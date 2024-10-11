@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '/Users/kavyaarora/Desktop/Task1/first/src/Assets/Css/ProductFilters.scss'; // Import the SCSS file for this component
+import '../Assets/Css/ProductFilters.scss'; // Import the SCSS file for this component
 
 const ProductFilters = () => {
     return (

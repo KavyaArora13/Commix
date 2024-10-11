@@ -1,0 +1,33 @@
+.comment-form-container {
+    background-color: #f8f9fa; /* Optional: background color for form */
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  
+    .form-control {
+      border-radius: 0;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      padding: 10px;
+    }
+  
+    .comment-input {
+      height: 150px; /* Adjust based on your requirement */
+    }
+  
+    .submit-btn {
+      background-color: #333;
+      color: white;
+      font-weight: bold;
+      padding: 10px 40px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      text-transform: uppercase;
+  
+      &:hover {
+        background-color: #555;
+      }
+    }
+  }
+  

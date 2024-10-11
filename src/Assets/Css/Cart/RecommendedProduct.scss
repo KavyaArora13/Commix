@@ -1,0 +1,43 @@
+.recommended-product {
+    .product-image {
+      width: 93px;
+      height: 114px;
+      img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  
+    .product-title {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+  
+    .product-rating {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+      .star {
+        color: #d6d6d6;
+        &.filled {
+          color: #EABE67;
+        }
+      }
+      .review-count {
+        color: #2C2E3A;
+        margin-left: 0.25rem;
+      }
+    }
+  
+    .product-price {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+  
+    .btn-warning {
+      border-radius: 11px;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+    }
+  }

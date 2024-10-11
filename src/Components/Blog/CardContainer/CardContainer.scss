@@ -1,0 +1,51 @@
+// src/Components/Blog/CardContainer/CardContainer.scss
+.card-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    
+    .card-slider {
+      display: flex;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      padding: 20px 0;
+      width: calc(288px * 4 + 30px); // Width of 4 cards plus some gap
+      margin: 0 auto;
+    }
+    
+    .slider-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 10;
+      
+      &.prev {
+        left: 0;
+      }
+      
+      &.next {
+        right: 0;
+      }
+    }
+    
+    .read-more {
+      text-align: center;
+      margin-top: 20px;
+      
+      .read-more-link {
+        font-family: 'Montserrat', sans-serif;
+        color: #ff69b4;
+        text-decoration: none;
+        font-weight: bold;
+      }
+    }
+  }

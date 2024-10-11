@@ -1,0 +1,30 @@
+
+.google-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+.google-login-btn {
+  background-color: #4A4E69; /* Background color */
+  color: white; /* Text color */
+  border: none; /* Remove border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 10px 20px; /* Padding */
+  display: flex; /* Flexbox for alignment */
+  align-items: center; /* Center items vertically */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 16px; /* Font size */
+  transition: background-color 0.3s; /* Transition for hover effect */
+
+  &:hover {
+    background-color: #3b3f54; /* Darker shade on hover */
+  }
+
+  .google-logo {
+    width: 20px; /* Logo size */
+    height: 20px; /* Logo size */
+    margin-right: 10px; /* Space between logo and text */
+  }
+}

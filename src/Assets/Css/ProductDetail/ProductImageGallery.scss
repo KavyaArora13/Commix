@@ -1,0 +1,47 @@
+.product-image-gallery {
+    display: flex;
+    align-items: flex-start;
+  
+    // Selected Image Container
+    .selected-image {
+      height: 400px;  // Set the fixed height for the selected image
+      width: 325px;   // Set the fixed width for the selected image
+  
+      img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover; // Ensures the image covers the container without distortion
+      }
+    }
+  
+    // Thumbnails Container
+    .thumbnail-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 400px; // Matches the height of the selected image container
+  
+      .thumbnail {
+        width: 80px;   // Set width for the thumbnail images
+        height: 80px;  // Set height for the thumbnail images to ensure they are proportional
+        margin-bottom: 5px; // Adds space between thumbnails
+        cursor: pointer;
+        border: 1px solid transparent; // Transparent border by default
+  
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover; // Ensure the thumbnail images cover their containers
+        }
+  
+        &:hover {
+          border-color: yellow;
+        }
+  
+        &:active {
+          border-color: red;
+        }
+      }
+    }
+  }
+  

@@ -1,0 +1,67 @@
+.order-summary {
+  
+    .progress-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      
+      .progress-bar-wrapper {
+        flex-grow: 1;
+        margin-right: 10px;
+      }
+  
+      .progress {
+        height: 16px; // Increased height
+        overflow: visible;
+      }
+  
+      .progress-bar {
+        background-color: #2e8b57;
+        border-radius: 7.5px; // Adjusted for increased height
+      }
+  
+      .progress-amount {
+        font-size: 13px;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+    }
+  
+    .free-delivery {
+      font-size: 0.9rem;
+  
+      .bi-check-circle-fill {
+        color: #28a745;
+      }
+  
+      p {
+        font-size: 0.8rem;
+      }
+    }
+  
+    .gift-checkbox {
+      .form-check-input {
+        border: 1px solid black; // Red border for checkbox
+        &:checked {
+          background-color: green;
+        }
+      }
+  
+      .form-check-label {
+        color: #636363; // Red text color
+      }
+    }
+  
+    .btn-warning {
+      background-color: #2C2E3A;
+      border-color: #2C2E3A;
+      border-radius: 16px;
+      color: #EABE67;
+  
+      &:hover {
+        background-color: #EABE67;
+        border-color: #EABE67;
+        color: #2C2E3A;
+      }
+    }
+  }

@@ -1,17 +1,17 @@
-@import '/Users/kavyaarora/Desktop/Task1/first/src/Assets/Css/variables.scss';
+@import './variables.scss';  // Correct relative path if 'variables.scss' is in the same directory
 
 
 html, body {
     overflow-x: hidden;
   }
 
-.main-section {
+  .main-section {
     background-size: cover;
     background-position: center;
     height: auto;  
     padding-bottom: 50px;
     position: relative;
-
+  
     .slick-slide {
       height: 100%;
       display: flex;
@@ -19,33 +19,81 @@ html, body {
       align-items: center;
       transition: all 0.5s ease-in-out;
     }
-
+  
     .slide-content {
       width: 100%;
       min-height: 605px;  
       position: relative;
-      background-image: url('../Image/main-image.png'); 
+      background-image: url('../../Assets/Image/main-image.png'); 
       background-size: cover;
       background-position: center;
-
+  
+      @media (max-width: 768px) {
+        min-height: 450px;
+      }
+  
+      @media (max-width: 480px) {
+        min-height: 350px;
+      }
+  
       .content-wrapper {
         position: absolute;
         top: 50%;
         left: 10%;
         transform: translateY(-50%);
         color: #4B4A9F;
-
+        max-width: 80%;
+  
+        @media (max-width: 768px) {
+          left: 5%;
+          max-width: 90%;
+        }
+  
+        @media (max-width: 480px) {
+          left: 3%;
+          max-width: 94%;
+        }
+  
         h1 {
           font-size: 48px;
           font-weight: bold;
-          margin-bottom: 10px;
+          margin-bottom: 15px;
+          width: 100%;
+          overflow-wrap: break-word;
+          word-wrap: break-word;
+          line-height: 1.2;
+  
+          @media (max-width: 1024px) {
+            font-size: 30px;
+          }
+  
+          @media (max-width: 768px) {
+            font-size: 24px;
+            margin-bottom: 10px;
+          }
+  
+          @media (max-width: 480px) {
+            font-size: 17.5px;
+            margin-bottom: 8px;
+          }
         }
-
+  
         p {
           font-size: 16px;
           margin-bottom: 20px;
+          line-height: 1.4;
+  
+          @media (max-width: 768px) {
+            font-size: 14px;
+            margin-bottom: 15px;
+          }
+  
+          @media (max-width: 480px) {
+            font-size: 12px;
+            margin-bottom: 12px;
+          }
         }
-
+  
         .shop-now-btn {
           background-color: #2C2E3A;
           color: white;
@@ -59,543 +107,988 @@ html, body {
           align-items: center;
           justify-content: center;
           gap: 10px;
-
+          transition: all 0.3s ease;
+  
+          @media (max-width: 768px) {
+            width: 250px;
+            height: 40px;
+            font-size: 14px;
+          }
+  
+          @media (max-width: 480px) {
+            width: 200px;
+            height: 36px;
+            font-size: 12px;
+          }
+  
           &:hover {
+            background-color: lighten(#2C2E3A, 10%);
+  
             .btn-content {
-              transform: scale(0.9);
-              color: $highlight-color;
+              transform: scale(0.95);
             }
-
+  
             .social-icon {
               color: $highlight-color;
             }
           }
-
+  
           .btn-content {
             display: flex;
             align-items: center;
             gap: 10px;
             transition: transform 0.3s ease;
           }
-
+  
           .social-icon {
             font-size: 14px;
             color: white;
             transition: color 0.3s ease;
-          }
-        }
-      }
-    }
-
-    /* New Launched Section Styling */
-    .new-launched-section {
-        margin-top: 90px;
-      
-        .heading-container {
-          margin-bottom: 60px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-      
-          .decor-icon {
-            display: inline-block;
-            width: 40px; 
-            height: auto;
-            margin: 0 15px;
-          }
-      
-          .section-heading {
-            font-size: 28px;
-            color: black;
-          }
-        }
-      
-        .image-container {
-          height: 326px;
-          position: relative;
-          width: 1364px;
-          margin: 0 auto;
-          
-          .content-overlay {
-            position: absolute;
-            top: 69%;
-            left: 10%;
-      
-            .shop-now-btn {
-              background-color: white;
-              color: black;
-              padding: 10px 30px;
-              border: 1px solid black;
-              cursor: pointer;
-              font-size: 20px;
-              border-radius: 20%;
-              font-style: Montserrat;
-      
-              &:hover {
-                background-color: $highlight-color;
-              }
+  
+            @media (max-width: 480px) {
+              font-size: 12px;
             }
           }
         }
       }
+    }
+  
 
-    /* Discover Haircare Section Styling */
-    .discover-haircare-section {
-      margin-top: 117px;
 
-      .heading-container {
-        margin-bottom: 50px;
+/* New Launched Section Styling */
+.new-launched-section {
+  margin-top: 5rem; // Use relative units for better responsiveness
+
+  .heading-container {
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap; // Allow wrapping on very small screens
+
+    .decor-icon {
+      display: inline-block;
+      width: 40px; 
+      height: auto;
+      margin: 0 15px;
+
+      @media (max-width: 480px) {
+        width: 30px; // Smaller icon for mobile
+        margin: 0 10px;
+      }
+    }
+
+    .section-heading {
+      font-size: 28px;
+      color: black;
+      text-align: center; // Center text if it wraps
+
+      @media (max-width: 768px) {
+        font-size: 24px;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 20px;
+        width: 100%; // Full width on mobile
+        margin-top: 10px; // Add some space if it wraps
+      }
+    }
+  }
+
+  .image-container {
+    position: relative;
+    width: 100%;
+    display: flex; // Use flexbox for alignment
+    justify-content: center; // Center images
+    margin: 0 auto; // Center the container
+
+    .launch-image {
+      width: auto; // Allow the image to maintain its aspect ratio
+      max-width: 90%; // Limit the maximum width
+      height: auto;
+      margin: 10px; // Add a small margin for the images
+    }
+
+    .desktop-image {
+      display: block; // Show desktop image by default
+    }
+
+    .mobile-image {
+      display: none; // Hide mobile image by default
+    }
+  }
+
+  // Media Queries for Responsiveness
+  @media (max-width: 576px) {
+    .image-container {
+      .desktop-image {
+        display: none; // Hide desktop image on small screens
+      }
+
+      .mobile-image {
+        display: block; // Show mobile image on small screens
+        margin: 0 auto; // Center the mobile image
+      }
+    }
+  }
+
+  // Media query for smaller devices
+  @media (max-width: 768px) {
+    .image-container {
+      .desktop-image {
+        display: none; // Hide desktop image on small screens
+      }
+
+      .mobile-image {
+        display: block; // Show mobile image on small screens
+        margin: 0 auto; // Center the mobile image
+      }
+    }
+  }
+}
+
+.discover-haircare-section {
+  margin-top: 40px;
+  width: 100%;
+
+  .heading-container {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+
+    .decor-icon {
+      width: 24px;
+      height: auto;
+      margin: 0 12px;
+    }
+
+    .section-heading {
+      font-size: 20px;
+      color: black;
+      text-align: center;
+      font-weight: 600;
+    }
+  }
+
+  .products-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    gap: 20px;
+
+    &.mobile-slider {
+      padding: 0;
+      
+      .slick-slider {
+        width: 100%;
+      }
+
+      .slick-slide {
+        padding: 0 10px;
+        box-sizing: border-box;
+      }
+
+      .slick-dots {
+        bottom: -30px;
+      }
+    }
+
+    .product-card {
+      flex: 1 1 calc(25% - 20px);
+      max-width: calc(25% - 20px);
+      min-width: 200px;
+      aspect-ratio: 1 / 1.2;
+      text-align: center;
+      border: 1px solid #e0e0e0;
+      padding: 15px;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      .product-image {
+        width: 100%;
+        height: 70%;
+        object-fit: contain;
+        margin-bottom: 10px;
+        transition: opacity 0.3s ease;
+      }
+
+      .product-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      &:hover {
+        .product-image {
+          opacity: 0;
+        }
+        .product-video {
+          opacity: 1;
+        }
+        .product-info {
+          opacity: 0;
+        }
+      }
+
+
+      &.small-image {
+        .product-image {
+          width: 40%;
+          position: relative;
+          top: 100px;
+          margin: auto auto;
+        }
+      }
+
+      .product-info {
+        flex-grow: 1;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
 
-        .decor-icon {
-          display: inline-block;
-          width: 40px;
-          height: auto;
-          margin: 0 15px;
+      .product-category {
+        font-size: 12px;
+        color: #888;
+        font-weight: 200;
+        margin-bottom: 3px;
+      }
+
+      .product-name {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 3px;
+      }
+
+      .product-price {
+        font-size: 12px;
+        color: #555;
+      }
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .products-container .product-card {
+      flex: 1 1 calc(33.33% - 20px);
+      max-width: calc(33.33% - 20px);
+    }
+  }
+
+  @media (max-width: 992px) {
+    .products-container .product-card {
+      flex: 1 1 calc(50% - 20px);
+      max-width: calc(50% - 20px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .heading-container {
+      .section-heading {
+        font-size: 18px;
+      }
+    }
+    
+    .products-container {
+      gap: 0;
+      
+      &.mobile-slider {
+        .product-card {
+          padding: 10px;
+          max-width: 100%;
+          flex: 1 1 100%;
+          margin: 0 auto;
+        }
+      }
+    }
+  }
+}
+
+.two-image-section {
+  .two-images-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 50px auto;
+
+    .image-wrapper {
+      flex: 1;
+      min-width: 0; // This allows the flex item to shrink below its minimum content size
+    }
+
+    .responsive-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .two-images-container {
+      padding: 15px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .two-images-container {
+      flex-direction: column;
+      gap: 15px;
+      padding: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .two-images-container {
+      gap: 10px;
+      padding: 5px;
+    }
+  }
+}
+
+/* Commix Iconics Section */
+
+
+
+.commix-iconics-section {
+  margin-top: 112px;
+  text-align: center;
+
+  .heading-container {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .decor-icon {
+      display: inline-block;
+      width: 40px;
+      height: auto;
+      margin: 0 15px;
+    }
+
+    .section-heading {
+      font-size: 28px;
+      color: black;
+      text-align: center;
+
+      @media (max-width: 768px) {
+        font-size: 24px;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 20px;
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+  }
+
+  .slick-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+
+  .product-card {
+    width: 300px;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin: 0 15px;
+    overflow: hidden;
+    padding: 15px;
+
+    img {
+      width: 100%;
+      height: auto;
+      max-height: 450px;
+      object-fit: cover;
+    }
+
+    h4 {
+      margin: 10px 0;
+      color: #333;
+      font-family: 'Montserret';
+      font-weight: light;
+      font-size: 14px;
+    }
+
+    h3 {
+      margin: 10px 0;
+      color: #333;
+      font-family: 'Montserret';
+      font-weight: bold;
+    }
+
+    p {
+      margin: 10px 0;
+      color: #333;
+      font-family: 'Montserret';
+      font-weight: normal;
+    }
+  }
+
+  .slick-center .product-card {
+    transform: scale(1.2);
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .slick-slide:not(.slick-center) .product-card {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+
+  @media (max-width: 768px) {
+    .product-card {
+      width: 90%;
+      margin: 0 5%;
+      padding: 20px;
+    }
+
+    img {
+      max-height: 300px;
+    }
+
+    .section-heading {
+      font-size: 24px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .product-card {
+      width: 100%;
+      margin: 0;
+      padding: 15px;
+    }
+
+    img {
+      max-height: 200px;
+    }
+
+    .section-heading {
+      font-size: 20px;
+    }
+  }
+}
+
+   /* Bottle Image Section */
+
+.full-width-image-section {
+  margin-top: 116px;
+  width: 100%;  /* Set to 100% for responsiveness */
+  height: auto; /* Auto height for flexible layout */
+  overflow: hidden; /* Ensure any overflow is hidden */
+}
+
+.full-width-image {
+  width: 100%; /* Set width to 100% for responsiveness */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Cover the area while maintaining aspect ratio */
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .full-width-image-section {
+      height: 815px; /* Set a fixed height for larger screens */
+  }
+
+  .full-width-image {
+      height: 815px; /* Fixed height for larger screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .full-width-image-section {
+      height: auto; /* Auto height for smaller screens */
+  }
+
+  .full-width-image {
+      height: auto; /* Maintain aspect ratio for smaller screens */
+  }
+}
+
+/* Exclusive Festive Combos Section */
+.exclusive-festive-combos-section {
+  margin-top: 5rem;
+  padding: 0 1.25rem;
+
+  /* Heading Styling */
+  .heading-container {
+    margin-bottom: 3.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+
+    .decor-icon {
+      width: 2.5rem;
+      height: auto;
+      margin: 0 0.9375rem;
+    }
+
+    .section-heading {
+      font-size: 28px;
+      color: black;
+      text-align: center; // Center text if it wraps
+
+      @media (max-width: 768px) {
+        font-size: 24px;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 20px;
+        width: 100%; // Full width on mobile
+        margin-top: 10px; // Add some space if it wraps
+      }
+    }
+  }
+
+  /* Image Container Styling */
+  .combo-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.25rem;
+
+    .combo-image {
+      width: 100%;
+      max-width: 75rem;
+      height: auto;
+      object-fit: contain;
+    }
+  }
+}
+
+/* Offer Section Styling */
+.offer-section {
+  width: 100%;
+  margin-top: 7.5625rem;
+  display: flex;
+  justify-content: center;
+
+  .offer-image-container {
+    position: relative;
+    width: 100%;
+    max-width: 107.125rem;
+    height: auto;
+    aspect-ratio: 1714 / 649;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+
+    .offer-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .shop-now-btn {
+      position: absolute;
+      top: 65%;
+      left: 52%;
+      transform: translate(-50%, -50%);
+      padding: 0.5rem 1rem;
+      background-color: black;
+      color: white;
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #333;
+      }
+    }
+  }
+}
+
+/* Featured Section Styling */
+
+
+.featured-section {
+  margin-top: 7.3125rem;
+  text-align: center;
+
+  .heading-container {
+    margin-bottom: 4.125rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .decor-icon {
+      width: 2.5rem;
+      height: auto;
+      margin: 0 0.9375rem;
+    }
+
+    .section-heading {
+      font-size: 1.75rem;
+      color: black;
+    }
+  }
+
+  .image-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 84.375rem;
+    margin: 0 auto;
+    gap: 1.875rem;
+
+    .product-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      max-width: 41.9375rem;
+      flex: 1 1 18.75rem;
+      position: relative;
+      overflow: hidden;
+
+      .media-container {
+        width: 100%;
+        position: relative;
+        padding-top: 75%; // Adjust this value to match your image aspect ratio
+        overflow: hidden;
+      }
+
+      .product-media {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .product-text {
+        width: 100%;
+        margin-top: 0.625rem;
+        padding: 0.9375rem;
+
+        h3 {
+          font-size: 1.125rem;
+          margin-bottom: 0.3125rem;
         }
 
-        .section-heading {
-          font-size: 28px;
+        p {
+          font-size: 1rem;
+          margin-bottom: 0.625rem;
+        }
+
+        .shop-now-btn {
+          padding: 0.625rem 1.25rem;
+          background-color: #2C2E3A;
+          color: white;
+          border: none;
+          cursor: pointer;
+          font-size: 0.9375rem;
+          text-transform: uppercase;
+          transition: background-color 0.3s ease;
+
+          &:hover {
+            background-color: #444;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .featured-section {
+    .image-grid {
+      flex-direction: column;
+
+      .product-card {
+        max-width: 100%;
+      }
+    }
+  }
+}
+
+/* Blog Section Styling */
+.blog-section {
+  margin-top: 6.25rem;
+  text-align: center;
+
+  .heading-container {
+    margin-bottom: 0.9375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .decor-icon {
+      width: 2.5rem;
+      height: auto;
+      margin: 0 0.9375rem;
+    }
+
+    .section-heading {
+      font-size: 1.75rem;
+      color: black;
+    }
+  }
+
+  .section-description {
+    font-size: 1rem;
+    color: #777;
+    margin-bottom: 3.125rem;
+  }
+
+  .blog-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 81.25rem;
+    margin: 0 auto;
+    gap: 1.25rem;
+
+    .blog-post {
+      width: 100%;
+      max-width: 20rem;
+      height: auto;
+      text-align: left;
+      border: 1px solid black;
+      padding: 1.1875rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      .blog-image {
+        width: 100%;
+        height: auto;
+      }
+
+      .blog-text {
+        padding: 0.9375rem;
+
+        p {
+          font-size: 0.875rem;
+          color: #999;
+          margin-bottom: 0.3125rem;
+        }
+
+        h3 {
+          font-size: 1.125rem;
           color: black;
         }
       }
+    }
+  }
 
-      .products-container {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 10px;
-        max-width: 1200px;
-        margin: 0 auto;
+  .see-all-button-container {
+    margin-top: 4.6875rem;
+    text-align: center;
 
-        .product-card {
-          text-align: center;
-          width: 250px;  
-          height: 350px; 
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end; /* Ensures equal space between elements */
-          align-items: center;
+    .see-all-button {
+      padding: 0.625rem 1.25rem;
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+      font-size: 0.875rem;
+      width: 18.9375rem;
+      height: 3.125rem;
+      transition: background-color 0.3s ease;
 
-          img { 
-            object-fit: contain; /* Keeps aspect ratio intact */
-            margin-bottom: 15px;
-          }
-
-          h4 {
-            font-size: 20px;
-            color: black;
-            font-weight: 200;
-            margin-bottom: 15px;
-          }
-
-          h3 {
-            font-size: 18px;
-            color: black;
-            margin-bottom: 5px;
-          }
-
-          p {
-            font-size: 16px;
-            color: #555;
-          }
-        }
+      &:hover {
+        background-color: #555;
       }
     }
+  }
+}
 
-    /* two image Section Styling */
-    .two-image-section {
-        .two-images-container {
-          display: flex;
-          justify-content: space-between; /* Ensure the images have space between them */
-          margin: 50px auto; /* To center the container and add space above and below */
-          max-width: 1400px; /* Set a maximum width for the container */
-          gap: 20px; /* Add a gap between the images */
-          padding: 20px; /* Add some padding for white space inside the container */
-          background-color: #fff; /* Optional: Add a background color for the white space effect */
-      
-          img {
-            width: 670px; /* Both images will take 49% of the container width */
-            object-fit: cover; /* Ensures the image covers the container while maintaining aspect ratio */
-            height: 317px; /* Set the same height for both images */
-            object-fit: contain;
-          }
-        }
+/* Subscribe Section Styling */
+.subscribe-section {
+  margin-top: 9.375rem;
+  text-align: center;
+
+  .heading-container {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .decor-icon {
+      width: 2.5rem;
+      height: auto;
+      margin: 0 0.9375rem;
+    }
+
+    .section-heading {
+      font-size: 1.75rem;
+      color: black;
+    }
+  }
+
+  .section-description {
+    font-size: 1rem;
+    color: #777;
+    margin: 1.25rem 0;
+  }
+
+  .subscribe-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .email-input {
+      width: 100%;
+      max-width: 36.3125rem;
+      height: 2.8125rem;
+      border: 1px solid black;
+      border-radius: 0.3125rem 0 0 0.3125rem;
+      padding-left: 0.9375rem;
+      font-size: 1rem;
+    }
+
+    .subscribe-button {
+      width: 8.3125rem;
+      height: 2.8125rem;
+      background-color: black;
+      color: white;
+      font-size: 0.875rem;
+      cursor: pointer;
+      font-family: Montserrat, sans-serif;
+      border: none;
+      border-radius: 0 0.3125rem 0.3125rem 0;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #333;
       }
-
-      /* commix-iconics-section*/
-
-      .commix-iconics-section {
-        margin-top: 112px;
-        text-align: center;
-    
-        .heading-container {
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-    
-            .decor-icon {
-                display: inline-block;
-                width: 40px;
-                height: auto;
-                margin: 0 15px;
-            }
-    
-            .section-heading {
-                font-size: 32px;
-                color: black;
-                display: inline-block;
-            }
-        }
-    
-        .slick-slide {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.5s ease; /* Smooth slide transition */
-        }
-    
-        .product-card {
-            width: 300px;  /* All cards have equal width */
-            text-align: center;
-            transition: transform 0.5s ease;
-            margin: 0 15px; /* Add margin between slides for proper spacing */
-    
-            img {
-                width: 100%; /* Image fills the product card */
-                height: 450px;
-                object-fit: cover;
-            }
-    
-            h4, h3, p {
-                margin: 10px 0;
-                color: #333;
-            }
-    
-            /* For left and right (non-center) slides */
-            &:not(.slick-center) {
-                transform: scale(0.8); /* Smaller size for non-center slides */
-            }
-        }
-    
-        /* This ensures the center slide enlarges */
-        .slick-center .product-card {
-            transform: scale(1.1); /* Larger size for the center slide */
-            opacity: 1; /* Full opacity for the center slide */
-            z-index: 1; /* Bring it to the front */
-        }
     }
-    
-    
-    
+  }
+}
 
-    /* bottle image section */
+/* Responsive Styles */
+@media (max-width: 75em) { /* 1200px */
+  .exclusive-festive-combos-section .heading-container .section-heading {
+    font-size: 1.75rem;
+  }
+}
 
-    .full-width-image-section{
-        margin-top: 116px;
-        width: 100px;
-        height: 815px;
+@media (max-width: 62em) { /* 992px */
+  .exclusive-festive-combos-section .heading-container {
+    flex-direction: column;
+
+    .section-heading {
+      font-size: 1.5rem;
+      margin-bottom: 0.9375rem;
     }
 
-    .full-width-image{
-        width: 1440px;
-        height: 815px;
-        object-fit: cover;
+    .decor-icon {
+      margin: 0.625rem 0;
+    }
+  }
+
+  .offer-section .offer-image-container .shop-now-btn {
+    font-size: 1rem;
+    padding: 0.4375rem 0.875rem;
+  }
+
+  .featured-section .image-grid,
+  .blog-section .blog-grid {
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 48em) { /* 768px */
+  .exclusive-festive-combos-section {
+    margin-top: 3.75rem;
+  }
+
+  .exclusive-festive-combos-section .heading-container .section-heading {
+    font-size: 1.25rem;
+  }
+
+  .offer-section {
+    margin-top: 5rem;
+  }
+
+  .featured-section,
+  .blog-section {
+    margin-top: 5rem;
+  }
+
+  .featured-section .heading-container,
+  .blog-section .heading-container,
+  .subscribe-section .heading-container {
+    flex-direction: column;
+  }
+
+  .featured-section .image-grid .product-card,
+  .blog-section .blog-grid .blog-post {
+    max-width: 100%;
+  }
+
+  .subscribe-section {
+    margin-top: 6.25rem;
+  }
+
+  .subscribe-form {
+    flex-direction: column;
+
+    .email-input {
+      border-radius: 0.3125rem;
+      margin-bottom: 0.625rem;
     }
 
-    /* Exclusive Festive Combos Section */
+    .subscribe-button {
+      width: 100%;
+      max-width: 36.3125rem;
+      border-radius: 0.3125rem;
+    }
+  }
+}
 
-    .exclusive-festive-combos-section {
-        margin-top: 75px;
-    
-        /* Heading Styling */
-        .heading-container {
-            margin-bottom: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-    
-            .decor-icon {
-                display: inline-block;
-                width: 40px;
-                height: auto;
-                margin: 0 15px;
-            }
-    
-            .section-heading {
-                font-size: px;
-                color: black;
-                display: inline-block;
-            }
-        }
-    
-        /* Image Container Styling */
-        .combo-image-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-    
-            .combo-image {
-                width: 1203px;
-                height: 311px;
-                object-fit: contain;
-            }
-        }
+@media (max-width: 36em) { /* 576px */
+  .exclusive-festive-combos-section .heading-container {
+    .section-heading {
+      font-size: 1.1rem;
     }
 
-    /* offer Section Styling */
-
-    .offer-section{
-        width: 100%;
-        margin-top: 121px;
-        display: flex;
-        justify-content: center;
-
-        .offer-image-container{
-            position: relative;
-            width: 1714px; /* Set the width based on your design */
-            height: 649px;
-            background-size: cover;
-            background-position: center;
-            overflow: hidden;
-
-            .offer-image{
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .shop-now-btn{
-                position: absolute;
-                top: 65%;
-                left: 52%;
-                padding: 8px;
-                background-color: black;
-                color: white;
-                font-size: 18px;
-                cursor: pointer;
-
-                &:hover{
-                    background-color: $highlight-color;
-                }
-            }
-        }
+    .decor-icon {
+      width: 1.5625rem;
     }
+  }
 
-    .featured-section {
-        margin-top: 117px;
-        text-align: center;
-      
-        .heading-container {
-          margin-bottom: 66px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-      
-          .decor-icon {
-            width: 40px;
-            height: auto;
-            margin: 0 15px;
-          }
-      
-          .section-heading {
-            font-size: 28px;
-            color: black;
-            display: inline-block;
-          }
-        }
-      
-        .image-grid {
-          display: flex;
-          justify-content: space-between; /* Space between the images */
-          max-width: 1350px; /* Set a max width for the grid */
-          margin: 0 auto; /* Center the grid on the page */
-          gap: 30px; /* Increase the gap between the divs to add spacing */
-      
-          .product-card {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
-            background-color: white;
-      
-            .product-image {
-              width: 671px;
-              height: 584px;
-              object-fit: cover;
-            }
-      
-            .product-text {
-              margin-top: 10px;
-              text-align: left;
-      
-              h3 {
-                font-size: 18px;
-              }
-      
-              p {
-                font-size: 16px;
-              }
-      
-              .shop-now-btn {
-                padding: 10px 20px;
-                background-color: #2C2E3A;
-                color: white;
-                border: none;
-                cursor: pointer;
-                font-size: 15px;
-                text-transform: uppercase;
-      
-                &:hover {
-                  background-color: $highlight-color;
-                }
-              }
-            }
-          }
-        }
-      }
+  .offer-section .offer-image-container .shop-now-btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+  }
 
-      .blog-section {
-        margin-top: 100px;
-        text-align: center;
-      
-        .heading-container {
-          margin-bottom: 15px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-      
-          .decor-icon {
-            width: 40px;
-            height: auto;
-            margin: 0 15px;
-          }
-      
-          .section-heading {
-            font-size: 28px;
-            color: black;
-          }
-        }
-      
-        .section-description {
-          font-size: 16px;
-          color: #777;
-          margin-bottom: 50px;
-        }
-      
-        .blog-grid {
-          display: flex;
-          justify-content: space-between;
-          max-width: 1300px;
-          margin: 0 auto;
-          gap: 20px; /* Add spacing between the divs */
-      
-          .blog-post {
-            width: 320px;
-            height: 397px; /* Adjust width to ensure both divs fit in one row */
-            text-align: left;
-            border: 1px solid black;
-            padding: 19px;
-      
-            .blog-image {
-              width: 100%;
-              height: auto;
-            }
-      
-            .blog-text {
-              padding: 15px;
-      
-              p {
-                font-size: 14px;
-                color: #999;
-              }
-      
-              h3 {
-                font-size: 18px;
-                color: black;
-              }
-            }
-          }
-        }
-      
-        .see-all-button-container {
-          margin-top: 75px;
-          text-align: center;
-      
-          .see-all-button {
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-            width: 303px;
-            height: 50px;
-      
-            &:hover {
-              background-color: $highlight-color;
-            }
-          }
-        }
-      }
+  .featured-section .heading-container .section-heading,
+  .blog-section .heading-container .section-heading,
+  .subscribe-section .heading-container .section-heading {
+    font-size: 1.5rem;
+  }
 
-      .subscribe-section{
-          margin-top: 150px;
-          text-align: center;
-
-          .heading-container{
-              margin-bottom: 0px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-
-              .decor-icon{
-                  width: 40px;
-                  height: auto;
-              }
-
-              .section-heading {
-                font-size: 28px;
-                color: black;
-              }
-          }
-
-          .section-description{
-              font-size: 16px;
-              color: #777;
-              margin-bottom: 20px;
-          }
-
-          .subscribe-form{
-              display: flex;
-              justify-content: center;
-              align-items: center;
-
-              .email-input{
-                  width: 581px;
-                  height: 45px;
-                  border: 1px solid black;
-                  border-top-left-radius: 5%;
-                  border-bottom-left-radius: 5%;
-                  padding-left: 15px;
-              }
-
-              .subscribe-button{
-                  width: 133px;
-                  height: 45px;
-                  background-color: black;
-                  color: white;
-                  font-size: 14px;
-                  cursor: pointer;
-                  font: Montserrat;
-
-                  &:hover{
-                      background-color: $highlight-color;
-                  }
-              }
-          }
-      }
+  .blog-section .see-all-button-container .see-all-button {
+    width: 100%;
+    max-width: 18.9375rem;
+  }
+}
 }

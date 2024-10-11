@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; 
-import '/Users/kavyaarora/Desktop/Task1/first/src/Assets/Css/Footer.scss';
+import '../Assets/Css/Footer.scss';
 import SocialIcon from './SocialIcon';
 import { faInstagram, faFacebookF, faTwitter, faLinkedinIn, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import logoImage from '/Users/kavyaarora/Desktop/Task1/first/src/Assets/Image/Mask group.png';
+import logoImage from '../Assets/Image/Mask group.png';
 
 const Footer = () => {
   const footerLinks = [
@@ -88,7 +88,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-column mb-3">
-          <h4>Careers</h4>
+          <h4>PR Inquiries</h4>
           <a href="mailto:pr@commix.com">pr@commix.com</a>
         </div>
 

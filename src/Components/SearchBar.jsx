@@ -1,5 +1,5 @@
 import React from 'react';
-import '/Users/kavyaarora/Desktop/Task1/first/src/Assets/Css/SearchBar.scss'; // Import the SCSS file
+import '../Assets/Css/SearchBar.scss'; // Import the SCSS file
 
 const SearchBar = () => {
     return (

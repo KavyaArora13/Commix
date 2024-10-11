@@ -1,0 +1,154 @@
+@import '../variables.scss';
+
+.top-bar {
+    background-color: $header-bg;  // Equivalent to Bootstrap's 'bg-dark'
+    color: #ffffff;  // Equivalent to 'text-light'
+  
+    .social-links {
+      .social-icon {
+        color: #ffffff;
+        margin-right: 15px;
+        font-size: 18px;
+  
+        &:hover {
+          color: $highlight-color;  // Change color on hover
+        }
+      }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;  // Ensure elements wrap on very small screens
+        }
+    
+        .contact-info {
+          font-size: 12px;  // Reduce text size
+          i {
+            font-size: 12px;  // Reduce icon size
+          }
+        }
+    
+        .social-links {
+          .social-icon {
+            font-size: 14px;  // Reduce size of social icons
+            margin-right: 10px;  // Reduce margin
+          }
+        }
+    }
+}
+
+.signup-page {
+  height: 100vh;
+  overflow: hidden;
+
+  .container-fluid {
+    padding-right: 0;
+  }
+
+  .signup-image {
+    width: 852px;
+    height: 100vh;
+    object-fit: fill;
+  }
+
+  .signup-container {
+    transform: scale(0.8);
+    max-width: 500px; 
+    margin: auto;
+    padding: 2rem;
+
+    .signup-divider{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .google-divider{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .btn-light {
+        color: black;
+        border: 1px solid white;
+        margin-top: 1rem;
+      }
+    }
+
+    p {
+      text-align: center;
+      a {
+        color: #007bff;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 3rem;
+      text-align: start;
+    }
+
+    form {
+      .form-group {
+        margin-bottom: 1rem;
+
+        label {
+          display: block;
+          font-size: 1rem;
+          margin-bottom: 0.5rem;
+        }
+
+        input {
+          width: 100%;
+          padding: 0.75rem;
+          border: 0.75px solid #ccc;
+          border-radius: 10px;
+
+          &::placeholder{
+              color: #a8a4a4;
+          }
+        }
+      }
+
+      .form-check {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+
+        .form-check-input{
+            border: 1px solid black;
+        }
+
+        input {
+          margin-right: 0.5rem;
+        }
+
+        label {
+          font-size: 0.9rem;
+        }
+      }
+
+      button {
+        background-color: black;
+        color: white;
+        font-weight: bold;
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 10px;
+      }
+
+      hr {
+        margin: 2rem 0;
+      }
+    }
+  }
+}

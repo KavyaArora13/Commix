@@ -1,0 +1,125 @@
+@import '../variables.scss';
+
+.profile-banner {
+    position: relative;
+    width: 100%;
+    height: 235px;
+    color: #fff;
+    padding: 20px 0;
+    overflow: hidden;
+    margin-bottom: 100px;
+    
+    .avatar-container {
+      width: 178px;
+      height: 178px;
+      margin-left: 3.15rem;
+      margin-right: 1.25rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  
+    .avatar-icon {
+      width: 100%;
+      height: 100%;
+    }
+    .banner-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      filter: brightness(0.4);
+      z-index: -1;
+    }
+  
+    .container-fluid {
+      height: 100%;
+    }
+  
+    .avatar {
+      width: 178px;
+      height: 178px;
+      object-fit: cover;
+      margin-left: 3.15rem;
+      margin-right: 1.25rem;
+    }
+  
+    .name {
+      font-size: 24px;
+      color: $highlight-color;
+    }
+  
+    .edit-button {
+      padding: 8px 12px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: $header-bg;
+      color: $highlight-color;
+      border: none;
+      margin-right: 5rem;
+      margin-bottom: 1.25rem;
+
+      &:hover{
+        background-color: $header-bg;
+      }
+    }
+  
+    .user-stats {
+      margin-right: 1rem;
+      display: flex;
+      gap: 30px;
+    }
+  
+    .stat {
+      text-align: center;
+    }
+  
+    .stat-value {
+      font-size: 18px;
+      font-weight: bold;
+    }
+  
+    .stat-label {
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+  }
+  
+  // Media queries for responsiveness
+  @media (max-width: 767px) {
+    .profile-banner {
+      height: auto;
+      padding-bottom: 20px;
+  
+      .row {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+  
+      .col-md-6 {
+        width: 100%;
+      }
+  
+      .d-flex.flex-column.align-items-end {
+        align-items: center !important;
+      }
+  
+      .edit-button {
+        margin-top: 1.25rem;
+        margin-bottom: 20px;
+      }
+  
+      .user-stats {
+        justify-content: center;
+      }
+    }
+  }

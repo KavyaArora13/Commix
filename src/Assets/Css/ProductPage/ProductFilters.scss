@@ -1,0 +1,75 @@
+@import '../variables.scss';
+
+.product-filters {
+  background-color: $header-bg;
+
+  .accordion-button {
+    background-color: $highlight-color;
+    color: $black;
+    font-weight: bolder;
+
+    &:not(.collapsed) {
+      background-color: $highlight-color;
+      color: $black;
+    }
+  }
+
+  .accordion-body {
+    background-color: $header-bg;
+  }
+
+  .list-group-item {
+    background-color: $header-bg;
+    color: white;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .list-group-item:hover {
+    background-color: #f5f5f5;
+    color: $black;
+    cursor: pointer;
+  }
+
+  .accordion-item{
+    margin-bottom: 10px;
+  }
+
+  // Browse by Popular Category Section
+  .browse-category {
+    background-color: white;
+
+    h3 {
+      color: $black;
+      font-weight: 600;
+      font-size: 20px;
+    }
+
+    .category-tags {
+      .tag {
+        background-color: $header-bg;
+        color: white;
+        text-decoration: none;
+        text-align: center;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex; /* Flexbox to align center */
+        align-items: center;
+        justify-content: center;
+        width: 100%; /* Full width for tags */
+        height: 100%; /* Full height for equal boxes */
+        white-space: nowrap; /* Prevent text wrapping */
+        overflow: hidden; /* Hide overflow */
+        text-overflow: ellipsis; /* Show ellipsis if text is too long */
+        padding: 10px; /* Add padding for better spacing */
+        font-size: clamp(12px, 1vw, 16px); /* Dynamically adjust font size */
+      }
+
+      .tag:hover {
+        background-color: #f5f5f5;
+        color: black;
+        border: 1px solid black;
+      }
+    }
+  }
+}

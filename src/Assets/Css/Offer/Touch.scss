@@ -1,0 +1,63 @@
+.touch-subscribe-section {
+    margin-top: 4rem;
+    text-align: center;
+  
+    .touch-heading-container {
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      .touch-decor-icon {
+        width: 2.5rem;
+        height: auto;
+        margin: 0 0.9375rem;
+      }
+  
+      .touch-section-heading {
+        font-size: 1.75rem;
+        color: black;
+      }
+    }
+  
+    .touch-section-description {
+      font-size: 1rem;
+      color: #777;
+      margin: 1.25rem 0;
+    }
+  
+    .touch-subscribe-form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+  
+      .touch-email-input {
+        width: 100%;
+        max-width: 36.3125rem;
+        height: 2.8125rem;
+        border: 1px solid black;
+        border-radius: 0.3125rem 0 0 0.3125rem;
+        padding-left: 0.9375rem;
+        font-size: 1rem;
+      }
+  
+      .touch-subscribe-button {
+        width: 8.3125rem;
+        height: 2.8125rem;
+        background-color: black;
+        color: white;
+        font-size: 0.875rem;
+        cursor: pointer;
+        font-family: Montserrat, sans-serif;
+        border: none;
+        border-radius: 0 0.3125rem 0.3125rem 0;
+        transition: background-color 0.3s ease;
+  
+        &:hover {
+          background-color: #333;
+        }
+      }
+    }
+  }
+  

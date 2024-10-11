@@ -1,0 +1,28 @@
+.favorite-orders {
+    text-align: left; // Changed from center to left
+
+    h2 {
+      margin-bottom: 2rem;
+      text-align: left; // Explicitly set the title alignment
+    }
+  
+    .no-favorites {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      text-align: center; // Keep the "Nothing here yet" centered
+  
+      .note-icon {
+        font-size: 3rem;
+        color: #ff69b4; // Pink color, you can adjust as needed
+        margin-bottom: 1rem;
+      }
+  
+      p {
+        font-size: 1.2rem;
+        color: #666;
+      }
+    }
+  }

@@ -1,0 +1,165 @@
+.cart-product {
+    font-size: 0.9rem;
+  }
+  
+  .cart-product-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+  }
+  
+  .cart-product-stock {
+    font-size: 0.8rem;
+    color: #007600;
+  }
+  
+  .cart-product-options {
+    font-size: 0.8rem;
+    
+    .learn-more {
+      color: #0066c0;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  
+  .cart-product-size {
+    font-size: 0.8rem;
+  }
+  
+  .cart-product-actions {
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+  
+    a {
+      color: #0066c0;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  
+    .quantity-selector {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 2px 8px;
+      background-color: #f0f0f0;
+  
+      label {
+        margin-right: 5px;
+        font-size: 0.8rem;
+      }
+  
+      select {
+        border: none;
+        background: transparent;
+        font-size: 0.8rem;
+        padding-right: 15px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: pointer;
+  
+        &::-ms-expand {
+          display: none;
+        }
+  
+        &:focus {
+          outline: none;
+        }
+      }
+  
+      &::after {
+        content: "\25BC";
+        font-size: 0.7rem;
+        color: #555;
+        position: relative;
+        right: 15px;
+        pointer-events: none;
+      }
+    }
+  }
+  
+  .cart-product-description {
+    font-size: 0.8rem;
+  }
+  
+  .cart-product-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #B12704;
+  }
+  
+  .badge {
+    font-size: 0.8rem;
+    font-weight: normal;
+  }
+  
+  .ends-in {
+    font-size: 0.8rem;
+  }
+  
+  .btn-outline-secondary {
+    font-size: 0.8rem;
+    border-color: #ccc;
+    color: #111;
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+  
+  .collect-coupon {
+    font-size: 0.8rem;
+    color: #0066c0;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  
+  .caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .cart-product {
+      .row {
+        flex-direction: column;
+      }
+  
+      .col-2, .col-8 {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+  
+      .col-2:last-child {
+        text-align: left;
+      }
+    }
+  
+    .cart-product-actions {
+      flex-wrap: wrap;
+      
+      .quantity-selector {
+        margin-bottom: 0.5rem;
+      }
+  
+      a {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }

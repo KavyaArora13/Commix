@@ -1,4 +1,4 @@
-@import './variables.scss';
+@import './variables.scss';  // Ensure this path is correct
 
 .footer {
   background-color: #2C2E3A;
@@ -21,13 +21,13 @@
     .rounded-logo {
       background-color: #2C2E3A; 
       height: 160px;
-      width: 160px; /* Ensures it's a circle */
+      width: 160px; 
       border-radius: 50%; 
       display: flex;
       justify-content: center;
       align-items: flex-start;
       position: absolute;
-      bottom: -80px; /* This will position the logo above the social links */
+      bottom: -80px; 
       z-index: 2; 
 
       img {
@@ -42,8 +42,9 @@
     display: flex;
     gap: 20px;
     justify-content: center;
-    margin-top: 100px !important; /* Increased margin to prevent overlap */
-    margin-bottom: 60px !important; /* Adjusted the bottom margin */
+    margin-top: 100px !important; 
+    margin-bottom: 60px !important; 
+    flex-wrap: wrap; // Allows wrapping to the next line on small screens
 
     .social-icon {
       width: 40px;
@@ -55,7 +56,7 @@
       align-items: center;
       color: #2C2E3A;
       font-size: 18px;
-      z-index: 1; /* Ensure social icons stay below the logo */
+      z-index: 1; 
 
       &:hover {
         background-color: $highlight-color;
@@ -93,8 +94,8 @@
   }
 
   .footer-header {
-    text-align: left;
-    padding-left: 135px;
+    text-align: left; // Align text to the left
+    padding-left: 135px; // Original padding for larger screens
     margin-bottom: 20px;
     margin-top: 20px;
     width: 100%;
@@ -108,6 +109,7 @@
 
   .footer-content {
     display: flex;
+    flex-wrap: wrap; // Allows wrapping to next line on small screens
     justify-content: space-between;
     width: 100%;
     max-width: 1200px;
@@ -125,9 +127,9 @@
       }
 
       .timing-line {
-        display: inline-block; /* Ensures the timing lines stay in the same row */
-        white-space: nowrap; /* Prevents line breaking */
-        margin-right: 10px; /* Adds spacing between timing blocks */
+        display: inline-block; 
+        white-space: nowrap; 
+        margin-right: 10px; 
       }
 
       a {
@@ -159,5 +161,58 @@
     padding-top: 20px;
     font-size: 12px;
     color: #888;
+  }
+}
+
+// Media Queries for Responsiveness
+@media (max-width: 768px) {
+  .footer-top {
+    height: auto; // Adjust height for small screens
+  }
+
+  .footer-social-links {
+    flex-direction: row; // Ensure icons are in a single row on smaller screens
+    justify-content: space-around; // Evenly distribute social icons
+    margin: 50px 0; // Adjust margins as needed
+  }
+
+  .footer-content {
+    flex-direction: column; // Stack footer columns on small screens
+    align-items: center; // Center content
+  }
+
+  .footer-column {
+    text-align: center; // Center align text in footer columns
+    padding: 10px 0; // Adjust padding for small screens
+    width: 100%; // Full width for better spacing
+    max-width: none; // Remove max width for footer columns
+  }
+}
+
+// Media Queries for Responsiveness
+@media (max-width: 576px) {
+  .footer-header {
+    padding-left: 0; // Remove left padding on small screens
+    padding-right: 0; // Remove right padding on small screens
+    text-align: left; // Ensure text is left-aligned
+    margin-bottom: 15px; // Adjust bottom margin for smaller screens
+    margin-top: 15px; // Adjust top margin for smaller screens
+  }
+
+  .footer-header h1 {
+    font-size: 24px; // Reduce font size for smaller screens
+  }
+
+  .footer-links {
+    flex-direction: column; // Stack footer links vertically
+    align-items: center; // Center the links
+  }
+
+  .footer-link-item {
+    padding: 5px 0; // Adjust padding for link items
+  }
+
+  .footer-bottom {
+    font-size: 10px; // Reduce font size for smaller screens
   }
 }

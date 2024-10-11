@@ -1,0 +1,72 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding-left: 0;
+    list-style: none;
+  
+    .page-item {
+      margin: 0 10px; // Slight space between page items
+  
+      &.active {
+        background-color: black; // Black background for active page
+        border-radius: 50%; // Circular active page
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+  
+        .page-link {
+          color: yellow; // Yellow text for active page
+          background-color: transparent; // No background
+          border: none;
+          outline: none; // Remove outline
+          box-shadow: none; // Remove the blue focus box (specific to certain browsers)
+        }
+      }
+  
+      .page-link {
+        color: black; // Default black color for page numbers
+        text-align: center;
+        padding: 8px;
+        border: none; // No borders
+        background-color: transparent; // Transparent background
+        outline: none; // Remove outline when focused
+        box-shadow: none; // Remove any focus blue box
+      }
+    }
+  }
+
+.section-subtitle{
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.section-title{
+    font-weight: bold;
+    font-size: 44px;
+}
+
+.view-all-button{
+  font-size: 16px;
+  cursor: pointer;
+  height: 40px;
+  width: 105px;
+
+  &:hover{
+    background-color: #555;
+  }
+}
+
+@media (max-width: 576px) {
+    .view-all-button {
+      margin-top: 10px; // Add margin for spacing
+      align-self: flex-start; // Align to the left in the flex context
+    }
+  
+    .d-flex {
+      flex-direction: column; // Stack elements vertically on small screens
+      align-items: flex-start; // Align items to the left
+    }
+  }
+  

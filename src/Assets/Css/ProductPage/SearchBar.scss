@@ -1,0 +1,22 @@
+.search-bar-container {
+    .form-container{
+        border: 1px solid #b9b9b9;
+        opacity: 80%;
+    }
+    .form-control {
+        font-size: 1rem; 
+    }
+
+    .btn-light {
+        padding: 10px; 
+    }
+
+    .btn-light i {
+        font-size: 1.2rem; 
+        color: black; 
+    }
+
+    .btn-light:hover {
+        cursor: pointer;
+    }
+}

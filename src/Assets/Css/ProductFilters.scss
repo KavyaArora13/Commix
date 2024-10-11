@@ -1,4 +1,4 @@
-@import '/Users/kavyaarora/Desktop/Task1/first/src/Assets/Css/variables.scss';
+@import './variables.scss';  // Correct relative path if 'variables.scss' is in the same directory
 
 .product-filters {
     background-color: $header-bg;

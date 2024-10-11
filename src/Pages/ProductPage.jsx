@@ -1,24 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../Components/Header';
 import Footer from '../Components/Footer';
-import Banner from '../Components/Banner'; 
-import SearchBar from '../Components/SearchBar';
-import ProductGridLayout from '../Components/ProductGridLayout';
+import Banner from '../Components/ProductPage/Banner';
+import SearchBar from '../Components/ProductPage/SearchBar';
+import ProductGridLayout from '../Components/ProductPage/ProductGridLayout'; 
 
 const ProductPage = () => {
-    return (
-      <div className="product-page">
-        <Header />
+  const [searchTerm, setSearchTerm] = useState(''); 
 
-        <div className="container">
-          <Banner />
-          <SearchBar/> 
-          <ProductGridLayout/>
-        </div>
+  return (
+    <div className="product-page">
+      <Header />
 
-        <Footer />
+      <div className="container">
+        <Banner />
+        <SearchBar searchTerm={searchTerm} handleSearch={setSearchTerm} />
+        <ProductGridLayout searchTerm={searchTerm} />
       </div>
-    );
+
+      <Footer />
+    </div>
+  );
 }
 
 export default ProductPage;

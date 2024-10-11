@@ -1,0 +1,57 @@
+/* src/Assets/Css/Profile/OrderHistory.scss */
+.order-history {
+  h2 {
+    text-align: left;
+    margin-bottom: 1rem;
+    font-size: 1.5rem; /* Adjust the size of the main heading */
+  }
+}
+
+.order {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9;
+
+  h3 {
+    margin: 0;
+    font-size: 1.2rem; /* Adjust the size of the order number */
+  }
+
+  p {
+    margin: 0.5rem 0; /* Add some margin for spacing */
+    font-size: 0.9rem; /* Adjust the size of the status, total amount, and order date */
+  }
+}
+
+.order-items {
+  margin-top: 1rem;
+}
+
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+.empty-state-content p {
+  margin-bottom: 1rem;
+  color: #666;
+}
+
+.primary-button {
+  background-color: #333;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

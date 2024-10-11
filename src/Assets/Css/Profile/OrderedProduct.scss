@@ -1,0 +1,152 @@
+@import '../variables.scss';
+
+.ordered-product {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.product-image-container {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: black;
+  margin-bottom: 5px;
+}
+
+.product-seller {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.product-price {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.original-price {
+  font-weight: normal;
+  font-size: 14px;
+  text-decoration: line-through;
+  color: #666;
+  margin-left: 10px;
+}
+
+.buy-again-btn {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  align-self: flex-start;
+  margin-top: 10px;
+}
+
+.product-actions {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.action-btn {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 10px;
+
+  &.primary {
+    background-color: $highlight-color;
+    color: black;
+    border: none;
+  }
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  &.primary:hover {
+    background-color: darken($highlight-color, 5%);
+  }
+}
+
+@media (min-width: 768px) {
+  .ordered-product {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .product-image-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  .product-info {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .product-actions {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .action-btn {
+    width: calc(50% - 5px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ordered-product {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .product-image-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  .product-info {
+    flex: 1;
+  }
+
+  .product-actions {
+    width: 250px;
+    flex-direction: column;
+    border-left: 1px solid #e0e0e0;
+    border-top: none;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}

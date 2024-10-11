@@ -1,0 +1,136 @@
+// src/Assets/Css/Admin/AdminPanel.scss
+
+.admin-panel {
+    display: flex;
+    height: 100vh;
+    background-color: #f3f4f6; // Light gray background
+  
+    .sidebar {
+      width: 250px; // Fixed width for sidebar
+      background-color: #ffffff; // White background
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); // Subtle shadow
+      padding: 20px; // Padding for sidebar
+      transition: transform 0.3s ease; // Smooth transition for sidebar
+      display: flex;
+      flex-direction: column; // Stack items vertically
+      height: 100%; 
+
+      &.open {
+        transform: translateX(0); // Show sidebar
+      }
+  
+      &.closed {
+        transform: translateX(-100%); // Hide sidebar
+      }
+  
+      h1 {
+        font-size: 1.5rem; // Title size
+        margin-bottom: 20px; // Space below title
+      }
+
+      .logout-item {
+        display: flex;
+        align-items: center; // Center the icon and text vertically
+        padding: 10px; // Padding for the item
+        cursor: pointer; // Pointer cursor on hover
+        transition: background-color 0.2s ease; // Smooth background transition
+        margin-top: auto; // Push it to the bottom of the sidebar
+    
+        &:hover {
+          background-color: #f3f4f6; // Hover color
+        }
+    
+        svg {
+          margin-right: 10px; // Space between icon and text
+          height: 1.2rem; // Icon size
+          width: 1.2rem; // Icon size
+        }
+      }
+  
+      nav {
+        display: flex;
+        flex-direction: column; // Stack buttons vertically
+        gap: 10px; // Space between buttons
+  
+        .custom-button {
+          width: 100%;
+          justify-content: flex-start;
+          padding: 10px; // Padding for buttons
+          text-align: left;
+          background: none;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          border-radius: 5px; // Rounded corners
+  
+          &.active {
+            background-color: #e5e7eb; // Active button color
+            color: #1f2937; // Text color for active button
+          }
+  
+          &:hover {
+            background-color: #f3f4f6; // Hover color
+          }
+  
+          svg {
+            margin-right: 10px; // Space between icon and text
+            height: 1.2rem; // Icon size
+            width: 1.2rem; // Icon size
+          }
+        }
+      }
+    }
+  
+    main {
+      flex: 1; // Take remaining space
+      padding: 20px; // Padding for main content
+      overflow-y: auto; // Scroll if content overflows
+    }
+  
+    .toggle-button {
+      display: none; // Hide toggle button by default
+      margin-bottom: 20px; // Space below toggle button
+      padding: 10px; // Padding for toggle button
+      background-color: #4a0e4e; // Button color
+      color: white; // Text color
+      border: none; // No border
+      border-radius: 5px; // Rounded corners
+      cursor: pointer; // Pointer cursor
+  
+      @media (max-width: 768px) {
+        display: block; // Show toggle button on mobile
+      }
+    }
+  
+    .card {
+      background-color: #ffffff; // Card background
+      border-radius: 8px; // Rounded corners
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); // Shadow for cards
+      padding: 20px; // Padding inside cards
+      margin-bottom: 20px; // Space between cards
+  
+      h2 {
+        font-size: 1.25rem; // Card title size
+        margin-bottom: 10px; // Space below title
+      }
+  
+      .card-content {
+        display: flex;
+        flex-direction: column; // Stack content vertically
+        gap: 5px; // Space between content items
+      }
+    }
+  
+    @media (max-width: 768px) {
+      .admin-panel {
+        flex-direction: column; // Stack sidebar and main content vertically
+      }
+  
+      .sidebar {
+        width: 100%; // Full width on mobile
+        position: absolute; // Position absolute for overlay effect
+        z-index: 1000; // Ensure it appears above other content
+      }
+    }
+  }
+

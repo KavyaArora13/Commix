@@ -1,0 +1,234 @@
+.checkout-page {
+  .container-fluid {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+
+    .checkout-header {
+      padding-left: 3.4375rem;
+      margin-bottom: 3rem;
+
+      @media (max-width: 768px) {
+        padding-left: 1.5rem;
+      }
+    }
+
+    .checkout-container {
+      .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      }
+  
+      h1, h2 {
+        color: #333;
+      }
+  
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        &:hover {
+          background-color: #0056b3;
+          border-color: #0056b3;
+        }
+      }
+    }
+  
+    .address-card {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+  
+    .address-card.selected {
+      border-color: #007bff;
+      background-color: #f8f9fa;
+    }
+  
+
+    .checkout-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 0.75rem;
+    }
+
+    .continue-shopping-link {
+      color: #000000;
+      text-decoration: none;
+      font-size: 1rem;
+      display: inline-block;
+      transition: all 0.3s ease;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &::before {
+        content: '←';
+        margin-right: 0.5rem;
+      }
+    }
+
+    .row {
+      margin-left: 3.4375rem;
+      margin-right: 3.4375rem;
+
+      @media (max-width: 768px) {
+        margin-left: 1.5rem;
+        margin-right: 1.5rem;
+      }
+    }
+
+    .col-lg-4 {
+      margin-bottom: 2rem;
+    }
+
+    .checkout-summary-wrapper {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+      .checkout-summary {
+        margin-bottom: 1.5rem;
+
+        .checkout-summary-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 1.5rem;
+          border-bottom: 1px solid #e0e0e0;
+          padding-bottom: 0.75rem;
+        }
+
+        .checkout-summary-title,
+        .checkout-summary-total {
+          font-size: 1.25rem;
+          font-weight: bold;
+        }
+
+        .checkout-product-list {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+      }
+    }
+  }
+}
+
+.payment-options {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  .payment-method {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-top: 1px solid #e0e0e0;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    .payment-logo-container {
+      display: flex;
+      align-items: center;
+
+      .payment-logo {
+        width: 59px;
+        height: auto;
+        margin-right: 1rem;
+        border: 1px solid #000;
+        padding: 0.25rem;
+        border-radius: 4px;
+      }
+
+      .payment-name {
+        font-size: 1rem;
+      }
+    }
+
+    .payment-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+  }
+}
+
+.address-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  .form-check {
+    display: flex;
+    align-items: flex-start;
+
+    .form-check-input {
+      margin-top: 0.25rem;
+      margin-right: 1rem;
+    }
+
+    .form-check-label {
+      flex: 1;
+
+      strong {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+
+      span {
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+}
+
+.btn-dark {
+  background-color: #000;
+  border-color: #000;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #333;
+    border-color: #333;
+  }
+}
+
+// Media query for responsiveness
+@media (max-width: 768px) {
+  .checkout-page {
+    .container-fluid {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+
+      .checkout-header {
+        padding-left: 1.5rem;
+      }
+
+      .row {
+        margin-left: 1rem;
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  .payment-options,
+  .checkout-summary-wrapper,
+  .address-card {
+    padding: 1rem;
+  }
+}

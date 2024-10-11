@@ -1,0 +1,34 @@
+.blog-top-section {
+    margin-bottom: 2rem;
+  
+    .category {
+      font-size: 1rem;
+      text-align: left;
+      margin-bottom: 10px;
+      display: inline-block;
+  
+      .category-name {
+        color: #ff00ff; /* The color for the category name (makeup in the example) */
+        font-weight: bold;
+      }
+    }
+  
+    .blog-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #000;
+    }
+  
+    .blog-info {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #666;
+  
+      .author-name {
+        color: #ff00ff; /* Pink color for the author name */
+      }
+    }
+  }
+  

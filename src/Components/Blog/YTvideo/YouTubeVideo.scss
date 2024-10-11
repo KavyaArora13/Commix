@@ -1,0 +1,48 @@
+// src/Components/Blog/YTvideo/YouTubeVideo.scss
+
+.youtube-video-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  
+    .video-section-title {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+  
+    .youtube-video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      background-color: #f0f0f0; // Light gray background
+      
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  
+  // Media queries for responsiveness
+  @media (max-width: 768px) {
+    .youtube-video-wrapper {
+      padding: 0 10px;
+  
+      .video-section-title {
+        font-size: 20px;
+      }
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .youtube-video-wrapper {
+      .video-section-title {
+        font-size: 18px;
+      }
+    }
+  }

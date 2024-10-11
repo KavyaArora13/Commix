@@ -1,0 +1,51 @@
+@import '../variables.scss';
+
+.card {
+    position: relative;
+    outline: none;
+    padding-bottom: 15px; /* Remove focus outline from the card */
+  
+    .heart-icon {
+      top: 10px;
+      right: 10px;
+      color: #333;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  
+    /* Category and rating alignment */
+    .card-category-rating {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  
+    .rating-section {
+      display: flex;
+      align-items: center;
+      margin-top: -10px;
+    }
+  
+    .star-icon {
+      color: #FFD700; /* Gold color for the star */
+      font-size: 18px;
+      margin-right: 5px;
+    }
+  
+    .rating-text {
+      font-size: 16px;
+      color: #333;
+    }
+  
+    .card-title1 {
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: -10px;
+    }
+  
+    .card-text1 {
+      font-size: 16px;
+      color: black;
+    }
+  }
+  

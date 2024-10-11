@@ -1,0 +1,467 @@
+.login-page {
+  height: 100vh;
+  background-image: linear-gradient(rgba(30, 30, 44, 0.9), rgba(30, 30, 44, 0.9)), url('../../../../public/Sign up.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.field-container {
+  background-color: #4A4E69; /* Replace with the desired color */
+  border-radius: 8px; /* Optional: for rounded corners */
+  padding: 10px; /* Optional: for spacing inside the container */
+  color: white; /* Optional: text color */
+}
+
+.login-container {
+  position: absolute;
+  width: 350px;
+  height: auto;
+  top: 150px;
+  left: 264px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.brand-logo {
+  width: 100px;
+  position: absolute;
+  height: auto;
+  top: 50px;
+  left: 264px;
+  margin-bottom: 2rem;
+}
+
+.login-form-container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.welcome-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.form-group label {
+  color: white;
+  font-size: 0.8rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+}
+
+.eye-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-check-input {
+  accent-color: #ffd700;
+}
+
+.form-check-label, .forgot-password {
+  font-size: 0.8rem;
+  color: #a0aec0;
+}
+
+.forgot-password {
+  color: #ffd700;
+  text-decoration: none;
+}
+
+.login-btn, .verify-btn {
+  width: 100%;
+  height: 48px;
+  background-color: #7dd3fc;
+  border: none;
+  font-size: 1rem;
+  color: #1f1d2b;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #5bc0de;
+  }
+
+  &:disabled {
+    background-color: #6C7293;
+    cursor: not-allowed;
+  }
+}
+
+.signup-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #a0aec0;
+  margin: 1rem 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #a0aec0;
+  }
+
+  span {
+    padding: 0 0.5rem;
+  }
+}
+
+.google-divider {
+  width: 100%;
+
+  .btn {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #f8f9fa;
+    }
+  }
+}
+
+.login-image-container {
+  position: absolute;
+  top: 5px;
+  right: 0;
+  width: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+// Add decorative elements
+.login-page::before,
+.login-page::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.login-page::before {
+  top: -100px;
+  left: -100px;
+}
+
+.login-page::after {
+  bottom: -100px;
+  right: 50%;
+}
+
+// Add small decorative circles
+@for $i from 1 through 5 {
+  .login-page::before:nth-of-type(#{$i}) {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(123, 97, 255, 0.3);
+    top: random(100) + vh;
+    left: random(50) + vw;
+    z-index: 0;
+  }
+}
+
+// Media queries for responsiveness
+@media (max-width: 1920px) {
+  .login-container {
+    width: 350px;
+    top: 150px;
+    left: 13.75%;
+  }
+
+  .brand-logo {
+    top: 50px;
+    left: 13.75%;
+    width: 120px;
+  }
+}
+
+@media (max-width: 1440px) {
+  .login-container {
+    width: 320px;
+    top: 130px;
+    left: 6.94%;
+  }
+
+  .brand-logo {
+    top: 30px;
+    left: 6.94%;
+    width: 100px;
+  }
+
+  .welcome-text {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1366px) {
+  .login-page {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .brand-logo {
+    position: absolute;
+    top: 22rem;
+    left: 2rem;
+    width: 80px;
+    margin-bottom: 0;
+  }
+
+  .login-container {
+    position: relative;
+    width: 45%;
+    max-width: 400px;
+    top: 0;
+    left: 0;
+    padding: 2rem;
+  }
+
+  .login-form-container {
+    width: 100%;
+  }
+
+  .login-image-container {
+    position: relative;
+    width: 45%;
+    height: 100%;
+    max-height: 80vh;
+    margin-top: 0;
+    right: 2rem;
+  }
+
+  .login-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .welcome-text {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-control {
+    font-size: 1rem;
+  }
+
+  .login-btn, .google-divider .btn {
+    height: 48px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 834px) {
+  .login-page {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-container {
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+    top: 0;
+    left: 0;
+    padding: 2rem;
+  }
+
+  .brand-logo {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 2rem;
+  }
+
+  .login-form-container {
+    width: 100%;
+  }
+
+  .login-image-container {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    height: auto;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .login-container {
+    padding: 1rem;
+  }
+
+  .brand-logo {
+    width: 80px;
+  }
+
+  .welcome-text {
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  .form-control {
+    font-size: 0.8rem;
+  }
+
+  .login-btn, .google-divider .btn {
+    height: 40px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 1rem;
+  }
+
+  .login-container {
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  .brand-logo {
+    width: 60px;
+  }
+
+  .welcome-text {
+    font-size: 1rem;
+  }
+
+  .form-control {
+    font-size: 0.75rem;
+  }
+
+  .login-btn, .google-divider .btn {
+    height: 36px;
+    font-size: 0.8rem;
+  }
+}
+
+
+// Add this to your existing styles
+.signup-link, .signup-link a {
+  color: #a0aec0;
+  text-decoration: none;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}
+
+.forgot-password a {
+  color: #a0aec0;
+  text-decoration: none;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+
+.form-check-container {
+  display: flex;
+  justify-content: space-between; /* Aligns items on the same line */
+  align-items: center; /* Vertically centers the items */
+  margin-top: 0.5rem; /* Optional: adds some space above */
+}
+
+.verify-otp-container{
+  color: #5bc0de;
+}
