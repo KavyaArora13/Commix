@@ -14,6 +14,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
 
   const validateForm = () => {
     if (!email) {
@@ -42,13 +44,9 @@ const Login = () => {
         if (login.fulfilled.match(resultAction)) {
           toast.success('Login successful');
           navigate('/');
-        } else if (login.rejected.match(resultAction)) {
+        } else {
           const error = resultAction.payload;
-          if (error && error.message) {
-            toast.error(error.message);
-          } else {
-            toast.error('Login failed. Please try again.');
-          }
+          toast.error(error.message || 'Login failed. Please try again.'); // Display the error message
         }
       } catch (error) {
         console.error('Login error:', error);
@@ -59,6 +57,19 @@ const Login = () => {
     }
   };
 
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    if (!forgotPasswordEmail) {
+      toast.error('Please enter your email address');
+      return;
+    }
+    // Here you would typically call an API to handle the password reset
+    console.log('Password reset requested for:', forgotPasswordEmail);
+    toast.success('Password reset instructions sent to your email');
+    setShowForgotPassword(false);
+    setForgotPasswordEmail('');
+  };
+
   return (
     <div className="login-page">
       <Link to="/"> 
@@ -66,78 +77,110 @@ const Login = () => {
       </Link>
       <div className="login-container">
         <div className="login-form-container">
-          <h2 className="welcome-text">Welcome Back</h2>
-          <form className="login-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="email">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                className="form-control"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <div className="password-input-container">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  className="form-control"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="password-toggle-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOffIcon className="eye-icon" />
+          {!showForgotPassword ? (
+            <>
+              <h2 className="welcome-text">Welcome Back</h2>
+              <form className="login-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="email">Email Address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    className="form-control"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <div className="password-input-container">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      id="password"
+                      className="form-control"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOffIcon className="eye-icon" />
+                      ) : (
+                        <EyeIcon className="eye-icon" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                <div className="form-check-container">
+                  <div className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="remember-me"
+                    />
+                    <label className="form-check-label" htmlFor="remember-me">
+                      Remember me
+                    </label>
+                  </div>
+                  <div className="forgot-password">
+                    <a href="#" onClick={(e) => { e.preventDefault(); setShowForgotPassword(true); }}>Forgot Password?</a>
+                  </div>
+                </div>
+                <button type="submit" className="login-btn" disabled={loading}>
+                  {loading ? (
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                   ) : (
-                    <EyeIcon className="eye-icon" />
+                    'Login'
                   )}
                 </button>
-              </div>
-            </div>
-            <div className="form-check-container">
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="remember-me"
-                />
-                <label className="form-check-label" htmlFor="remember-me">
-                  Remember me
-                </label>
-              </div>
-              <div className="forgot-password">
-                <Link to="/forgot-password">Forgot Password?</Link>
-              </div>
-            </div>
-            <button type="submit" className="login-btn" disabled={loading}>
-              {loading ? (
-                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-              ) : (
-                'Login'
-              )}
-            </button>
-          </form>
+              </form>
+            </>
+          ) : (
+            <>
+              <h2 className="forgot-password-text">Forgot Password</h2>
+              <p className="forgot-password-description">Enter your email address to reset your password.</p>
+              <form className="forgot-password-form" onSubmit={handleForgotPassword}>
+                <div className="form-group">
+                  <label htmlFor="forgot-password-email">Email Address</label>
+                  <input
+                    type="email"
+                    id="forgot-password-email"
+                    className="form-control"
+                    placeholder="Enter your email"
+                    value={forgotPasswordEmail}
+                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                  />
+                </div>
+                <button type="submit" className="reset-password-btn">
+                  Reset Password
+                </button>
+                <div className="back-to-login">
+                  <a href="#" onClick={(e) => { e.preventDefault(); setShowForgotPassword(false); }}>Back to Login</a>
+                </div>
+              </form>
+            </>
+          )}
 
-          {/* OR Divider */}
-          <div className="signup-divider">
-            <span>OR</span>
-          </div>
+          {!showForgotPassword && (
+            <>
+              {/* OR Divider */}
+              <div className="signup-divider">
+                <span>OR</span>
+              </div>
 
-          {/* Google Sign-In Button */}
-          <GoogleLoginComponent onLogin={() => navigate('/')} />
+              {/* Google Sign-In Button */}
+              <GoogleLoginComponent onLogin={() => navigate('/')} />
 
-          <p className="mt-3 signup-link">
-            Don't have an account? <Link to="/signup">Sign Up</Link>
-          </p>
+              <p className="mt-3 signup-link">
+                Don't have an account? <Link to="/signup">Sign Up</Link>
+              </p>
+            </>
+          )}
         </div>
       </div>
       <div className="login-image-container">

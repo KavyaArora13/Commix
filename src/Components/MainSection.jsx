@@ -10,7 +10,6 @@ import ExclusiveFestiveCombosSection from './MainSection/ExclusiveFestiveCombosS
 import OfferSection from './MainSection/OfferSection';
 import FeaturedSection from './FeaturedSection';
 import BlogSection from './MainSection/BlogSection';
-import SubscribeSection from './MainSection/SubscribeSection';
 import '../Assets/Css/MainSection.scss';
 
 const MainSection = () => {
@@ -26,7 +25,6 @@ const MainSection = () => {
       <OfferSection />
       <FeaturedSection />
       <BlogSection />
-      <SubscribeSection />
     </section>
   );
 };

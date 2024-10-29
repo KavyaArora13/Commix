@@ -1,45 +1,102 @@
-@import './variables.scss';  // Correct relative path if 'variables.scss' is in the same directory
+// src/Assets/Css/ProductFilters.scss
+
+@import './variables.scss';
 
 .product-filters {
     background-color: $header-bg;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 10px;
 
-    .accordion-button {
-        background-color: $highlight-color;  
-        color: $black;  
-        font-weight: bolder;
+    .accordion {
+        .accordion-item {
+            border: none;
+            margin-bottom: 10px;
+        }
 
-        &:not(.collapsed) {
+        .accordion-button {
             background-color: $highlight-color;
             color: $black;
+            font-weight: bold;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: none;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none;
+
+            &:not(.collapsed) {
+                background-color: $highlight-color;
+            }
+
+            &:focus {
+                box-shadow: none;
+            }
+
+            &::after {
+                flex-shrink: 0;
+                width: 1.25rem;
+                height: 1.25rem;
+                margin-left: auto;
+                content: "\25BC";
+                background-image: none;
+                background-repeat: no-repeat;
+                background-size: 1.25rem;
+                transition: transform .2s ease-in-out;
+            }
+
+            &.collapsed::after {
+                transform: rotate(-90deg);
+            }
+        }
+
+        .accordion-body {
+            background-color: $header-bg;
+            padding: 15px;
+        }
+
+        .list-group-item {
+            background-color: transparent;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            transition: background-color 0.3s, color 0.3s;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: $highlight-color;
+            }
         }
     }
 
-    .accordion-body {
-        background-color: $header-bg;
-    }
-
-    .list-group-item {
-        background-color: $header-bg;
-        color: white;
-        border: none;
-        font-size: 1rem;
-    }
-
-    .list-group-item:hover {
-        background-color: #f5f5f5;
-        color: $black;  
-        cursor: pointer;
-    }
-
-    // Browse by Popular Category Section
     .browse-category {
         background-color: white;
-    
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+
         h3 {
             color: $black;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
         }
-    
+
         .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            .col-lg-6 {
+                flex: 0 0 calc(50% - 5px);
+                max-width: calc(50% - 5px);
+            }
+
             .tag {
                 background-color: $header-bg;
                 color: white;
@@ -47,23 +104,33 @@
                 text-align: center;
                 font-size: 0.9rem;
                 cursor: pointer;
-                display: block;  // Ensure full block-level for w-100
-                width: 100%;  // Full width for tags
-                padding: 8px 12px;
+                display: block;
+                width: 100%;
+                padding: 10px;
                 border-radius: 5px;
-                white-space: nowrap;  // Prevents text from overflowing the tag
-                overflow: hidden;  // Hides any overflow
-            }
-    
-            .tag:hover {
-                background-color: #f5f5f5;
-                color: black;
-                border: 1px solid black;
+                transition: background-color 0.3s, color 0.3s;
+
+                &:hover {
+                    background-color: $highlight-color;
+                    color: $black;
+                }
             }
         }
     }
-    
-    
 }
 
+// Media query for smaller screens
+@media (max-width: 768px) {
+    .product-filters {
+        max-width: 100%;
 
+        .browse-category {
+            .category-tags {
+                .col-lg-6 {
+                    flex: 0 0 100%;
+                    max-width: 100%;
+                }
+            }
+        }
+    }
+}

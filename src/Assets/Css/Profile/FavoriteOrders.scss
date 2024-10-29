@@ -1,28 +1,113 @@
 .favorite-orders {
-    text-align: left; // Changed from center to left
+  padding: 20px;
+  text-align: left;
 
-    h2 {
-      margin-bottom: 2rem;
-      text-align: left; // Explicitly set the title alignment
+  h2 {
+    margin-bottom: 2rem;
+  }
+
+  .no-favorites {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    text-align: center;
+
+    .note-icon {
+      font-size: 3rem;
+      color: #ff69b4;
+      margin-bottom: 1rem;
     }
-  
-    .no-favorites {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 200px;
-      text-align: center; // Keep the "Nothing here yet" centered
-  
-      .note-icon {
-        font-size: 3rem;
-        color: #ff69b4; // Pink color, you can adjust as needed
-        margin-bottom: 1rem;
-      }
-  
-      p {
-        font-size: 1.2rem;
-        color: #666;
-      }
+
+    p {
+      font-size: 1.2rem;
+      color: #666;
     }
   }
+
+  .favorites-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+  }
+
+  .favorite-item {
+    flex: 0 0 calc(25% - 20px);
+    max-width: calc(25% - 20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
+    height: 300px; /* Set a fixed height for uniformity */
+
+    // Add a hover effect
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: box-shadow 0.3s ease;
+    }
+  }
+
+  .product-image {
+    width: 80%; /* Reduced width */
+    height: auto;
+    max-height: 120px; /* Set a maximum height */
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .product-name {
+    font-size: 1rem; /* Adjust font size */
+    margin: 0.5rem 0; /* Add some margin */
+    white-space: normal; /* Allow text to wrap */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis for overflow */
+    max-width: 100%; /* Ensure it doesn't exceed the container */
+  }
+
+  .unfavorite-btn {
+    margin-top: auto; /* Push the button to the bottom */
+    background-color: #ff69b4; /* Button color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px 10px; /* Padding */
+    cursor: pointer; /* Pointer cursor */
+    display: flex; /* Flex for icon */
+    align-items: center; /* Center icon vertically */
+    justify-content: center; /* Center text horizontally */
+    transition: background-color 0.3s ease; /* Transition for hover effect */
+
+    &:hover {
+      background-color: #ff1493; /* Darker shade on hover */
+    }
+
+    .icon {
+      margin-right: 5px; /* Space between icon and text */
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .favorite-orders .favorite-item {
+    flex: 0 0 calc(33.333% - 20px);
+    max-width: calc(33.333% - 20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .favorite-orders .favorite-item {
+    flex: 0 0 calc(50% - 20px);
+    max-width: calc(50% - 20px);
+  }
+}
+
+@media (max-width: 480px) {
+  .favorite-orders .favorite-item {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}

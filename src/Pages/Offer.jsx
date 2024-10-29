@@ -1,30 +1,64 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../Components/Header';
 import Footer from '../Components/Footer';
-import Touch from '../Components/Offer/Touch';
+import Touch from '../Components/Touch';
 import CouponCard from '../Components/Offer/CouponCard';
 import '../Assets/Css/Offer/Offer.scss';
+import axios from 'axios'; // Make sure axios is installed
+import { API_URL } from '../config/api';
 
 const Offer = () => {
+  const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/offers/active-offers`); // Adjust the URL as needed
+        setOffers(response.data.offers);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching offers:', err);
+        setError('Failed to load offers. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchOffers();
+  }, []);
+
+  if (loading) return <div>Loading offers...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <>
-      {/* Header Section */}
       <Header />
 
-      {/* Main Content Section */}
       <div className="container mt-4">
-        <div className="row">
-          <CouponCard imageSrc="/images/iconic1.png" couponCode="COUPON 1499"/>
-          <CouponCard imageSrc="/images/iconic2.png" couponCode="COUPON 2499"/>
-          <CouponCard imageSrc="/images/iconic1.png" couponCode="COUPON 3499"/>
-          <CouponCard imageSrc="/images/iconic2.png" couponCode="COUPON 4499"/>
-        </div>
+        {offers.length > 0 ? (
+          <div className="row">
+            {offers.map((offer) => (
+              <CouponCard
+                key={offer._id}
+                imageSrc={offer.image_url}
+                couponCode={offer.title}
+                description={offer.description}
+                discountPercentage={offer.discount_percentage}
+                startDate={new Date(offer.start_date).toLocaleDateString()}
+                endDate={new Date(offer.end_date).toLocaleDateString()}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="no-offers-message">
+            <h2>No offers available at the moment</h2>
+            <p>Please check back later for new offers and discounts!</p>
+          </div>
+        )}
       </div>
 
-      {/* Call to action or offer-related component */}
       <Touch />
-
-      {/* Footer Section */}
       <Footer />
     </>
   );

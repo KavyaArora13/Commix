@@ -40,4 +40,26 @@
       font-size: 0.8rem;
       padding: 0.25rem 0.5rem;
     }
+}
+
+// Mobile styles for Swiper
+@media (max-width: 767px) {
+  .recommended-products-swiper {
+    .recommended-product {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+
+      .product-image {
+        width: 100%;
+        height: auto;
+        margin-bottom: 1rem;
+      }
+
+      .product-details {
+        width: 100%;
+      }
+    }
   }
+}

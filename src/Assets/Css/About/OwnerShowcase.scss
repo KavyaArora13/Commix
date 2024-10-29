@@ -1,0 +1,17 @@
+.owner-showcase {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; // Reduced gap between images
+}
+
+.owner-image {
+  width: 100%;
+  
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+}

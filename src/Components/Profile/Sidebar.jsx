@@ -52,13 +52,13 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
           <li>
             <a 
               href="#" 
-              className={`sidebar-link ${activeSection === 'favorite-orders' ? 'active' : ''}`}
+              className={`sidebar-link ${activeSection === 'favorites' ? 'active' : ''}`}
               onClick={(e) => {
                 e.preventDefault();
-                setActiveSection('favorite-orders');
+                setActiveSection('favorites');
               }}
             >
-              Favorite Orders
+              Favorites
             </a>
           </li>
         </ul>

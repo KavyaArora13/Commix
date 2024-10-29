@@ -1,10 +1,12 @@
+// src/Components/ProductFilters.jsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../Assets/Css/ProductFilters.scss'; // Import the SCSS file for this component
+import '../Assets/Css/ProductFilters.scss';
 
 const ProductFilters = () => {
     return (
-        <div className="product-filters p-4">
+        <div className="product-filters">
             <div className="accordion" id="filterAccordion">
                 {/* Categories Filter */}
                 <div className="accordion-item">
@@ -62,35 +64,32 @@ const ProductFilters = () => {
                     </div>
                 </div>
             </div>
-            <div className="browse-category mt-4 p-2">
-    <h3 className='mb-3'>Browse by Popular Category</h3>
-    <div className="container">
-        <div className="row category-tags">
-            <div className="col-lg-6 col-md-6 col-sm-12 mb-3">
-                <Link to="/cleansers" className="tag p-2 w-100">Cleansers</Link>
+            <div className="browse-category">
+                <h3>Browse by Popular Category</h3>
+                <div className="category-tags">
+                    <div className="col-lg-6 col-md-6 col-sm-12">
+                        <Link to="/cleansers" className="tag">Cleansers</Link>
+                    </div>
+                    <div className="col-lg-6 col-md-6 col-sm-12">
+                        <Link to="/face-mask" className="tag">Face Mask</Link>
+                    </div>
+                    <div className="col-lg-6 col-md-6 col-sm-12">
+                        <Link to="/lipstick" className="tag">Lipstick</Link>
+                    </div>
+                    <div className="col-lg-6 col-md-6 col-sm-12">
+                        <Link to="/sunscreens" className="tag">Sunscreens</Link>
+                    </div>
+                    <div className="col-lg-6 col-md-6 col-sm-12">
+                        <Link to="/face-moisturizers" className="tag">Face Moisturizers</Link>
+                    </div>
+                    <div className="col-lg-6 col-md-6 col-sm-12">
+                        <Link to="/mascara" className="tag">Mascara</Link>
+                    </div>
+                    <div className="col-lg-6 col-md-6 col-sm-12">
+                        <Link to="/foundations" className="tag">Foundations</Link>
+                    </div>
+                </div>
             </div>
-            <div className="col-lg-6 col-md-6 col-sm-12 mb-3">
-                <Link to="/face-mask" className="tag p-2 w-100">Face Mask</Link>
-            </div>
-            <div className="col-lg-6 col-md-6 col-sm-12 mb-3">
-                <Link to="/lipstick" className="tag p-2 w-100">Lipstick</Link>
-            </div>
-            <div className="col-lg-6 col-md-6 col-sm-12 mb-3">
-                <Link to="/sunscreens" className="tag p-2 w-100">Sunscreens</Link>
-            </div>
-            <div className="col-lg-6 col-md-6 col-sm-12 mb-3">
-                <Link to="/face-moisturizers" className="tag p-2 w-100">Face Moisturizers</Link>
-            </div>
-            <div className="col-lg-6 col-md-6 col-sm-12 mb-3">
-                <Link to="/mascara" className="tag p-2 w-100">Mascara</Link>
-            </div>
-            <div className="col-lg-6 col-md-6 col-sm-12 mb-3">
-                <Link to="/foundations" className="tag p-2 w-100">Foundations</Link>
-            </div>
-        </div>
-    </div>
-</div>
-
         </div>
     );
 }

@@ -61,3 +61,160 @@
     padding: 10px 20px;
   }
 }
+
+
+// src/Assets/Css/Cart/Cart.scss
+
+// ... (keep existing styles)
+
+.recommended-products {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  h5 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #333;
+    text-align: center;
+  }
+
+  .swiper-container {
+    padding-bottom: 30px;
+  }
+
+  .swiper-slide {
+    display: flex;
+    justify-content: center;
+  }
+
+  .swiper-pagination {
+    bottom: 0;
+  }
+
+  @media (max-width: 767px) {
+    .mySwiper {
+      max-width: 90%;
+      margin: 0 auto;
+    }
+
+    .recommended-product {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 1rem;
+
+      img {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-right: 0;
+        margin-bottom: 1rem;
+        display: block; // Ensure it's a block element
+        margin-left: auto; // Center horizontally
+        margin-right: auto; // Center horizontally
+      }
+
+      .product-info {
+        width: 100%;
+      }
+
+      h6 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .price {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .rating {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        width: 100%;
+      }
+    }
+  }
+
+  @media (min-width: 768px) {
+    .recommended-product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+}
+
+.best-collections {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .view-all-button {
+    display: block;
+    width: 200px;
+    margin: 2rem auto 0;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    text-align: center;
+  }
+}
+
+// Add these styles for the RecommendedProduct component
+.recommended-product {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+
+  img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 1rem;
+  }
+
+  .product-info {
+    flex-grow: 1;
+  }
+
+  h6 {
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+  }
+
+  .price {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+  }
+
+  .rating {
+    color: #ffc107;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+  }
+}

@@ -13,12 +13,14 @@ const CommixIconicsSection = () => {
     autoplaySpeed: 2000,
     pauseOnHover: false,
     cssEase: 'ease',
+    initialSlide: 1, // Start with second slide
     responsive: [
       {
         breakpoint: 768,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          initialSlide: 1
         }
       }
     ]

@@ -1,75 +1,60 @@
+// src/Assets/Css/ProductPage/ProductFilters.scss
 @import '../variables.scss';
 
 .product-filters {
   background-color: $header-bg;
+  padding: 10px;
+  border-radius: 8px;
 
-  .accordion-button {
-    background-color: $highlight-color;
-    color: $black;
-    font-weight: bolder;
+  .accordion {
+    .accordion-item {
+      border: none;
+      margin-bottom: 10px;
+      background-color: transparent;
+    }
 
-    &:not(.collapsed) {
+    .accordion-button {
       background-color: $highlight-color;
       color: $black;
-    }
-  }
+      font-weight: bolder;
+      border-radius: 8px;
+      padding: 15px 20px;
+      box-shadow: none;
 
-  .accordion-body {
-    background-color: $header-bg;
-  }
+      &:not(.collapsed) {
+        background-color: $highlight-color;
+        color: $black;
+        box-shadow: none;
+      }
 
-  .list-group-item {
-    background-color: $header-bg;
-    color: white;
-    border: none;
-    font-size: 1rem;
-  }
-
-  .list-group-item:hover {
-    background-color: #f5f5f5;
-    color: $black;
-    cursor: pointer;
-  }
-
-  .accordion-item{
-    margin-bottom: 10px;
-  }
-
-  // Browse by Popular Category Section
-  .browse-category {
-    background-color: white;
-
-    h3 {
-      color: $black;
-      font-weight: 600;
-      font-size: 20px;
+      &::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+      }
     }
 
-    .category-tags {
-      .tag {
-        background-color: $header-bg;
-        color: white;
-        text-decoration: none;
-        text-align: center;
-        font-size: 0.9rem;
+    .accordion-body {
+      background-color: $header-bg;
+      padding: 15px;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .list-group-item {
+      background-color: transparent;
+      color: white;
+      border: none;
+      font-size: 1rem;
+      padding: 10px 0;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: $highlight-color;
         cursor: pointer;
-        display: flex; /* Flexbox to align center */
-        align-items: center;
-        justify-content: center;
-        width: 100%; /* Full width for tags */
-        height: 100%; /* Full height for equal boxes */
-        white-space: nowrap; /* Prevent text wrapping */
-        overflow: hidden; /* Hide overflow */
-        text-overflow: ellipsis; /* Show ellipsis if text is too long */
-        padding: 10px; /* Add padding for better spacing */
-        font-size: clamp(12px, 1vw, 16px); /* Dynamically adjust font size */
-      }
-
-      .tag:hover {
-        background-color: #f5f5f5;
-        color: black;
-        border: 1px solid black;
       }
     }
+  }
+
+  // Remove the Browse by Popular Category Section for now
+  .browse-category {
+    display: none;
   }
 }

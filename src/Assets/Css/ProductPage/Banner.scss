@@ -2,6 +2,9 @@
     background-color: #D9D9D9; 
     min-height: 500px;
     position: relative; 
+    background-size: cover; // Add this line
+    background-position: center; // Add this line
+    background-repeat: no-repeat; // Add this line
 
     .col-12 {
         position: absolute;

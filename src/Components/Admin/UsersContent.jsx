@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '../../config/api';
-import { FaEye, FaEdit, FaBan, FaArrowLeft, FaPlus, FaTrash, FaUpload } from 'react-icons/fa'; // Import icons
-import '../../Assets/Css/Admin/UserProfile.scss'; // Import your CSS file for styling
+import { FaEdit, FaTrash, FaPlus, FaUpload, FaEye, FaBan, FaArrowLeft } from 'react-icons/fa';
+import '../../Assets/Css/Admin/UserContent.scss';
 
 export default function UsersContent() {
   const [users, setUsers] = useState([]); // State for users list
@@ -17,6 +17,7 @@ export default function UsersContent() {
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
   const [newProfilePicture, setNewProfilePicture] = useState(null);
   const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
   // Fetch users when the component mounts
   useEffect(() => {
@@ -129,15 +130,47 @@ export default function UsersContent() {
     }
   };
 
-  const openEditModal = (user) => {
-    setEditingUser({...user, newAddress: { street: '', house: '', postcode: '', location: '', country: '' }});
-    setIsEditModalOpen(true);
+  const handleEditUser = (user) => {
+    setEditingUser({
+      ...user,
+      newAddress: { street: '', house: '', postcode: '', location: '', country: '' }
+    });
+    setIsEditFormOpen(true);
   };
 
-  const closeEditModal = () => {
-    setIsEditModalOpen(false);
+  const handleCloseEditForm = () => {
+    setIsEditFormOpen(false);
     setEditingUser(null);
-    setSelectedAddressIndex(0);
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      Object.keys(editingUser).forEach(key => {
+        if (key === 'address') {
+          formData.append(key, JSON.stringify(editingUser[key]));
+        } else if (key !== 'newAddress') {
+          formData.append(key, editingUser[key]);
+        }
+      });
+      if (newProfilePicture) {
+        formData.append('profile_picture', newProfilePicture);
+      }
+
+      const response = await axios.put(`${API_URL}/admin/users/${editingUser._id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      if (response.data.success) {
+        setUsers(prevUsers => prevUsers.map(user => 
+          user._id === editingUser._id ? response.data.user : user
+        ));
+        handleCloseEditForm();
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
   };
 
   const handleEditInputChange = (e) => {
@@ -190,178 +223,19 @@ export default function UsersContent() {
     }
   };
 
-  const handleSubmitEdit = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      Object.keys(editingUser).forEach(key => {
-        if (key === 'address') {
-          formData.append(key, JSON.stringify(editingUser[key]));
-        } else {
-          formData.append(key, editingUser[key]);
-        }
-      });
-      if (newProfilePicture) {
-        formData.append('profile_picture', newProfilePicture);
-      }
-
-      const response = await axios.put(`${API_URL}/admin/users/${editingUser._id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      if (response.data.success) {
-        setUsers(prevUsers => prevUsers.map(user => 
-          user._id === editingUser._id ? response.data.user : user
-        ));
-        closeEditModal();
-      }
-    } catch (error) {
-      console.error('Error updating user:', error);
-    }
-  };
-
   return (
-    <div className="card">
-      {selectedUser ? (
-        <div className="user-profile">
-          {/* Back Button with Icon Only */}
-          <button onClick={handleBack} style={backButtonStyle}>
-            <FaArrowLeft style={{ fontSize: '24px', color: 'black' }} />
-          </button>
-          <div className="profile-header">
-            <img src={selectedUser.profile_picture || 'default-profile.png'} alt="Profile" className="profile-image" />
-            <div className="profile-details">
-              <h3>{displayValue(selectedUser.username)}</h3>
-              <p><strong>Email:</strong> {displayValue(selectedUser.email)}</p>
-              <p><strong>Address:</strong> {selectedUser.address && selectedUser.address.length > 0 ? selectedUser.address.map(addr => `${addr.street}, ${addr.house}, ${addr.postcode}, ${addr.location}, ${addr.country}`).join(' | ') : 'Not provided'}</p>
-              <p><strong>Phone Number:</strong> {displayValue(selectedUser.phone_number)}</p>
-            </div>
-            <div className="user-stats">
-              <div><strong>Total Orders:</strong> {orders.length}</div>
-            </div>
-          </div>
-          <h3>Ordered Products</h3>
-          {orders.length === 0 ? (
-            <p>No orders found for this user.</p>
-          ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>Order No</th>
-                  <th>Order Status</th>
-                  <th>Total Amount</th>
-                  <th>Items</th>
-                  <th>Order Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentOrders.map(order => (
-                  <tr key={order._id}>
-                    <td>{order.order_no}</td>
-                    <td>{order.order_status}</td>
-                    <td>Rs {order.total_amount.toFixed(2)}</td>
-                    <td>
-                      <ul className="order-items">
-                        {order.items.map(item => {
-                          console.log('Item data:', item); // Debugging log
-                          return (
-                            <li key={item._id} className="ordered-product">
-                              <img 
-                                src={item.product.image || "/images/order.png"}
-                                alt={item.product.name || "Product Image"}
-                                style={{ width: '50px', height: '50px', objectFit: 'cover', marginRight: '10px' }}
-                              />
-                              <div className="product-details">
-                                <strong className="product-name">{item.product.name || "Product Name Not Available"}</strong>
-                                <p>Qty: {item.quantity}, Price: Rs {item.price.toFixed(2)}</p>
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </td>
-                    <td>{formatDate(order.createdAt)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          {/* Pagination for Orders */}
-          {orders.length > ordersPerPage && (
-            <div className="pagination-container">
-              {Array.from({ length: Math.ceil(orders.length / ordersPerPage) }, (_, index) => (
-                <button 
-                  key={index + 1} 
-                  onClick={() => paginateOrders(index + 1)} 
-                  className="pagination-button"
-                >
-                  {index + 1}
-                </button>
-              ))} 
-            </div>
-          )}
-        </div>
-      ) : (
-        // If no user is selected, show the list of users
-        <>
-          <h2>Users</h2>
-          <p>Manage your user base here.</p>
-          <table>
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentUsers.map(user => (
-                <tr key={user._id}>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>{user.phone_number}</td>
-                  <td>{user.isBlocked ? 'Blocked' : 'Active'}</td>
-                  <td>
-                    <button onClick={() => viewUser(user._id)} style={buttonStyle}>
-                      <FaEye style={iconStyle} /> View User
-                    </button>
-                    <button onClick={() => editUser(user._id)} style={buttonStyle}>
-                      <FaEdit style={iconStyle} /> Edit
-                    </button>
-                    <button onClick={() => blockUser(user._id, user.isBlocked)} style={buttonStyle}>
-                      <FaBan style={iconStyle} /> {user.isBlocked ? 'Unblock' : 'Block'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {/* Pagination for Users */}
-          {users.length > usersPerPage && (
-            <div className="pagination-container">
-              {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, index) => (
-                <button 
-                  key={index + 1} 
-                  onClick={() => paginateUsers(index + 1)} 
-                  className="pagination-button"
-                >
-                  {index + 1}
-                </button>
-              ))} 
-            </div>
-          )}
-        </>
-      )}
-      {isEditModalOpen && (
-        <div className="edit-modal">
-          <div className="edit-modal-content">
-            <h2>Edit User</h2>
-            <form onSubmit={handleSubmitEdit}>
+    <div className="user-content">
+      <div className="user-header">
+        <h2>Users</h2>
+        {/* Add user button if needed */}
+      </div>
+      <p>Manage your user base here.</p>
+
+      {isEditFormOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Edit User</h3>
+            <form onSubmit={handleUpdateUser}>
               <div className="form-group">
                 <label>Profile Picture</label>
                 <div className="profile-picture-container">
@@ -390,7 +264,7 @@ export default function UsersContent() {
                   name="username"
                   value={editingUser.username}
                   onChange={handleEditInputChange}
-                  placeholder="Username"
+                  required
                 />
               </div>
 
@@ -401,31 +275,8 @@ export default function UsersContent() {
                   name="email"
                   value={editingUser.email}
                   onChange={handleEditInputChange}
-                  placeholder="Email"
+                  required
                 />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>First Name</label>
-                  <input
-                    type="text"
-                    name="first_name"
-                    value={editingUser.first_name}
-                    onChange={handleEditInputChange}
-                    placeholder="First Name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Last Name</label>
-                  <input
-                    type="text"
-                    name="last_name"
-                    value={editingUser.last_name}
-                    onChange={handleEditInputChange}
-                    placeholder="Last Name"
-                  />
-                </div>
               </div>
 
               <div className="form-group">
@@ -435,12 +286,11 @@ export default function UsersContent() {
                   name="phone_number"
                   value={editingUser.phone_number}
                   onChange={handleEditInputChange}
-                  placeholder="Phone Number"
                 />
               </div>
-              
-              <h3>Addresses</h3>
-              <div className="address-list">
+
+              <div className="form-group">
+                <label>Addresses</label>
                 {editingUser.address.map((addr, index) => (
                   <div key={index} className="address-item">
                     <input
@@ -456,72 +306,15 @@ export default function UsersContent() {
                     </button>
                   </div>
                 ))}
+                <button type="button" onClick={() => setIsAddingNewAddress(!isAddingNewAddress)} className="add-address-btn">
+                  <FaPlus /> {isAddingNewAddress ? 'Cancel' : 'Add New Address'}
+                </button>
               </div>
-              
-              {selectedAddressIndex !== -1 && (
-                <div className="address-form">
-                  <div className="form-group">
-                    <label>Street</label>
-                    <input
-                      type="text"
-                      name="address.street"
-                      value={editingUser.address[selectedAddressIndex].street}
-                      onChange={handleEditInputChange}
-                      placeholder="Street"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>House</label>
-                    <input
-                      type="text"
-                      name="address.house"
-                      value={editingUser.address[selectedAddressIndex].house}
-                      onChange={handleEditInputChange}
-                      placeholder="House"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Postcode</label>
-                    <input
-                      type="text"
-                      name="address.postcode"
-                      value={editingUser.address[selectedAddressIndex].postcode}
-                      onChange={handleEditInputChange}
-                      placeholder="Postcode"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Location</label>
-                    <input
-                      type="text"
-                      name="address.location"
-                      value={editingUser.address[selectedAddressIndex].location}
-                      onChange={handleEditInputChange}
-                      placeholder="Location"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Country</label>
-                    <input
-                      type="text"
-                      name="address.country"
-                      value={editingUser.address[selectedAddressIndex].country}
-                      onChange={handleEditInputChange}
-                      placeholder="Country"
-                    />
-                  </div>
-                </div>
-              )}
-              
-              <button type="button" onClick={() => setIsAddingNewAddress(!isAddingNewAddress)}>
-                <FaPlus /> {isAddingNewAddress ? 'Cancel' : 'Add New Address'}
-              </button>
-              
+
               {isAddingNewAddress && (
                 <div className="new-address-form">
-                  <h4>Add New Address</h4>
+                  <h4>New Address</h4>
                   <div className="form-group">
-                    <label>Street</label>
                     <input
                       type="text"
                       name="newAddress.street"
@@ -531,7 +324,6 @@ export default function UsersContent() {
                     />
                   </div>
                   <div className="form-group">
-                    <label>House</label>
                     <input
                       type="text"
                       name="newAddress.house"
@@ -541,7 +333,6 @@ export default function UsersContent() {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Postcode</label>
                     <input
                       type="text"
                       name="newAddress.postcode"
@@ -551,7 +342,6 @@ export default function UsersContent() {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Location</label>
                     <input
                       type="text"
                       name="newAddress.location"
@@ -561,7 +351,6 @@ export default function UsersContent() {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Country</label>
                     <input
                       type="text"
                       name="newAddress.country"
@@ -570,44 +359,51 @@ export default function UsersContent() {
                       placeholder="Country"
                     />
                   </div>
-                  <button type="button" onClick={addNewAddress}>Add Address</button>
+                  <button type="button" onClick={addNewAddress} className="add-address-btn">Add Address</button>
                 </div>
               )}
-              
-              <button type="submit">Save Changes</button>
-              <button type="button" onClick={closeEditModal}>Cancel</button>
+
+              <div className="button-group">
+                <button type="submit" className="submit-btn">Update User</button>
+                <button type="button" onClick={handleCloseEditForm} className="cancel-btn">Cancel</button>
+              </div>
             </form>
           </div>
         </div>
       )}
+
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map(user => (
+            <tr key={user._id}>
+              <td>{user.username}</td>
+              <td>{user.email}</td>
+              <td>{user.phone_number}</td>
+              <td>{user.isBlocked ? 'Blocked' : 'Active'}</td>
+              <td>
+                <button onClick={() => viewUser(user._id)} title="View">
+                  <FaEye />
+                </button>
+                <button onClick={() => handleEditUser(user)} title="Edit">
+                  <FaEdit />
+                </button>
+                <button onClick={() => blockUser(user._id, user.isBlocked)} title={user.isBlocked ? 'Unblock' : 'Block'}>
+                  <FaBan />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-
-  function editUser(id) {
-    const user = users.find(u => u._id === id);
-    if (user) {
-      openEditModal(user);
-    }
-  }
 }
-
-// Styles for buttons and icons
-const buttonStyle = {
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  margin: '0 5px',
-  padding: '5px 10px',
-};
-
-const iconStyle = {
-  marginRight: '5px',
-};
-
-// Style for the back button
-const backButtonStyle = {
-  marginBottom: '20px', // Space below the button
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-};

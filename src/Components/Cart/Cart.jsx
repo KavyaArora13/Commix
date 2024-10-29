@@ -20,8 +20,11 @@ const Cart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCartData();
-    fetchAllProducts();
+    const fetchData = async () => {
+      await fetchCartData();
+      fetchAllProducts();
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -69,31 +72,68 @@ const Cart = () => {
     }
   };
 
-  const handleDelete = async (productId) => {
+  const handleDelete = async (productId, variantName, quantity) => {
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (!user || !user.id) {
-        navigate('/login');
+      if (!productId) {
+        console.error('Product ID is missing');
         return;
       }
-      await axios.post(`${API_URL}/cart/remove`, {
-        user_id: user.id,
-        product_id: productId
+
+      const userId = JSON.parse(localStorage.getItem('user'))?.user?.id;
+      if (!userId) {
+        console.error('User ID is missing');
+        return;
+      }
+
+      const response = await fetch('/api/cart/remove', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          product_id: productId,
+          variant_name: variantName
+        })
       });
-      fetchCartData();
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      setCartProducts(prevItems => 
+        prevItems.filter(item => 
+          !(item.product_id._id === productId && item.variant_name === variantName)
+        )
+      );
+
     } catch (error) {
-      console.error("Error removing item:", error);
+      console.error('Error removing item:', error);
     }
   };
 
   const fetchAllProducts = async () => {
     try {
       const response = await axios.get(`${API_URL}/products/`);
-      const allProducts = response.data;
+      const allProducts = response.data.products;
+
+      console.log("All products:", allProducts);
       
       if (Array.isArray(allProducts)) {
-        setRecommendedProducts(allProducts.slice(0, 5));
-        setBestSellers(allProducts.slice(5, 9));
+        // Filter out products that are already in the cart
+        const cartProductIds = new Set(cartProducts.map(item => item.product_id._id));
+        const availableProducts = allProducts.filter(product => !cartProductIds.has(product._id));
+        
+        console.log("Available products for recommendations:", availableProducts);
+        
+        // Shuffle the available products
+        const shuffled = availableProducts.sort(() => 0.5 - Math.random());
+        
+        // Set recommended products (up to 5)
+        setRecommendedProducts(shuffled.slice(0, 5));
+        
+        // Set best sellers (next 4 products)
+        setBestSellers(shuffled.slice(5, 9));
       } else {
         console.error("Unexpected response format for products:", allProducts);
       }
@@ -131,10 +171,14 @@ const Cart = () => {
           <div className="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
             <OrderSummary subtotal={subtotal} itemCount={itemCount} />
             <div className="recommended-products">
-              <h5>Recommended Products</h5>
-              {recommendedProducts.map(product => (
-                <RecommendedProduct key={product._id} {...product} />
-              ))}
+              <h5 className="mb-3">Recommended Products</h5>
+              {recommendedProducts.length > 0 ? (
+                recommendedProducts.map(product => (
+                  <RecommendedProduct key={product._id} product={product} />
+                ))
+              ) : (
+                <p>No recommended products available.</p>
+              )}
             </div>
           </div>
         </div>

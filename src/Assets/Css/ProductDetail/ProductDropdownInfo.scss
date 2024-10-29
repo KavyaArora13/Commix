@@ -1,0 +1,137 @@
+.product-dropdown-info {
+  margin-top: 20px;
+
+  .dropdown-section {
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    cursor: pointer;
+  }
+
+  .dropdown-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+
+    .bullet-icon {
+      font-size: 8px;
+      margin-right: 10px;
+    }
+
+    .rating-info {
+      margin-left: 10px;
+      font-size: 14px;
+      font-weight: normal;
+
+      .star-icon {
+        color: #FBD800;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .dropdown-icon {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+    margin-left: 10px;
+  }
+
+  .dropdown-icon.open {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-content {
+    padding: 15px 0;
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  li {
+    margin-bottom: 15px;
+  }
+}
+
+
+.reviews-section {
+  .review-item {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+
+      .reviewer-name {
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .review-rating {
+        .star-filled {
+          color: gold;
+        }
+        .star-empty {
+          color: #ccc;
+        }
+      }
+    }
+
+    .review-text {
+      margin: 0;
+    }
+  }
+
+  .review-photos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+
+    img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+
+    .pagination-button {
+      padding: 5px 10px;
+      background-color: #f0f0f0;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .page-info {
+      font-size: 0.9em;
+    }
+  }
+}
+
+

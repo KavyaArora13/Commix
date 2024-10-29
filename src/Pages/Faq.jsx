@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import Touch from '../Components/Offer/Touch'
+import Touch from '../Components/Touch'
 import '../Assets/Css/Faq/Faq.scss'
 
 const Faq = () => {
@@ -62,9 +62,9 @@ const Faq = () => {
         <div className="row faq-content">
           {/* Left Section */}
           <div className="col-md-5 mb-4 mb-md-0">
-            <div className="faq-left-section">
+            <div className="faq-left-section ">
               <div className="faq-image ">
-                <img src="/images/iconic1.png" alt="FAQ" className="img-fluid" />
+                <img src="/images/faq.jpg" alt="FAQ" className="img-fluid" />
               </div>
               <h5>Quires Not Listed below</h5>
               <p className="small">Nulla facilisi. Suspendisse interdum sollicitudin velit, nec porttitor justo accumsan quis. Nunc at sollicitudin velit. Sed vitae feugiat nisi.</p>

@@ -4,7 +4,6 @@ import '../Assets/Css/Footer.scss';
 import SocialIcon from './SocialIcon';
 import { faInstagram, faFacebookF, faTwitter, faLinkedinIn, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import logoImage from '../Assets/Image/Mask group.png';
 
 const Footer = () => {
   const footerLinks = [
@@ -21,7 +20,7 @@ const Footer = () => {
       {/* Footer Top Section */}
       <div className="footer-top text-center">
         <div className="rounded-logo">
-          <img src={logoImage} alt="Top logo" className="footer-logo mx-auto" />
+          <img src='./images/logo.gif' alt="Top logo" className="footer-logo " />
         </div>
       </div>
 
@@ -84,7 +83,7 @@ const Footer = () => {
 
         <div className="footer-column mb-3">
           <h4>Careers</h4>
-          <Link to="/careers">We’re hiring!</Link>
+          <Link to="/career">We’re hiring!</Link>
         </div>
 
         <div className="footer-column mb-3">

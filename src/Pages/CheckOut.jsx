@@ -6,9 +6,10 @@ import Footer from '../Components/Footer';
 import '../Assets/Css/CheckOut/CheckOut.scss';
 import PersonalInfoForm from '../Components/Checkout/PersonalInfoForm.jsx';
 import ProductItem from '../Components/Checkout/ProductItem.jsx';
-import VoucherSection from '../Components/Checkout/VoucherSection.jsx';
+import OfferSection from '../Components/Checkout/OfferSection.jsx';
 import TotalSummary from '../Components/Checkout/TotalSummary.jsx';
 import { API_URL } from "../config/api.js";
+import Touch from '../Components/Touch';
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -34,11 +35,14 @@ const CheckOut = () => {
     subtotal: 0,
     shipping: 103.50,
     total: 0,
-    vat: 0
+    vat: 0,
+    discount: 0
   });
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+  const [appliedOffer, setAppliedOffer] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('razorpay');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,7 +86,8 @@ const CheckOut = () => {
           subtotal,
           shipping: orderSummary.shipping,
           total,
-          vat
+          vat,
+          discount: 0
         });
 
         setLoading(false);
@@ -132,12 +137,85 @@ const CheckOut = () => {
     setShowAddressForm(true);
   };
 
-  const initiateRazorpayPayment = async () => {
+  const applyOffer = async (offerId) => {
     try {
-      if (!razorpayLoaded) {
-        throw new Error('Razorpay SDK is not loaded yet');
+      // If the same offer is selected again, remove it
+      if (appliedOffer && appliedOffer._id === offerId) {
+        setAppliedOffer(null);
+        updateOrderSummary(0);
+        return;
       }
 
+      const response = await axiosInstance.post(`${API_URL}/offers/apply-offer`, {
+        offerId: offerId,
+        cartTotal: orderSummary.subtotal + orderSummary.discount // Use original subtotal
+      });
+
+      if (response.data.success) {
+        setAppliedOffer(response.data.offer);
+        updateOrderSummary(response.data.offer.discountAmount);
+      } else {
+        throw new Error(response.data.message || 'Failed to apply offer');
+      }
+    } catch (error) {
+      console.error('Error applying offer:', error);
+      throw error;
+    }
+  };
+
+  const updateOrderSummary = (discountAmount) => {
+    setOrderSummary(prevSummary => {
+      const newSubtotal = prevSummary.subtotal - discountAmount;
+      const newTotal = newSubtotal + prevSummary.shipping;
+      const newVat = newTotal * 0.05; // Assuming 5% VAT
+      return {
+        ...prevSummary,
+        subtotal: newSubtotal,
+        total: newTotal,
+        vat: newVat,
+        discount: discountAmount
+      };
+    });
+  };
+
+  const handlePaymentMethodChange = (method) => {
+    setSelectedPaymentMethod(method);
+  };
+
+  const initiatePayment = async () => {
+    if (selectedPaymentMethod === 'razorpay') {
+      await initiateRazorpayPayment();
+    } else if (selectedPaymentMethod === 'cod') {
+      // Handle COD order placement
+      try {
+        const userString = localStorage.getItem('user');
+        if (!userString) {
+          throw new Error('User not found in localStorage');
+        }
+        const userData = JSON.parse(userString);
+        const userId = userData.user.id;
+
+        const orderResponse = await axiosInstance.post('/orders/create', {
+          user_id: userId,
+          amount: orderSummary.total,
+          payment_method: 'COD',
+          // Add other necessary order details
+        });
+
+        if (orderResponse.data.success) {
+          navigate('/order-success');
+        } else {
+          throw new Error(orderResponse.data.message || 'Failed to place COD order');
+        }
+      } catch (error) {
+        console.error('Error placing COD order:', error);
+        setError('An error occurred while placing the COD order. Please try again.');
+      }
+    }
+  };
+
+  const initiateRazorpayPayment = async () => {
+    try {
       const userString = localStorage.getItem('user');
       if (!userString) {
         throw new Error('User not found in localStorage');
@@ -145,10 +223,11 @@ const CheckOut = () => {
       const userData = JSON.parse(userString);
       const userId = userData.user.id;
 
-      const orderResponse = await axiosInstance.post('/payment/create', {
+      const orderResponse = await axiosInstance.post('/payment/create-order', {
+        amount: orderSummary.total * 100, // Razorpay expects amount in paise
+        currency: 'INR',
         user_id: userId,
-        amount: orderSummary.total,
-        currency: 'INR'
+        // Add any other necessary data for order creation
       });
 
       if (!orderResponse.data.success) {
@@ -209,11 +288,11 @@ const CheckOut = () => {
           checked={selectedAddress === address}
           onChange={() => handleAddressSelect(address)}
         />
-        <label className="form-check-label ms-2" htmlFor={`address${index}`}>
-          <strong className="d-block mb-2">{address.firstName} {address.lastName}</strong>
-          <span className="d-block">{address.street}, {address.house}</span>
-          <span className="d-block">{address.postcode}, {address.location}</span>
-          <span className="d-block">{address.country}</span>
+        <label className="form-check-label ms-2" htmlFor={`address${index}`} style={{ color: '#000000' }}>
+          <strong className="d-block mb-2" style={{ color: '#000000' }}>{address.firstName} {address.lastName}</strong>
+          <span className="d-block" style={{ color: '#000000' }}>{address.street}, {address.house}</span>
+          <span className="d-block" style={{ color: '#000000' }}>{address.postcode}, {address.location}</span>
+          <span className="d-block" style={{ color: '#000000' }}>{address.country}</span>
         </label>
       </div>
     </div>
@@ -260,16 +339,32 @@ const CheckOut = () => {
                 )}
               </div>
               <div className="col-lg-4 col-md-6 col-sm-12 mb-4">
-                  <div className='payment-options p-4 bg-light rounded shadow-sm'>
-                    <h3 className="mb-4">Payment Method</h3>
-                    <div className='payment-method d-flex align-items-center'>
-                      <div className="payment-logo-container me-3">
-                        <img src="/images/razor-pay.png" alt="Razor Pay" className="payment-logo" style={{maxWidth: '100px'}} />
-                      </div>
-                      <span className="payment-name me-3">Razor Pay</span>
-                      <input type="checkbox" className="payment-checkbox form-check-input" />
+                <div className='payment-options p-4 bg-light rounded shadow-sm'>
+                  <h3 className="mb-4">Payment Method</h3>
+                  <div className='payment-method d-flex align-items-center mb-3'>
+                    <div className="payment-logo-container me-3">
+                      <img src="/images/razor-pay.png" alt="Razor Pay" className="payment-logo" style={{maxWidth: '100px'}} />
                     </div>
+                    <span className="payment-name me-3">Razor Pay</span>
+                    <input 
+                      type="radio" 
+                      className="payment-radio form-check-input" 
+                      checked={selectedPaymentMethod === 'razorpay'}
+                      onChange={() => handlePaymentMethodChange('razorpay')}
+                    />
                   </div>
+                  <div className='payment-method d-flex align-items-center'>
+                    <div className="payment-logo-container me-3">
+                    </div>
+                    <span className="payment-name me-3">Cash on Delivery</span>
+                    <input 
+                      type="radio" 
+                      className="payment-radio form-check-input" 
+                      checked={selectedPaymentMethod === 'cod'}
+                      onChange={() => handlePaymentMethodChange('cod')}
+                    />
+                  </div>
+                </div>
               </div>
               <div className="col-lg-4 col-md-12 col-sm-12 mb-4">
                 <div className="checkout-summary-wrapper">
@@ -291,14 +386,15 @@ const CheckOut = () => {
                       ))}
                     </div>
                   </div>
-                  <VoucherSection/>
+                  <OfferSection onApplyOffer={applyOffer} appliedOffer={appliedOffer} />
                   <TotalSummary 
                     subtotal={orderSummary.subtotal}
                     shipping={orderSummary.shipping}
                     total={orderSummary.total}
                     vat={orderSummary.vat}
-                    onCheckout={initiateRazorpayPayment}
-                    isPaymentDisabled={!razorpayLoaded}
+                    discount={orderSummary.discount}
+                    onCheckout={initiatePayment}
+                    isPaymentDisabled={selectedPaymentMethod === 'razorpay' && !razorpayLoaded}
                   />
                 </div>
               </div>
@@ -306,6 +402,7 @@ const CheckOut = () => {
           </div>
         </div>
       </div>
+      <Touch/>
       <Footer/>
     </div>
   );

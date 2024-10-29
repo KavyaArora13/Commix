@@ -8,7 +8,7 @@ import { API_URL } from '../../config/api';
 
 const itemsPerPage = 9;
 
-const ProductGridLayout = ({ searchTerm }) => {
+const ProductGridLayout = ({ searchTerm, sortOption, setSortOption }) => {
   const [products, setProducts] = useState([]); // State to hold products
   const [bestSellers, setBestSellers] = useState([]); // State to hold best sellers
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,7 +19,6 @@ const ProductGridLayout = ({ searchTerm }) => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`${API_URL}/products`); // Adjust the endpoint as necessary
-        // Ensure the response contains products
         if (response.data.success) {
           setProducts(Array.isArray(response.data.products) ? response.data.products : []);
         } else {
@@ -37,7 +36,6 @@ const ProductGridLayout = ({ searchTerm }) => {
     const fetchBestSellers = async () => {
       try {
         const response = await axios.get(`${API_URL}/products`); // Use the same endpoint for best sellers
-        // Ensure the response contains best sellers
         if (response.data.success) {
           setBestSellers(Array.isArray(response.data.products) ? response.data.products : []);
         } else {
@@ -75,6 +73,24 @@ const ProductGridLayout = ({ searchTerm }) => {
     currentPage * itemsPerPage
   );
 
+  // Function to sort products based on the selected option
+  const sortProducts = (products) => {
+    switch (sortOption) {
+      case 'AtoZ':
+        return products.sort((a, b) => a.name.localeCompare(b.name));
+      case 'ZtoA':
+        return products.sort((a, b) => b.name.localeCompare(a.name));
+      case 'priceLowToHigh':
+        return products.sort((a, b) => a.price - b.price);
+      case 'priceHighToLow':
+        return products.sort((a, b) => b.price - a.price);
+      default:
+        return products;
+    }
+  };
+
+  const sortedProducts = sortProducts(filteredProducts);
+
   if (loading) return <p>Loading products...</p>; // Loading state
   if (error) return <p>{error}</p>; // Error state
 
@@ -94,21 +110,18 @@ const ProductGridLayout = ({ searchTerm }) => {
                 <p>Showing all {filteredProducts.length} results</p>
               </div>
               <div className="sort-by dropdown">
-                <button
+                <select 
+                  id="sortOptions" 
+                  value={sortOption} 
+                  onChange={(e) => setSortOption(e.target.value)} // Use setSortOption here
                   className="btn btn-dark dropdown-toggle"
-                  type="button"
-                  id="dropdownMenuButton"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
                 >
-                  Recommendation
-                </button>
-                <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <li><a className="dropdown-item" href="#">List Dropdown 1</a></li>
-                  <li><a className="dropdown-item" href="#">List Dropdown 2</a></li>
-                  <li><a className="dropdown-item" href="#">List Dropdown 3</a></li>
-                  <li><a className="dropdown-item" href="#">List Dropdown 4</a></li>
-                </ul>
+    <option value="" disabled>Sort By</option> {/* "Sort By" will be shown initially but disabled */}
+    <option value="AtoZ">A to Z</option>
+                  <option value="ZtoA">Z to A</option>
+                  <option value="priceLowToHigh">Price Low to High</option>
+                  <option value="priceHighToLow">Price High to Low</option>
+                </select>
               </div>
             </div>
           </div>

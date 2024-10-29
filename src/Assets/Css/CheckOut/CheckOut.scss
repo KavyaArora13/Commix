@@ -193,6 +193,18 @@
       }
     }
   }
+
+  .form-check-label {
+    color: #000000; // This sets the text color to black
+  }
+
+  .form-check-input:checked + .form-check-label {
+    color: #000000; // This ensures the text stays black even when selected
+  }
+
+  strong, span {
+    color: #000000; // This ensures all text within the label is black
+  }
 }
 
 .btn-dark {

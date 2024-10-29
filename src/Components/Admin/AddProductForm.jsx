@@ -1,34 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import axios from 'axios';
 import { API_URL } from '../../config/api';
+import '../../Assets/Css/Admin/AddProductForm.scss';
+
+const VARIANT_SIZES = ['50ml', '150ml', '250ml'];
 
 const AddProductForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    price: '',
-    stock_quantity: '',
     category_id: '',
-    brand: '',
-    rating: '',
-    discount_percentage: '',
+    subcategory_id: '',
+    ingredients: '',
+    hero_ingredients: '',
+    functions: '',
+    taglines: '',  // Add taglines field
+    variants: [{ name: '50ml', price: '', stock_quantity: '' }],
   });
   const [images, setImages] = useState([]);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [success, setSuccess] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
 
-  const handleChange = (e) => {
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/categories`);
+      setCategories(response.data.categories);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const handleChange = async (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
     }));
+
+    if (name === 'category_id') {
+      try {
+        const response = await axios.get(`${API_URL}/categories/${value}`);
+        setSubcategories(response.data.category.subcategories || []);
+      } catch (error) {
+        console.error('Error fetching subcategories:', error);
+        setSubcategories([]);
+      }
+    }
+  };
+
+  const handleVariantChange = (index, field, value) => {
+    setFormData(prevState => ({
+      ...prevState,
+      variants: prevState.variants.map((variant, i) => 
+        i === index ? { 
+          ...variant, 
+          [field]: field === 'price' ? parseFloat(value) || 0 : value 
+        } : variant
+      )
+    }));
+  };
+
+  const addVariant = () => {
+    if (formData.variants.length < VARIANT_SIZES.length) {
+      setFormData(prevState => ({
+        ...prevState,
+        variants: [...prevState.variants, { name: '', price: '', stock_quantity: '' }]
+      }));
+    }
+  };
+
+  const removeVariant = (index) => {
+    setFormData(prevState => ({
+      ...prevState,
+      variants: prevState.variants.filter((_, i) => i !== index)
+    }));
   };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length > 4) {
-      setError('You can only upload a maximum of 4 images.');
+    if (files.length > 7) {
+      setError('You can only upload a maximum of 7 images.');
       return;
     }
     setImages(files);
@@ -40,57 +98,98 @@ const AddProductForm = ({ onClose }) => {
     setError('');
     setSuccess('');
 
+    // Validate variants
+    const validVariants = formData.variants.filter(v => 
+      v.name && 
+      typeof parseFloat(v.price) === 'number' && 
+      parseFloat(v.price) > 0 && 
+      typeof parseInt(v.stock_quantity) === 'number' && 
+      parseInt(v.stock_quantity) > 0
+    );
+    if (validVariants.length === 0) {
+      setError('At least one valid variant with a name, positive price, and positive stock quantity is required.');
+      return;
+    }
+
     try {
       const productData = new FormData();
       
-      // Append all form data fields
+      // Convert comma-separated strings to arrays
+      const ingredientsArray = formData.ingredients.split(',').map(item => item.trim());
+      const heroIngredientsArray = formData.hero_ingredients.split(',').map(item => item.trim());
+      const functionsArray = formData.functions.split(',').map(item => item.trim());
+      const taglinesArray = formData.taglines.split(',').map(item => item.trim());  // Add taglines conversion
+
+      // Validate hero ingredients
+      const invalidHeroIngredients = heroIngredientsArray.filter(
+        hero => !ingredientsArray.includes(hero)
+      );
+      if (invalidHeroIngredients.length > 0) {
+        setError(`Hero ingredients must be part of the main ingredients list. Invalid ingredients: ${invalidHeroIngredients.join(', ')}`);
+        return;
+      }
+
       Object.keys(formData).forEach(key => {
-        productData.append(key, formData[key]);
+        if (key === 'variants') {
+          productData.append(key, JSON.stringify(formData[key]));
+        } else if (key === 'ingredients') {
+          productData.append(key, JSON.stringify(ingredientsArray));
+        } else if (key === 'hero_ingredients') {
+          productData.append(key, JSON.stringify(heroIngredientsArray));
+        } else if (key === 'functions') {
+          productData.append(key, JSON.stringify(functionsArray));
+        } else if (key === 'taglines') {
+          productData.append(key, JSON.stringify(taglinesArray));  // Add taglines
+        } else {
+          productData.append(key, formData[key]);
+        }
       });
       
-      // Append each file individually
       images.forEach((image, index) => {
         productData.append(`files`, image);
       });
-
-      console.log('FormData contents:');
-      for (let pair of productData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-      }
-
+  
       const response = await axios.post(`${API_URL}/products/add`, productData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-
+  
       setSuccess('Product added successfully');
       setTimeout(() => {
         onClose();
         setFormData({
           name: '',
           description: '',
-          price: '',
-          stock_quantity: '',
           category_id: '',
-          brand: '',
-          rating: '',
-          discount_percentage: '',
+          subcategory_id: '',
+          ingredients: '',
+          hero_ingredients: '',
+          functions: '',
+          taglines: '',  // Add taglines field
+          variants: [{ name: '50ml', price: '', stock_quantity: '' }],
         });
         setImages([]);
         setSuccess('');
       }, 2000);
     } catch (error) {
-      console.error('Error adding product:', error);
-      setError('Failed to add product. Please try again.');
+      console.error('Error adding product:', error.response?.data || error.message);
+      setError(error.response?.data?.message || 'Failed to add product. Please try again.');
     }
   };
 
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h3 className="text-2xl font-bold mb-4">Add New Product</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+  return ReactDOM.createPortal(
+    <div className="add-product-modal-overlay">
+      <div className="add-product-modal-content">
+        <div className="add-product-modal__header">
+          <h3 className="add-product-modal__title">Add New Product</h3>
+          <button onClick={onClose} className="add-product-modal__close-button">
+            <svg className="add-product-modal__close-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="add-product-modal__form">
+          <div className="add-product-modal__form-group">
+            <label htmlFor="name" className="add-product-modal__label">Name</label>
             <input
               id="name"
               name="name"
@@ -98,102 +197,154 @@ const AddProductForm = ({ onClose }) => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="add-product-modal__input"
             />
           </div>
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+          
+          <div className="add-product-modal__form-group">
+            <label htmlFor="description" className="add-product-modal__label">Description</label>
             <textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
-              rows="3"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="add-product-modal__textarea"
             ></textarea>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
-              <input
-                id="price"
-                name="price"
-                type="number"
-                value={formData.price}
-                onChange={handleChange}
-                required
-                min="0"
-                step="0.01"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <label htmlFor="stock_quantity" className="block text-sm font-medium text-gray-700">Stock Quantity</label>
-              <input
-                id="stock_quantity"
-                name="stock_quantity"
-                type="number"
-                value={formData.stock_quantity}
-                onChange={handleChange}
-                required
-                min="0"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">Category ID</label>
-            <input
+          
+          <div className="add-product-modal__form-group">
+            <label htmlFor="category_id" className="add-product-modal__label">Category</label>
+            <select
               id="category_id"
               name="category_id"
-              type="text"
               value={formData.category_id}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
+              required
+              className="add-product-modal__select"
+            >
+              <option value="">Select a category</option>
+              {categories.map(category => (
+                <option key={category._id} value={category._id}>{category.name}</option>
+              ))}
+            </select>
           </div>
-          <div>
-            <label htmlFor="brand" className="block text-sm font-medium text-gray-700">Brand</label>
-            <input
-              id="brand"
-              name="brand"
-              type="text"
-              value={formData.brand}
+          
+          <div className="add-product-modal__form-group">
+            <label htmlFor="subcategory_id" className="add-product-modal__label">Subcategory</label>
+            <select
+              id="subcategory_id"
+              name="subcategory_id"
+              value={formData.subcategory_id}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
+              required
+              className="add-product-modal__select"
+              disabled={!formData.category_id}
+            >
+              <option value="">Select a subcategory</option>
+              {subcategories.map(subcategory => (
+                <option key={subcategory._id} value={subcategory._id}>{subcategory.name}</option>
+              ))}
+            </select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="rating" className="block text-sm font-medium text-gray-700">Rating</label>
-              <input
-                id="rating"
-                name="rating"
-                type="number"
-                value={formData.rating}
-                onChange={handleChange}
-                min="0"
-                max="5"
-                step="0.1"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <label htmlFor="discount_percentage" className="block text-sm font-medium text-gray-700">Discount Percentage</label>
-              <input
-                id="discount_percentage"
-                name="discount_percentage"
-                type="number"
-                value={formData.discount_percentage}
-                onChange={handleChange}
-                min="0"
-                max="100"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
+          
+          <div className="add-product-modal__form-group">
+            <label htmlFor="ingredients" className="add-product-modal__label">Ingredients (comma-separated)</label>
+            <textarea
+              id="ingredients"
+              name="ingredients"
+              value={formData.ingredients}
+              onChange={handleChange}
+              className="add-product-modal__textarea"
+            ></textarea>
           </div>
-          <div>
-            <label htmlFor="images" className="block text-sm font-medium text-gray-700">Product Images (Max 4)</label>
+          
+          <div className="add-product-modal__form-group">
+            <label htmlFor="hero_ingredients" className="add-product-modal__label">
+              Hero Ingredients (comma-separated)
+            </label>
+            <textarea
+              id="hero_ingredients"
+              name="hero_ingredients"
+              value={formData.hero_ingredients}
+              onChange={handleChange}
+              className="add-product-modal__textarea"
+              placeholder="Must be included in the main ingredients list"
+            ></textarea>
+          </div>
+
+          <div className="add-product-modal__form-group">
+            <label htmlFor="functions" className="add-product-modal__label">
+              Functions (comma-separated)
+            </label>
+            <textarea
+              id="functions"
+              name="functions"
+              value={formData.functions}
+              onChange={handleChange}
+              className="add-product-modal__textarea"
+              placeholder="e.g., Moisturizing, Anti-aging, etc."
+            ></textarea>
+          </div>
+          
+          <div className="add-product-modal__form-group">
+            <label htmlFor="taglines" className="add-product-modal__label">
+              Taglines (comma-separated)
+            </label>
+            <textarea
+              id="taglines"
+              name="taglines"
+              value={formData.taglines}
+              onChange={handleChange}
+              className="add-product-modal__textarea"
+              placeholder="Enter product taglines"
+            ></textarea>
+          </div>
+          
+          <div className="add-product-modal__form-group">
+            <label className="add-product-modal__label">Variants</label>
+            {formData.variants.map((variant, index) => (
+              <div key={index} className="variant-row">
+                <select
+                  value={variant.name}
+                  onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                  className="add-product-modal__select"
+                >
+                  <option value="">Select size</option>
+                  {VARIANT_SIZES.map(size => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  value={variant.price}
+                  onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
+                  placeholder="Price"
+                  step="0.01"
+                  min="0"
+                  className="add-product-modal__input"
+                />
+                <input
+                  type="number"
+                  value={variant.stock_quantity}
+                  onChange={(e) => handleVariantChange(index, 'stock_quantity', Math.max(0, parseInt(e.target.value) || 0))}
+                  placeholder="Stock"
+                  min="0"
+                  className="add-product-modal__input"
+                />
+                <button type="button" onClick={() => removeVariant(index)} className="remove-variant-btn">
+                  Remove
+                </button>
+              </div>
+            ))}
+            {formData.variants.length < VARIANT_SIZES.length && (
+              <button type="button" onClick={addVariant} className="add-variant-btn">
+                Add Variant
+              </button>
+            )}
+          </div>
+          
+          <div className="add-product-modal__form-group">
+            <label htmlFor="images" className="add-product-modal__label">Product Images (Max 7)</label>
             <input
               id="images"
               name="files"
@@ -201,32 +352,30 @@ const AddProductForm = ({ onClose }) => {
               onChange={handleImageChange}
               multiple
               accept="image/*"
-              className="mt-1 block w-full text-sm text-gray-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-full file:border-0
-                file:text-sm file:font-semibold
-                file:bg-violet-50 file:text-violet-700
-                hover:file:bg-violet-100"
+              className="add-product-modal__file-input"
             />
           </div>
+          
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-              <span className="block sm:inline">{error}</span>
+            <div className="add-product-modal__error" role="alert">
+              <span>{error}</span>
             </div>
           )}
           {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-              <span className="block sm:inline">{success}</span>
+            <div className="add-product-modal__success" role="alert">
+              <span>{success}</span>
             </div>
           )}
+          
           <div>
-            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+            <button type="submit" className="add-product-modal__submit-button">
               Add Product
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

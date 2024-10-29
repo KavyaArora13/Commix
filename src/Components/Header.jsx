@@ -4,12 +4,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import '../Assets/Css/Header.scss';
 import SocialIcon from '../Components/SocialIcon.jsx';
-import { faHeart, faShoppingCart, faUserCircle, faSearch, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faShoppingCart, faUserCircle, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import HeaderLogo from '../Assets/Image/HeaderLogo.png';
+import HeaderLogo from '../Assets/Image/comix-logo.gif';
 import { checkAuthStatus, logout } from '../features/auth/authActions';
 import { fetchUserDetails, setUserDetails } from '../features/user/userSlice.js'
 import { API_URL } from "../config/api";
+import { updateCartItemCount } from '../features/cart/cartSlice';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+
+
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,12 +21,12 @@ const Header = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [profilePicture, setProfilePicture] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [cartItemCount, setCartItemCount] = useState(0);
-  const dropdownTimeout = useRef(null);
+  const cartItemCount = useSelector((state) => state.cart.itemCount);
   const dispatch = useDispatch();
   const { user: authUser, isAuthenticated } = useSelector((state) => state.auth);
   const { user: userDetails, loading: userLoading } = useSelector((state) => state.user);
   const dropdownRef = useRef(null);
+  const dropdownTimeout = useRef(null);
 
   const navigate = useNavigate();
 
@@ -45,15 +49,14 @@ const Header = () => {
         if (!userDetails) {
           dispatch(setUserDetails(storedUser));
         }
-        // Fetch fresh user details only if user ID is available
         if (storedUser.id || (storedUser.user && storedUser.user.id)) {
           const userId = storedUser.id || storedUser.user.id;
-          await dispatch(fetchUserDetails(userId)); // Ensure this is awaited
+          await dispatch(fetchUserDetails(userId));
         }
       }
     };
   
-    if (isAuthenticated && !userDetails) { // Only fetch if authenticated and userDetails is not set
+    if (isAuthenticated && !userDetails) {
       loadUserDetails();
     }
   }, [dispatch, isAuthenticated, userDetails]);
@@ -64,10 +67,6 @@ const Header = () => {
     }
   }, [userDetails]);
 
-  useEffect(() => {
-    fetchCartItemCount();
-  }, [isAuthenticated]);
-
   const fetchCartItemCount = async () => {
     try {
       const userString = localStorage.getItem('user');
@@ -77,7 +76,7 @@ const Header = () => {
       const response = await axios.get(`${API_URL}/cart/${user.user.id}`);
       const cartItems = response.data.cartItems || [];
       const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-      setCartItemCount(count);
+      dispatch(updateCartItemCount(count));
     } catch (error) {
       console.error("Error fetching cart item count:", error);
     }
@@ -235,10 +234,39 @@ const Header = () => {
     }
   };
 
+  const handleFavoritesClick = () => {
+    if (isAuthenticated) {
+      navigate('/profile', { state: { activeSection: 'favorites' } });
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const marqueeItems = [
+    "Comix best cosmetic website",
+    "Great deals on all products",
+    "Free shipping on orders over $50"
+  ];
+
+  const totalDuration = 15 * marqueeItems.length; // Total duration for all items
+
   return (
     <header className="header">
       <div className="header-top">
-        <div className='header-top-text'>Commix best cosmetic website</div>
+        <div className="marquee-container">
+          {marqueeItems.map((item, index) => (
+            <div 
+              key={index} 
+              className="marquee-item"
+              style={{
+                animationDelay: `${index * 15}s`,
+                animationDuration: `${totalDuration}s`
+              }}
+            >
+              {item}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="header-middle">
@@ -249,15 +277,15 @@ const Header = () => {
         <div className="search-bar-container">
           <input className="search-bar" type="text" placeholder="Try Liquid Lipstick" />
           <button className="search-button">
-            <SocialIcon icon={faSearch} link="#"/>
+            <SocialIcon icon={faSearch} className="search-icon" />
             <span className="search-text">Search</span>
           </button>
         </div>
 
         <div className="header-icons">
           {renderUserInfo()}
-          <span className="icon">
-            <SocialIcon icon={faHeart} link="#"/>
+          <span className="icon" onClick={handleFavoritesClick} style={{ cursor: 'pointer' }}>
+            <SocialIcon icon={faHeart} />
           </span>
           <span className="icon" onClick={handleCartClick} style={{ cursor: 'pointer', position: 'relative' }}>
             <SocialIcon icon={faShoppingCart} />

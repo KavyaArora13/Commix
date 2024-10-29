@@ -1,22 +1,27 @@
-import { useState } from "react";
-import { BarChart, Users, Package, Grid, Image, Tag, LogOut, ShoppingCart } from "lucide-react"; // Import ShoppingCart icon
-import "../Assets/Css/Admin/AdminPanel.scss"; // Import the SCSS file
+// src/Pages/AdminPanel.jsx
+import React, { useState } from "react";
+import { BarChart, Users, Package, Grid, Image, Tag, LogOut, ShoppingCart } from "lucide-react";
+import "../Assets/Css/Admin/AdminPanel.scss";
 import DashboardContent from '../Components/Admin/DashboardContent';
 import UsersContent from '../Components/Admin/UsersContent';
 import OrderContent from '../Components/Admin/OrderContent';
 import ProductsContent from '../Components/Admin/ProductsContent';
 import CategoriesContent from '../Components/Admin/CategoriesContent';
 import BannerContent from '../Components/Admin/BannerContent';
-import CouponsContent from '../Components/Admin/CouponsContent';
-import { useDispatch } from 'react-redux'; // Import useDispatch
-import { logout } from '../features/auth/authActions'; // Import logout action
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import OffersContent from "../Components/Admin/OffersContent";
+import EditProductForm from "../Components/Admin/EditProductForm";
+import { useDispatch } from 'react-redux';
+import { logout } from '../features/auth/authActions';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminPanel() {
   const [currentSection, setCurrentSection] = useState("dashboard");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar visibility
-  const dispatch = useDispatch(); // Initialize dispatch
-  const navigate = useNavigate(); // Initialize navigate
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [refreshProducts, setRefreshProducts] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const sidebarItems = [
     { name: "Dashboard", icon: BarChart },
@@ -24,9 +29,20 @@ export default function AdminPanel() {
     { name: "Products", icon: Package },
     { name: "Categories", icon: Grid },
     { name: "Banner", icon: Image },
-    { name: "Orders", icon: ShoppingCart }, // Changed icon for Orders section
-    { name: "Coupons", icon: Tag },
+    { name: "Orders", icon: ShoppingCart },
+    { name: "Offers", icon: Tag },
   ];
+
+  const handleEditProduct = (product) => {
+    setSelectedProduct(product);
+    setIsEditProductModalOpen(true);
+  };
+
+  const handleUpdateProduct = (updatedProduct) => {
+    console.log("Product updated:", updatedProduct);
+    setIsEditProductModalOpen(false);
+    setRefreshProducts(prev => !prev); // Toggle this state to trigger a refresh
+  };
 
   const renderContent = () => {
     switch (currentSection) {
@@ -35,15 +51,15 @@ export default function AdminPanel() {
       case "users":
         return <UsersContent />;
       case "products":
-        return <ProductsContent />;
+        return <ProductsContent onEditProduct={handleEditProduct} refreshTrigger={refreshProducts} />;
       case "categories":
         return <CategoriesContent />;
       case "banner":
         return <BannerContent />;
       case "orders":
-        return <OrderContent />; // Render Orders content
-      case "coupons":
-        return <CouponsContent />;
+        return <OrderContent />;
+      case "offers":
+        return <OffersContent />;
       default:
         return <div>Select a section</div>;
     }
@@ -51,9 +67,10 @@ export default function AdminPanel() {
 
   const handleLogout = async () => {
     try {
-      await dispatch(logout()); // Dispatch the logout action
+      await dispatch(logout());
+      localStorage.removeItem('admin');
       console.log("Logged out successfully");
-      navigate('/adminlogin'); // Redirect to the admin login page
+      navigate('/adminlogin');
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -74,7 +91,7 @@ export default function AdminPanel() {
               } custom-button`}
               onClick={() => {
                 setCurrentSection(item.name.toLowerCase());
-                setIsSidebarOpen(false); // Close sidebar on item click
+                setIsSidebarOpen(false);
               }}
             >
               <item.icon />
@@ -93,6 +110,13 @@ export default function AdminPanel() {
         </button>
         {renderContent()}
       </main>
+      {isEditProductModalOpen && (
+        <EditProductForm
+          product={selectedProduct}
+          onClose={() => setIsEditProductModalOpen(false)}
+          onUpdate={handleUpdateProduct}
+        />
+      )}
     </div>
   );
 }

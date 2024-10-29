@@ -2,37 +2,58 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '../../config/api';
-import { FaTimes } from 'react-icons/fa';
+import { X } from 'lucide-react';
+import '../../Assets/Css/Admin/EditProductForm.scss';
+
+const VARIANT_SIZES = ['50ml', '150ml', '250ml'];
 
 const EditProductForm = ({ product, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    stock_quantity: '',
-    category_id: '',
-    brand: '',
-    rating: '',
-    discount_percentage: '',
+    name: product?.name || '',
+    description: product?.description || '',
+    category_id: product?.category?._id || product?.category_id?._id || '',
+    subcategory_id: product?.subcategory?._id || product?.subcategory_id?._id || '',
+    ingredients: Array.isArray(product?.ingredients) 
+      ? product.ingredients.join(', ') 
+      : product?.ingredients || '',
+    hero_ingredients: Array.isArray(product?.hero_ingredients) 
+      ? product.hero_ingredients.join(', ') 
+      : product?.hero_ingredients || '',
+    functions: Array.isArray(product?.functions) 
+      ? product.functions.join(', ') 
+      : product?.functions || '',
+    taglines: Array.isArray(product?.taglines) 
+      ? product.taglines.join(', ') 
+      : product?.taglines || '',
+    variants: product?.variants?.map(variant => ({
+      name: variant.name || '',
+      price: variant.price || '',
+      stock_quantity: variant.stock_quantity || ''
+    })) || []
   });
+  const [existingImages, setExistingImages] = useState(product?.image_urls || []);
   const [images, setImages] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
 
   useEffect(() => {
-    if (product) {
-      setFormData({
-        name: product.name || '',
-        description: product.description || '',
-        price: product.price || '',
-        stock_quantity: product.stock_quantity || '',
-        category_id: product.category_id?._id || product.category_id || '',
-        brand: product.brand || '',
-        rating: product.rating || '',
-        discount_percentage: product.discount_percentage || '',
-      });
+    fetchCategories();
+    if (formData.category_id) {
+      const selectedCategory = categories.find(cat => cat._id === formData.category_id);
+      setSubcategories(selectedCategory ? selectedCategory.subcategories : []);
     }
-  }, [product]);
+  }, [formData.category_id, categories]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/categories`);
+      setCategories(response.data.categories);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,12 +61,46 @@ const EditProductForm = ({ product, onClose, onUpdate }) => {
       ...prevState,
       [name]: value
     }));
+
+    if (name === 'category_id') {
+      const selectedCategory = categories.find(cat => cat._id === value);
+      setSubcategories(selectedCategory ? selectedCategory.subcategories : []);
+      setFormData(prevState => ({ ...prevState, subcategory_id: '' }));
+    }
+  };
+
+  const handleVariantChange = (index, field, value) => {
+    const updatedVariants = [...formData.variants];
+    updatedVariants[index] = {
+      ...updatedVariants[index],
+      [field]: value
+    };
+    setFormData(prevState => ({
+      ...prevState,
+      variants: updatedVariants
+    }));
+  };
+
+  const addVariant = () => {
+    if (formData.variants.length < VARIANT_SIZES.length) {
+      setFormData(prevState => ({
+        ...prevState,
+        variants: [...prevState.variants, { name: '', price: '', stock_quantity: '' }]
+      }));
+    }
+  };
+
+  const removeVariant = (index) => {
+    setFormData(prevState => ({
+      ...prevState,
+      variants: prevState.variants.filter((_, i) => i !== index)
+    }));
   };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length > 4) {
-      setError('You can only upload a maximum of 4 images.');
+    if (files.length > 7) {
+      setError('You can only upload a maximum of 7 images.');
       return;
     }
     setImages(files);
@@ -57,30 +112,48 @@ const EditProductForm = ({ product, onClose, onUpdate }) => {
     setError('');
     setSuccess('');
 
-    // Check if any changes were made
-    const hasChanges = Object.keys(formData).some(key => formData[key] !== product[key]);
-    if (!hasChanges && images.length === 0) {
-      setError('No changes were made to the product.');
+    // Validate variants
+    if (!formData.variants || formData.variants.length === 0) {
+      setError('At least one variant is required');
+      return;
+    }
+
+    // Validate that each variant has required fields
+    const invalidVariants = formData.variants.some(
+      variant => !variant.name || !variant.price || !variant.stock_quantity
+    );
+    if (invalidVariants) {
+      setError('All variant fields (name, price, and stock) are required');
       return;
     }
 
     try {
       const productData = new FormData();
       
+      // Convert variants to proper format
+      const validVariants = formData.variants.map(variant => ({
+        name: variant.name,
+        price: Number(variant.price),
+        stock_quantity: Number(variant.stock_quantity)
+      }));
+
+      // Append form data
       Object.keys(formData).forEach(key => {
-        if (key === 'category_id' && formData[key]) {
-          productData.append(key, formData[key]);
-        } else if (formData[key] !== '') {
+        if (key === 'variants') {
+          productData.append(key, JSON.stringify(validVariants));
+        } else if (['ingredients', 'hero_ingredients', 'functions', 'taglines'].includes(key)) {
+          const arrayData = formData[key].split(',').map(item => item.trim()).filter(Boolean);
+          productData.append(key, JSON.stringify(arrayData));
+        } else {
           productData.append(key, formData[key]);
         }
       });
-      
+
       if (images.length > 0) {
         images.forEach((image, index) => {
           productData.append(`files`, image);
         });
       } else {
-        // If no new images are selected, send a flag to the server
         productData.append('noNewImages', 'true');
       }
 
@@ -90,6 +163,8 @@ const EditProductForm = ({ product, onClose, onUpdate }) => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
+      console.log('Server response:', response.data);
+
       setSuccess('Product updated successfully');
       setTimeout(() => {
         onUpdate(response.data.product);
@@ -97,24 +172,93 @@ const EditProductForm = ({ product, onClose, onUpdate }) => {
       }, 2000);
     } catch (error) {
       console.error('Error updating product:', error.response?.data || error.message);
-      setError(`Failed to update product. ${error.response?.data?.message || error.message}`);
+      setError(error.response?.data?.message || 'Failed to update product');
     }
   };
 
+  const renderImagePreviews = () => (
+    <div className="image-previews">
+      <h4>Current Images:</h4>
+      <div className="existing-images-grid">
+        {existingImages.map((url, index) => (
+          <div key={index} className="image-preview-container">
+            <img src={url} alt={`Product ${index + 1}`} className="image-preview" />
+          </div>
+        ))}
+      </div>
+      {images.length > 0 && (
+        <>
+          <h4>New Images to Upload:</h4>
+          <div className="new-images-grid">
+            {Array.from(images).map((file, index) => (
+              <div key={index} className="image-preview-container">
+                <img 
+                  src={URL.createObjectURL(file)} 
+                  alt={`New upload ${index + 1}`} 
+                  className="image-preview" 
+                />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+
+  const renderVariants = () => (
+    <div className="variants-section">
+      <label>Variants</label>
+      {formData.variants.map((variant, index) => (
+        <div key={index} className="variant-row">
+          <select
+            value={variant.name}
+            onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+            required
+          >
+            <option value="">Select size</option>
+            {VARIANT_SIZES.map(size => (
+              <option key={size} value={size}>{size}</option>
+            ))}
+          </select>
+          <input
+            type="number"
+            value={variant.price}
+            onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
+            placeholder="Price"
+            required
+            min="0"
+          />
+          <input
+            type="number"
+            value={variant.stock_quantity}
+            onChange={(e) => handleVariantChange(index, 'stock_quantity', e.target.value)}
+            placeholder="Stock"
+            required
+            min="0"
+          />
+          <button 
+            type="button" 
+            onClick={() => removeVariant(index)}
+            disabled={formData.variants.length === 1}
+          >Remove</button>
+        </div>
+      ))}
+      {formData.variants.length < VARIANT_SIZES.length && (
+        <button type="button" onClick={addVariant}>Add Variant</button>
+      )}
+    </div>
+  );
+
   return (
-    <div className="modal-overlay">
-      <div className="modal-content relative">
-        <button 
-          onClick={onClose} 
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-          aria-label="Close"
-        >
-          <FaTimes size={24} />
+    <div className="edit-product-modal-overlay">
+      <div className="edit-product-modal-content">
+        <button onClick={onClose} className="close-button" aria-label="Close">
+          <X size={24} />
         </button>
-        <h3 className="text-2xl font-bold mb-4">Edit Product</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <h3 className="modal-title">Edit Product</h3>
+        <form onSubmit={handleSubmit} className="edit-product-form">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+            <label htmlFor="name">Product Name</label>
             <input
               id="name"
               name="name"
@@ -122,102 +266,95 @@ const EditProductForm = ({ product, onClose, onUpdate }) => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+            <label htmlFor="description">Description</label>
             <textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows="3"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             ></textarea>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
-              <input
-                id="price"
-                name="price"
-                type="number"
-                value={formData.price}
-                onChange={handleChange}
-                required
-                min="0"
-                step="0.01"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <label htmlFor="stock_quantity" className="block text-sm font-medium text-gray-700">Stock Quantity</label>
-              <input
-                id="stock_quantity"
-                name="stock_quantity"
-                type="number"
-                value={formData.stock_quantity}
-                onChange={handleChange}
-                required
-                min="0"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-          </div>
           <div>
-            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">Category ID</label>
-            <input
+            <label htmlFor="category_id">Category</label>
+            <select
               id="category_id"
               name="category_id"
-              type="text"
               value={formData.category_id}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
+              required
+            >
+              <option value="">Select a category</option>
+              {categories.map(category => (
+                <option key={category._id} value={category._id}>{category.name}</option>
+              ))}
+            </select>
           </div>
           <div>
-            <label htmlFor="brand" className="block text-sm font-medium text-gray-700">Brand</label>
-            <input
-              id="brand"
-              name="brand"
-              type="text"
-              value={formData.brand}
+            <label htmlFor="subcategory_id">Subcategory</label>
+            <select
+              id="subcategory_id"
+              name="subcategory_id"
+              value={formData.subcategory_id}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="rating" className="block text-sm font-medium text-gray-700">Rating</label>
-              <input
-                id="rating"
-                name="rating"
-                type="number"
-                value={formData.rating}
-                onChange={handleChange}
-                min="0"
-                max="5"
-                step="0.1"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <label htmlFor="discount_percentage" className="block text-sm font-medium text-gray-700">Discount Percentage</label>
-              <input
-                id="discount_percentage"
-                name="discount_percentage"
-                type="number"
-                value={formData.discount_percentage}
-                onChange={handleChange}
-                min="0"
-                max="100"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
+              required
+            >
+              <option value="">Select a subcategory</option>
+              {subcategories.map(subcategory => (
+                <option key={subcategory._id} value={subcategory._id}>{subcategory.name}</option>
+              ))}
+            </select>
           </div>
           <div>
-            <label htmlFor="images" className="block text-sm font-medium text-gray-700">Product Images (Max 4)</label>
+            <label htmlFor="ingredients">Ingredients (comma-separated)</label>
+            <textarea
+              id="ingredients"
+              name="ingredients"
+              value={formData.ingredients}
+              onChange={handleChange}
+              rows="3"
+            ></textarea>
+          </div>
+          <div>
+            <label htmlFor="hero_ingredients">Hero Ingredients (comma-separated)</label>
+            <textarea
+              id="hero_ingredients"
+              name="hero_ingredients"
+              value={formData.hero_ingredients}
+              onChange={handleChange}
+              rows="3"
+              placeholder="Must be included in the main ingredients list"
+            ></textarea>
+          </div>
+          <div>
+            <label htmlFor="functions">Functions (comma-separated)</label>
+            <textarea
+              id="functions"
+              name="functions"
+              value={formData.functions}
+              onChange={handleChange}
+              rows="3"
+              placeholder="e.g., Moisturizing, Anti-aging"
+            ></textarea>
+          </div>
+          <div>
+            <label htmlFor="taglines">Taglines (comma-separated)</label>
+            <textarea
+              id="taglines"
+              name="taglines"
+              value={formData.taglines}
+              onChange={handleChange}
+              rows="3"
+              placeholder="Enter product taglines"
+            ></textarea>
+          </div>
+          {renderVariants()}
+          {renderImagePreviews()}
+          <div>
+            <label htmlFor="images">Add New Images (Max 7 total)</label>
             <input
               id="images"
               name="files"
@@ -225,28 +362,22 @@ const EditProductForm = ({ product, onClose, onUpdate }) => {
               onChange={handleImageChange}
               multiple
               accept="image/*"
-              className="mt-1 block w-full text-sm text-gray-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-full file:border-0
-                file:text-sm file:font-semibold
-                file:bg-violet-50 file:text-violet-700
-                hover:file:bg-violet-100"
+              className="file-input"
             />
+            <small>Current images: {existingImages.length}, New images: {images.length}</small>
           </div>
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-              <span className="block sm:inline">{error}</span>
+            <div className="error-message">
+              <span>{error}</span>
             </div>
           )}
           {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-              <span className="block sm:inline">{success}</span>
+            <div className="success-message">
+              <span>{success}</span>
             </div>
           )}
           <div>
-            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
-              Update Product
-            </button>
+            <button type="submit">Update Product</button>
           </div>
         </form>
       </div>

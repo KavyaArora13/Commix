@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
 import JobPosition from '../Components/Career/JobPosition'
-import Touch from '../Components/Offer/Touch'
+import Touch from '../Components/Touch'
 import '../Assets/Css/Career/Career.scss'
 
 const Career = () => {

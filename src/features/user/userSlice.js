@@ -26,6 +26,7 @@ export const fetchUserDetails = createAsyncThunk(
     }
 );
 
+
 export const updateUserDetails = createAsyncThunk(
     'user/updateDetails',
     async (userData, { rejectWithValue }) => {

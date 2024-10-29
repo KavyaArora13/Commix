@@ -1,13 +1,21 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../../Assets/Css/Profile/OrderedProduct.scss';
 
-const OrderedProduct = ({ image, title, seller, price, originalPrice, slug }) => {
-  const navigate = useNavigate();
-
-  const handleBuyAgain = () => {
-    const productSlug = slug || title.toLowerCase().replace(/\s+/g, '-');
-    navigate(`/product/${productSlug}`);
+const OrderedProduct = ({ 
+  image, 
+  title, 
+  seller, 
+  price, 
+  originalPrice, 
+  quantity, 
+  slug, 
+  productId,
+  handleOpenReviewModal
+}) => {
+  const openReviewModal = () => {
+    console.log('openReviewModal called for:', { id: productId, name: title });
+    handleOpenReviewModal({ id: productId, name: title, image, price });
   };
 
   return (
@@ -17,19 +25,19 @@ const OrderedProduct = ({ image, title, seller, price, originalPrice, slug }) =>
       </div>
       <div className="product-info">
         <h3 className="product-title">{title}</h3>
-        <p className="product-seller">
-          Sold by: {seller} | <span className="ask-seller">Product question? Ask Seller</span>
-        </p>
+        <p className="product-seller">Sold by: {seller}</p>
         <p className="product-price">
-          ${price} <span className="original-price">M.R.P.: ${originalPrice}</span>
+          ${price}
+          {originalPrice && <span className="original-price">${originalPrice}</span>}
         </p>
-        <button className="buy-again-btn" onClick={handleBuyAgain}>Buy it Again</button>
-      </div>
-      <div className="product-actions">
-        <button className="action-btn primary">Return or replace items</button>
-        <button className="action-btn">Ask Product Question</button>
-        <button className="action-btn">Leave seller feedback</button>
-        <button className="action-btn">Write a product review</button>
+        <Link to={`/product/${slug}`} className="ask-question">Product question? Ask Seller</Link>
+        <div className="product-actions">
+          <button className="buy-again">Buy it Again</button>
+          <button className="action-button">Return or replace items</button>
+          <button className="action-button" onClick={openReviewModal}>
+            Write a product review
+          </button>
+        </div>
       </div>
     </div>
   );

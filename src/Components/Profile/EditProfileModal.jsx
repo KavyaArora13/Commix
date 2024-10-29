@@ -18,13 +18,6 @@ const EditProfileModal = ({ isOpen, onClose, onUpdate, user }) => {
         last_name: user.last_name || '',
         phone_number: user.phone_number || '',
         email: user.email || '',
-        address: user.address && user.address.length > 0 ? user.address[0] : {
-          street: '',
-          house: '',
-          postcode: '',
-          location: '',
-          country: ''
-        },
         profile_picture: user.profile_picture || null
       });
       setPreviewImage(user.profile_picture || null);
@@ -33,15 +26,7 @@ const EditProfileModal = ({ isOpen, onClose, onUpdate, user }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setFormData(prev => ({
-        ...prev,
-        [parent]: { ...prev[parent], [child]: value }
-      }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
@@ -65,9 +50,7 @@ const EditProfileModal = ({ isOpen, onClose, onUpdate, user }) => {
     setIsUpdating(true);
     const data = new FormData();
     for (const key in formData) {
-      if (key === 'address') {
-        data.append('address', JSON.stringify(formData.address));
-      } else if (key === 'profile_picture' && formData[key] instanceof File) {
+      if (key === 'profile_picture' && formData[key] instanceof File) {
         data.append('profile_picture', formData[key]);
       } else {
         data.append(key, formData[key]);
@@ -128,17 +111,7 @@ const EditProfileModal = ({ isOpen, onClose, onUpdate, user }) => {
             </div>
             <input type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} placeholder="Phone number" />
             <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email address" />
-            <textarea name="address.street" value={formData.address.street} onChange={handleChange} placeholder="Street Address"></textarea>
-            <div className="form-row">
-              <input type="text" name="address.house" value={formData.address.house} onChange={handleChange} placeholder="House No." />
-              <input type="text" name="address.postcode" value={formData.address.postcode} onChange={handleChange} placeholder="Pincode" />
-            </div>
-            <div className="form-row">
-              <input type="text" name="address.country" value={formData.address.country} onChange={handleChange} placeholder="Country" />
-              <input type="text" name="address.location" value={formData.address.location} onChange={handleChange} placeholder="City" />
-            </div>
             <div className="button-row">
-              <button type="button" className="cancel-button" onClick={handleClose} disabled={isUpdating}>Cancel</button>
               <button type="submit" className="update-button" disabled={isUpdating}>
                 {isUpdating ? 'Updating...' : 'Update'}
               </button>

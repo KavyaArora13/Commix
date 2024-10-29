@@ -13,7 +13,6 @@ import SignUp from './Pages/SignUp.jsx';
 import Login from './Pages/Login';
 import { Toaster } from 'sonner';
 import ProtectedRoute from './Components/GuardRoutes/ProtectedRoute.jsx';
-import PrivateRoute from './Components/GuardRoutes/PrivateRoute.jsx';
 import ProductDetail from './Pages/ProductDetail.jsx';
 import Checkout from './Pages/CheckOut.jsx';
 import Cart from './Pages/Cart.jsx';
@@ -22,17 +21,48 @@ import Profile from './Pages/Profile';
 import Faq from './Pages/Faq';
 import { useDispatch } from 'react-redux';
 import { checkAuthStatus } from './features/auth/authActions';
+import { updateCartItemCount } from './features/cart/cartSlice';
 import OrderCompleted from './Pages/OrderSucess.jsx';
 import Chatbot from './Components/Chatbot/Chatbot.jsx';
 import AdminPanel from './Pages/AdminPanel.jsx';
 import AdminLogin from './Pages/AdminLogin.jsx';
+import NotFound from './Pages/NotFound.jsx';
+import Offer from './Pages/Offer.jsx';
+import AdminRoute from './Components/GuardRoutes/AdminRoute';
+import axios from 'axios';
+import { API_URL } from './config/api';
+import Career from './Pages/Career.jsx';
+
 
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(checkAuthStatus());
+    
+    // Set up an interval to fetch the cart count every 30 seconds
+    const interval = setInterval(() => {
+      fetchCartItemCount();
+    }, 30000);
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(interval);
   }, [dispatch]);
+
+  const fetchCartItemCount = async () => {
+    try {
+      const userString = localStorage.getItem('user');
+      if (!userString) return;
+      const user = JSON.parse(userString);
+      if (!user.user || !user.user.id) return;
+      const response = await axios.get(`${API_URL}/cart/${user.user.id}`);
+      const cartItems = response.data.cartItems || [];
+      const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      dispatch(updateCartItemCount(count));
+    } catch (error) {
+      console.error("Error fetching cart item count:", error);
+    }
+  };
 
   return (
     <Router>
@@ -46,17 +76,25 @@ function App() {
         <Route path="/singleBlogPage" element={<SingleBlogPage/>} />
         <Route path="/faq" element={<Faq/>}/>
         <Route path="/order-success" element={<OrderCompleted/>}/>
-        <Route path='/admin' element={<AdminPanel/>}/>
+        <Route path="/offer" element={<Offer />} />
+        <Route path="/career" element={<Career />} />
 
         <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/adminlogin" element={<AdminLogin/>}/>
+        <Route path="*" element={<NotFound />} />
 
         {/* Public routes (redirect to home if already authenticated) */}
         <Route element={<ProtectedRoute />}>
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+        </Route>
+
+        {/* Admin routes */}
+        <Route element={<AdminRoute />}>
+          <Route path='/admin' element={<AdminPanel/>}/>
+          {/* Add other admin routes here if needed */}
         </Route>
       </Routes>
       <ChatbotWrapper />
@@ -66,9 +104,9 @@ function App() {
 
 const ChatbotWrapper = () => {
   const location = useLocation();
-  const noChatbotRoutes = ['/login', '/signup', '/order-success','/admin','/adminlogin'];
+  const noChatbotRoutes = ['/login', '/signup', '/order-success', '/admin', '/adminlogin'];
 
-  // Check if the current route is one of the specified routes
+  // Check if the current route is one of the specified routes or if it's a NotFound route
   const showChatbot = !noChatbotRoutes.includes(location.pathname);
 
   return showChatbot ? <Chatbot /> : null;

@@ -1,3 +1,4 @@
+// src/Pages/Profile.jsx
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -10,11 +11,12 @@ import Sidebar from '../Components/Profile/Sidebar';
 import PersonalInformation from '../Components/Profile/PersonalInformation';
 import OrderHistory from '../Components/Profile/OrderHistory';
 import MyAddresses from '../Components/Profile/MyAddresses';
-import FavoriteOrders from '../Components/Profile/FavoriteOrders';
+import Favorites from '../Components/Profile/Favorites';
 import DeleteAccount from '../Components/Profile/DeleteAccount';
 import EditProfileModal from '../Components/Profile/EditProfileModal';
 import Spinner from '../Components/Spinner';
 import '../Assets/Css/Profile/Profile.scss';
+import Touch from '../Components/Touch';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -24,6 +26,7 @@ const Profile = () => {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('personal-info');
+  const [expandedSection, setExpandedSection] = useState(null);
 
   useEffect(() => {
     dispatch(checkAuthStatus());
@@ -32,9 +35,13 @@ const Profile = () => {
   useEffect(() => {
     if (isAuthenticated) {
       const storedUser = JSON.parse(localStorage.getItem('user'));
+      console.log('Stored user:', storedUser);
       const userId = storedUser ? (storedUser.id || (storedUser.user && storedUser.user.id)) : null;
+      console.log('User ID for fetching details:', userId);
       if (userId) {
         dispatch(fetchUserDetails(userId));
+      } else {
+        console.error('No user ID found for fetching user details');
       }
     } else if (!authLoading) {
       dispatch(clearUserDetails());
@@ -73,13 +80,14 @@ const Profile = () => {
     }
   };
 
-  if (authLoading || userLoading) {
-    return <Spinner />;
-  }
-
-  if (!isAuthenticated && !authLoading) {
-    return <Navigate to="/login" replace />;
-  }
+  const toggleSection = (section) => {
+    if (expandedSection === section) {
+      setExpandedSection(null);
+    } else {
+      setExpandedSection(section);
+      setActiveSection(section);
+    }
+  };
 
   const renderContent = () => {
     switch (activeSection) {
@@ -89,8 +97,8 @@ const Profile = () => {
         return <OrderHistory userDetails={userDetails} />;
       case 'my-addresses':
         return <MyAddresses userDetails={userDetails} />;
-      case 'favorite-orders':
-        return <FavoriteOrders userDetails={userDetails} />;
+      case 'favorites':
+        return <Favorites userDetails={userDetails} />;
       case 'delete-account':
         return <DeleteAccount userDetails={userDetails} />;
       default:
@@ -98,11 +106,49 @@ const Profile = () => {
     }
   };
 
+  const renderMobileContent = () => {
+    const sections = [
+      { key: 'personal-info', title: 'Personal Information' },
+      { key: 'order-history', title: 'Order History' },
+      { key: 'my-addresses', title: 'My Addresses' },
+      { key: 'favorites', title: 'Favorites' },
+      { key: 'delete-account', title: 'Delete Account' },
+    ];
+
+    return (
+      <div className="mobile-accordion d-lg-none">
+        {sections.map((section) => (
+          <div key={section.key} className="accordion-item">
+            <button
+              className={`accordion-header ${expandedSection === section.key ? 'active' : ''}`}
+              onClick={() => toggleSection(section.key)}
+            >
+              {section.title}
+            </button>
+            {expandedSection === section.key && (
+              <div className="accordion-content">
+                {renderContent()}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  if (authLoading || userLoading) {
+    return <Spinner />;
+  }
+
+  if (!isAuthenticated && !authLoading) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
-    <div>
+    <div className="profile-wrapper">
       <Header />
       {userError ? (
-        <div>Error loading user data: {userError}</div>
+        <div className="error-message">Error loading user data: {userError}</div>
       ) : (
         <main className="profile-page">
           <ProfileBanner 
@@ -114,17 +160,21 @@ const Profile = () => {
             onEditClick={handleOpenEditModal}
           />
           <div className="container mt-4">
-            <div className="row">
-              <div className="col-md-3">
+            <div className="row profile-content">
+              <div className="col-lg-3 col-md-4 sidebar-wrapper d-none d-lg-block">
                 <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
               </div>
-              <div className="col-md-9">
-                {renderContent()}
+              <div className="col-lg-9 col-md-8 content-wrapper">
+                {renderMobileContent()}
+                <div className="d-none d-lg-block">
+                  {renderContent()}
+                </div>
               </div>
             </div>
           </div>
         </main>
       )}
+      <Touch/>
       <Footer />
       <EditProfileModal
         isOpen={isEditModalOpen}

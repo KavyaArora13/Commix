@@ -45,16 +45,20 @@
 }
 
 .faq-left-section {
-  position: sticky;
-  top: 100px;
   max-width: 448px;
   margin: 0;
+
+  &.sticky-top {
+    top: 100px; // Adjust this value to control when it starts sticking
+    z-index: 1020; // Ensure it's above other content but below the header
+  }
 
   .faq-image {
     margin-bottom: 40px;
     
     img {
       width: 100%;
+      border-radius: 5px;
       height: auto;
       object-fit: cover;
     }
@@ -137,6 +141,61 @@
       padding: 0 0 15px;
       font-size: 16px;
       color: #666;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .faq-left-section {
+    &.sticky-top {
+      position: static !important; // Disable sticky behavior on mobile
+    }
+  }
+}
+
+@media (max-width: 575px) {
+  .faq-container {
+    margin-top: 3rem;
+    padding-top: 1rem;
+  }
+
+  .faq-title {
+    font-size: 28px;
+  }
+
+  .faq-content {
+    margin-top: 40px !important;
+  }
+
+  .faq-left-section {
+    position: static;
+    margin-bottom: 30px;
+  }
+
+  .faq-right-section {
+    .faq-section {
+      margin-bottom: 40px;
+
+      .faq-section-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+        padding-top: 30px;
+      }
+
+      &:first-child .faq-section-title {
+        border-top: none;
+        padding-top: 0;
+      }
+
+      .faq-question-button {
+        font-size: 16px;
+        padding: 12px 0;
+      }
+
+      .faq-answer {
+        font-size: 14px;
+        padding-bottom: 12px;
+      }
     }
   }
 }
