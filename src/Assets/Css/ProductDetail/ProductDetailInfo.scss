@@ -1,7 +1,7 @@
 .product-detail-info {
   .product-title {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 500;
 
     @media (max-width: 576px) {
       font-size: 14px;
@@ -22,75 +22,156 @@
 
   .price-section {
     .price {
-      font-size: 22px;
-      color: #000;
-    }
-  }
-
-  .promotion-section {
-    color: white;
-
-    .promo-left {
-      .price-tag {
-        background-color: white;
-        color: black;
-        border-radius: 5px;
-        font-weight: bold;
-        margin-right: 10px;
-      }
-
-      .promo-text {
-        font-size: 14px;
-
-        .promo-discount {
-          color: red;
-          font-weight: bold;
-        }
-      }
-    }
-
-    .join-now-btn {
-      background-color: white;
-      color: black;
-
-      &:hover {
-        color: red;
-        background-color: #f5f5f5;
-      }
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 12px;
     }
   }
 
   .border-div {
-    border: 1px solid black;
-    height: 50px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    background: white;
+    margin-bottom: 20px;
+    max-width: 100%;
+
+    .variant-item {
+      flex: 0 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      min-width: 60px;
+      height: 30px;
+      
+      &:hover {
+        background-color: #f8f8f8;
+      }
+
+      &.active {
+        border-color: #000;
+        background-color: #fff;
+      }
+
+      .variant-name {
+        font-weight: 400;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+    }
   }
 
-  .offer-item {
-    button {
+  .offer-section {
+    background: white;
+    padding: 16px;
+    margin: 0;
+    width: 100%;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+
+    h4 {
       font-size: 14px;
-      color: black;
-      text-decoration: underline;
-      cursor: pointer;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 12px;
     }
 
-    .offer-dot {
-      font-size: 10px;
+    .offer-item {
+      padding: 8px 0;
+      width: 100%;
+      
+      .offer-text {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+        position: relative;
+        
+        .offer-dot {
+          font-size: 4px;
+          color: #666;
+          margin-top: 6px;
+          flex-shrink: 0;
+        }
+
+        span {
+          flex: 1;
+          font-size: 13px;
+          color: #333;
+          padding-right: 80px;
+        }
+
+        button {
+          font-size: 13px;
+          color: #007185;
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          white-space: nowrap;
+          position: absolute;
+          right: 0;
+          top: 0;
+        }
+      }
+
+      .offer-details {
+        margin-left: 14px;
+        margin-top: 8px;
+        padding: 12px;
+        background: #f7f7f7;
+        border-radius: 4px;
+        
+        p {
+          font-size: 13px;
+          color: #666;
+          margin: 0;
+          
+          strong {
+            color: #333;
+          }
+        }
+      }
     }
 
-    .offer-details {
-      background-color: #f1f1f1;
-      padding-left: 10px;
-      border-radius: 5px;
-      margin-top: 5px;
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: all 2s ease-in-out;
-    }
+    @media (max-width: 767px) {
+      padding: 12px;
+      
+      h4 {
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
 
-    &.expanded .offer-details {
-      max-height: 100px;
-      opacity: 1;
+      .offer-item {
+        padding: 6px 0;
+        
+        .offer-text {
+          gap: 6px;
+          
+          span {
+            font-size: 12px;
+            padding-right: 70px;
+          }
+
+          button {
+            font-size: 12px;
+          }
+        }
+
+        .offer-details {
+          margin-left: 10px;
+          padding: 10px;
+          
+          p {
+            font-size: 12px;
+          }
+        }
+      }
     }
   }
 
@@ -118,6 +199,65 @@
       padding: 15px;
       font-size: 16px;
       font-weight: bold;
+    }
+  }
+
+  .variants-box {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    padding: 15px;
+    background: #fff;
+
+    .product-title {
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .price-section {
+      margin-bottom: 20px;
+      
+      .price {
+        font-size: 20px;
+        font-weight: 600;
+        color: #000;
+      }
+    }
+
+    .border-div {
+      margin: 0 -15px 20px;
+      padding: 15px;
+      background: #fff;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      white-space: nowrap;
+      
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .variant-item {
+        display: inline-flex;
+        margin-right: 10px;
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        
+        &.active {
+          border-color: #000;
+          background: #fff;
+        }
+
+        &:last-child {
+          margin-right: 15px;
+        }
+      }
+    }
+
+    .add-to-bag-section {
+      display: none;
     }
   }
 }

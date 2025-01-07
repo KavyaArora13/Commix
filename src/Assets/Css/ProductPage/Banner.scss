@@ -64,15 +64,18 @@
 
 @media (max-width: 576px) { 
     .hero-banner .col-12 {
-        right: 2vw; // Smallest right margin for mobile screens
-        bottom: 5vh; // Smallest bottom margin for mobile screens
+        right: 0; // Center the content horizontally
+        bottom: 3vh; // Adjust bottom margin for better positioning
+        text-align: center; // Center text for mobile
     }
 
     .main-heading {
-        font-size: 2rem; 
+        font-size: 1.5rem; // Adjust font size for mobile
     }
 
     .sub-heading {
-        font-size: 0.8rem;
+        font-size: 0.7rem; // Adjust font size for mobile
     }
 }
+
+

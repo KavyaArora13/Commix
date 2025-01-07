@@ -1,136 +1,285 @@
 // src/Assets/Css/Admin/AdminPanel.scss
 
 .admin-panel {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  position: relative;
+
+  .sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    padding: 1.25rem;
+    transition: all 0.3s ease;
     display: flex;
-    height: 100vh;
-    background-color: #f3f4f6; // Light gray background
-  
-    .sidebar {
-      width: 250px; // Fixed width for sidebar
-      background-color: #ffffff; // White background
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); // Subtle shadow
-      padding: 20px; // Padding for sidebar
-      transition: transform 0.3s ease; // Smooth transition for sidebar
+    flex-direction: column;
+    height: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    align-items: flex-end;
+
+    &.open {
+      transform: translateX(0);
+    }
+
+    &.closed {
+      transform: translateX(-100%);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    .logout-item {
       display: flex;
-      flex-direction: column; // Stack items vertically
-      height: 100%; 
+      align-items: center;
+      padding: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: auto;
+      border-radius: 8px;
 
-      &.open {
-        transform: translateX(0); // Show sidebar
-      }
-  
-      &.closed {
-        transform: translateX(-100%); // Hide sidebar
-      }
-  
-      h1 {
-        font-size: 1.5rem; // Title size
-        margin-bottom: 20px; // Space below title
+      &:hover {
+        background-color: #f3f4f6;
       }
 
-      .logout-item {
+      svg {
+        margin-right: 0.75rem;
+        height: 1.2rem;
+        width: 1.2rem;
+      }
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .custom-button {
+        width: 100%;
+        justify-content: flex-end;
+        padding: 0.75rem;
+        text-align: left;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #4b5563;
         display: flex;
-        align-items: center; // Center the icon and text vertically
-        padding: 10px; // Padding for the item
-        cursor: pointer; // Pointer cursor on hover
-        transition: background-color 0.2s ease; // Smooth background transition
-        margin-top: auto; // Push it to the bottom of the sidebar
-    
+        align-items: center;
+
+        &.active {
+          background-color: #f3f4f6;
+          color: #000;
+          font-weight: 500;
+        }
+
         &:hover {
-          background-color: #f3f4f6; // Hover color
+          background-color: #f3f4f6;
         }
-    
+
         svg {
-          margin-right: 10px; // Space between icon and text
-          height: 1.2rem; // Icon size
-          width: 1.2rem; // Icon size
+          margin-right: 0.75rem;
+          height: 1.2rem;
+          width: 1.2rem;
         }
-      }
-  
-      nav {
-        display: flex;
-        flex-direction: column; // Stack buttons vertically
-        gap: 10px; // Space between buttons
-  
-        .custom-button {
-          width: 100%;
-          justify-content: flex-start;
-          padding: 10px; // Padding for buttons
-          text-align: left;
-          background: none;
-          border: none;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-          border-radius: 5px; // Rounded corners
-  
-          &.active {
-            background-color: #e5e7eb; // Active button color
-            color: #1f2937; // Text color for active button
-          }
-  
-          &:hover {
-            background-color: #f3f4f6; // Hover color
-          }
-  
-          svg {
-            margin-right: 10px; // Space between icon and text
-            height: 1.2rem; // Icon size
-            width: 1.2rem; // Icon size
-          }
-        }
-      }
-    }
-  
-    main {
-      flex: 1; // Take remaining space
-      padding: 20px; // Padding for main content
-      overflow-y: auto; // Scroll if content overflows
-    }
-  
-    .toggle-button {
-      display: none; // Hide toggle button by default
-      margin-bottom: 20px; // Space below toggle button
-      padding: 10px; // Padding for toggle button
-      background-color: #4a0e4e; // Button color
-      color: white; // Text color
-      border: none; // No border
-      border-radius: 5px; // Rounded corners
-      cursor: pointer; // Pointer cursor
-  
-      @media (max-width: 768px) {
-        display: block; // Show toggle button on mobile
-      }
-    }
-  
-    .card {
-      background-color: #ffffff; // Card background
-      border-radius: 8px; // Rounded corners
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); // Shadow for cards
-      padding: 20px; // Padding inside cards
-      margin-bottom: 20px; // Space between cards
-  
-      h2 {
-        font-size: 1.25rem; // Card title size
-        margin-bottom: 10px; // Space below title
-      }
-  
-      .card-content {
-        display: flex;
-        flex-direction: column; // Stack content vertically
-        gap: 5px; // Space between content items
-      }
-    }
-  
-    @media (max-width: 768px) {
-      .admin-panel {
-        flex-direction: column; // Stack sidebar and main content vertically
-      }
-  
-      .sidebar {
-        width: 100%; // Full width on mobile
-        position: absolute; // Position absolute for overlay effect
-        z-index: 1000; // Ensure it appears above other content
       }
     }
   }
 
+  main {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+  }
+
+  .toggle-button {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1001;
+    padding: 0.75rem;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #333;
+    }
+
+    &.hidden {
+      display: none !important;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      margin: 0 -1.5rem;
+      padding: 0 1.5rem;
+
+      table {
+        min-width: 100%;
+        border-collapse: collapse;
+
+        th, td {
+          padding: 0.75rem;
+          text-align: left;
+          border-bottom: 1px solid #e5e7eb;
+          white-space: nowrap;
+
+          &:first-child {
+            padding-left: 0;
+          }
+
+          &:last-child {
+            padding-right: 0;
+          }
+        }
+
+        th {
+          font-weight: 600;
+          color: #4b5563;
+        }
+      }
+    }
+  }
+}
+
+// Mobile styles
+@media (max-width: 767px) {
+  .admin-panel {
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      padding: 1rem;
+      transform: translateX(-100%);
+      background-color: #ffffff;
+      z-index: 1000;
+
+      &.open {
+        transform: translateX(0);
+      }
+
+      h1 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+      }
+
+      nav {
+        gap: 0.5rem;
+
+        .custom-button {
+          padding: 0.75rem;
+          font-size: 0.95rem;
+
+          svg {
+            margin-right: 0.75rem;
+          }
+        }
+      }
+    }
+
+    main {
+      padding: 1rem;
+      padding-top: 4rem;
+    }
+
+    .toggle-button {
+      display: flex;
+    }
+  }
+}
+
+// Tablet styles
+@media (min-width: 768px) and (max-width: 1024px) {
+  .admin-panel {
+    .toggle-button {
+      display: none;
+    }
+
+    .sidebar {
+      width: 220px;
+      padding: 1.25rem;
+
+      h1 {
+        font-size: 1.35rem;
+      }
+
+      nav {
+        .custom-button {
+          padding: 0.75rem;
+          font-size: 0.975rem;
+        }
+      }
+    }
+
+    main {
+      padding: 1.25rem;
+    }
+
+    .card {
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+
+      h2 {
+        font-size: 1.15rem;
+      }
+
+      .table-responsive {
+        margin: 0 -1.25rem;
+        padding: 0 1.25rem;
+
+        table {
+          th, td {
+            padding: 0.65rem;
+            font-size: 0.95rem;
+          }
+        }
+      }
+    }
+  }
+}

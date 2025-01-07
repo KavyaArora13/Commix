@@ -10,22 +10,33 @@ import ExclusiveFestiveCombosSection from './MainSection/ExclusiveFestiveCombosS
 import OfferSection from './MainSection/OfferSection';
 import FeaturedSection from './FeaturedSection';
 import BlogSection from './MainSection/BlogSection';
-import '../Assets/Css/MainSection.scss';
+import withScrollAnimation from './withScrollAnimation';
 
 const MainSection = () => {
+  const AnimatedNewLaunchedSection = withScrollAnimation(NewLaunchedSection, { delay: 0 });
+  const AnimatedDiscoverHaircareSection = withScrollAnimation(DiscoverHaircareSection, { delay: 0.1 });
+  const AnimatedTwoImageSection = withScrollAnimation(TwoImageSection, { delay: 0.2 });
+  const AnimatedCommixIconicsSection = withScrollAnimation(CommixIconicsSection, { delay: 0.1 });
+  const AnimatedExclusiveFestiveCombosSection = withScrollAnimation(ExclusiveFestiveCombosSection, { delay: 0.2 });
+  const AnimatedOfferSection = withScrollAnimation(OfferSection, { delay: 0.1 });
+  const AnimatedFeaturedSection = withScrollAnimation(FeaturedSection, { delay: 0.2 });
+  const AnimatedBlogSection = withScrollAnimation(BlogSection, { delay: 0.1 });
+
   return (
-    <section className="main-section">
-      <MainSlider />
-      <NewLaunchedSection />
-      <DiscoverHaircareSection />
-      <TwoImageSection />
-      <CommixIconicsSection />
-      <FullWidthImageSection />
-      <ExclusiveFestiveCombosSection />
-      <OfferSection />
-      <FeaturedSection />
-      <BlogSection />
-    </section>
+    <>
+      <section className="main-section">
+        <MainSlider />
+        <AnimatedNewLaunchedSection />
+        <AnimatedDiscoverHaircareSection />
+        <AnimatedTwoImageSection />
+        <AnimatedCommixIconicsSection />
+        <FullWidthImageSection />
+        <AnimatedExclusiveFestiveCombosSection />
+        <AnimatedOfferSection />
+        <AnimatedFeaturedSection />
+        <AnimatedBlogSection />
+      </section>
+    </>
   );
 };
 

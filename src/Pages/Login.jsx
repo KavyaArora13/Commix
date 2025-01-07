@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { login } from '../features/auth/authActions';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
@@ -6,6 +6,8 @@ import '../Assets/Css/Login/Login.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import GoogleLoginComponent from '../Components/GoogleLogin.jsx';
+import axios from 'axios';
+import { API_URL } from '../config/api';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -16,6 +18,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [showResetForm, setShowResetForm] = useState(false);
+  const [resetToken, setResetToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const validateForm = () => {
     if (!email) {
@@ -46,7 +53,7 @@ const Login = () => {
           navigate('/');
         } else {
           const error = resultAction.payload;
-          toast.error(error.message || 'Login failed. Please try again.'); // Display the error message
+          toast.error(error.message || 'Login failed. Please try again.');
         }
       } catch (error) {
         console.error('Login error:', error);
@@ -57,18 +64,99 @@ const Login = () => {
     }
   };
 
-  const handleForgotPassword = (e) => {
+  const handleForgotPassword = async (e) => {
     e.preventDefault();
     if (!forgotPasswordEmail) {
       toast.error('Please enter your email address');
       return;
     }
-    // Here you would typically call an API to handle the password reset
-    console.log('Password reset requested for:', forgotPasswordEmail);
-    toast.success('Password reset instructions sent to your email');
-    setShowForgotPassword(false);
-    setForgotPasswordEmail('');
+
+    setResetLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}/auth/forgot-password`, {
+        email: forgotPasswordEmail
+      });
+      
+      toast.success(response.data.message || 'Password reset instructions sent to your email');
+      setShowForgotPassword(false);
+      setForgotPasswordEmail('');
+    } catch (error) {
+      console.error('Password reset error:', error);
+      toast.error(error.response?.data?.message || 'Failed to send reset instructions');
+    } finally {
+      setResetLoading(false);
+    }
   };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    
+    if (!newPassword || !confirmPassword) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters long');
+      return;
+    }
+
+    if (!resetToken) {
+      toast.error('Reset token is missing. Please request a new password reset.');
+      return;
+    }
+
+    setResetLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}/auth/reset-password`, {
+        token: resetToken,
+        newPassword: newPassword
+      });
+      
+      if (response.data.success) {
+        toast.success('Password reset successful');
+        setShowResetForm(false);
+        // Clear all reset-related states
+        setNewPassword('');
+        setConfirmPassword('');
+        setResetToken('');
+        // Redirect to login form
+        navigate('/login');
+      } else {
+        toast.error(response.data.message || 'Failed to reset password');
+      }
+    } catch (error) {
+      console.error('Password reset error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to reset password';
+      toast.error(errorMessage);
+      
+      // If token is invalid or expired, show the forgot password form
+      if (errorMessage.includes('Invalid or expired')) {
+        setShowResetForm(false);
+        setShowForgotPassword(true);
+        toast.error('Your reset link has expired. Please request a new one.');
+      }
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  // Modify the useEffect to handle the token
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const token = queryParams.get('token');
+    if (token) {
+      setResetToken(token);
+      setShowResetForm(true);
+      // Remove token from URL to prevent reuse
+      window.history.replaceState({}, document.title, "/login");
+    }
+  }, []);
 
   return (
     <div className="login-page">
@@ -77,7 +165,66 @@ const Login = () => {
       </Link>
       <div className="login-container">
         <div className="login-form-container">
-          {!showForgotPassword ? (
+          {showResetForm ? (
+            // Reset Password Form
+            <>
+              <h2 className="reset-password-text">Reset Password</h2>
+              <form className="reset-password-form" onSubmit={handleResetPassword}>
+                <div className="form-group">
+                  <label htmlFor="new-password">New Password</label>
+                  <div className="password-input-container">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      id="new-password"
+                      className="form-control"
+                      placeholder="Enter new password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOffIcon className="eye-icon" />
+                      ) : (
+                        <EyeIcon className="eye-icon" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="confirm-password">Confirm Password</label>
+                  <div className="password-input-container">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      id="confirm-password"
+                      className="form-control"
+                      placeholder="Confirm new password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <button 
+                  type="submit" 
+                  className="reset-password-btn"
+                  disabled={resetLoading}
+                >
+                  {resetLoading ? (
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  ) : (
+                    'Reset Password'
+                  )}
+                </button>
+                <div className="back-to-login">
+                  <Link to="/login">Back to Login</Link>
+                </div>
+              </form>
+            </>
+          ) : !showForgotPassword ? (
+            // Existing Login Form
             <>
               <h2 className="welcome-text">Welcome Back</h2>
               <form className="login-form" onSubmit={handleSubmit}>
@@ -141,6 +288,7 @@ const Login = () => {
               </form>
             </>
           ) : (
+            // Forgot Password Form
             <>
               <h2 className="forgot-password-text">Forgot Password</h2>
               <p className="forgot-password-description">Enter your email address to reset your password.</p>
@@ -156,8 +304,16 @@ const Login = () => {
                     onChange={(e) => setForgotPasswordEmail(e.target.value)}
                   />
                 </div>
-                <button type="submit" className="reset-password-btn">
-                  Reset Password
+                <button 
+                  type="submit" 
+                  className="reset-password-btn"
+                  disabled={resetLoading}
+                >
+                  {resetLoading ? (
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  ) : (
+                    'Send Reset Link'
+                  )}
                 </button>
                 <div className="back-to-login">
                   <a href="#" onClick={(e) => { e.preventDefault(); setShowForgotPassword(false); }}>Back to Login</a>

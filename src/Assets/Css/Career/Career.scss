@@ -57,3 +57,22 @@
       }
     }
   }
+
+.no-job-positions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid #ccc; // Optional border
+  border-radius: 8px; // Rounded corners
+  background-color: #f9f9f9; // Light background color
+  color: #555; // Text color
+}
+
+.no-job-icon {
+  font-size: 40px; // Icon size
+  color: black; // Icon color
+  margin-bottom: 10px; // Space between icon and text
+}

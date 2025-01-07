@@ -7,44 +7,99 @@ const initialState = {
     error: null,
 };
 
-export const fetchUserDetails = createAsyncThunk(
+// Async Thunks
+const fetchUserDetails = createAsyncThunk(
     'user/fetchUserDetails',
     async (userId, { rejectWithValue }) => {
         if (!userId) {
-            console.error('fetchUserDetails called with no userId');
             return rejectWithValue('No userId provided');
         }
         try {
-            console.log('Fetching user details for ID:', userId);
             const response = await api.get(`/users/${userId}`);
-            console.log('User details response:', response.data);
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message);
+            }
             return response.data;
         } catch (error) {
-            console.error('Error fetching user details:', error.response?.data || error.message);
-            return rejectWithValue(error.response?.data || error.message);
+            return rejectWithValue(
+                error.response?.data?.message || 
+                error.response?.data?.error || 
+                'Failed to fetch user details'
+            );
         }
     }
 );
 
-
-export const updateUserDetails = createAsyncThunk(
-    'user/updateDetails',
-    async (userData, { rejectWithValue }) => {
-      try {
-        console.log('Sending update data to server:');
-        for (let [key, value] of userData.entries()) {
-          console.log(key, value);
+const addAddress = createAsyncThunk(
+    'user/addAddress',
+    async (addressData, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await api.post('/users/address', addressData);
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message);
+            }
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || 
+                error.response?.data?.error || 
+                'Failed to add address'
+            );
         }
-        const response = await api.put('/users/update', userData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        return response.data;
-      } catch (error) {
-        console.error('Error in updateUserDetails:', error);
-        return rejectWithValue(error.response?.data || error.message);
-      }
+    }
+);
+
+const updateAddress = createAsyncThunk(
+    'user/updateAddress',
+    async ({ addressId, addressData }, { dispatch, rejectWithValue, getState }) => {
+        try {
+            const response = await api.put(`/users/address/${addressId}`, addressData);
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message);
+            }
+            const userId = getState().user.user.id;
+            if (userId) {
+                await dispatch(fetchUserDetails(userId));
+            }
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || 
+                error.response?.data?.error || 
+                'Failed to update address'
+            );
+        }
+    }
+);
+
+const deleteAddress = createAsyncThunk(
+    'user/deleteAddress',
+    async (addressId, { rejectWithValue }) => {
+        try {
+            const response = await api.delete(`/users/address/${addressId}`);
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message);
+            }
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || 
+                error.response?.data?.error || 
+                'Failed to delete address'
+            );
+        }
+    }
+);
+
+const updateUserDetails = createAsyncThunk(
+    'user/updateUserDetails',
+    async (userData, { rejectWithValue }) => {
+        try {
+            const response = await api.put(`/users/update`, userData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
     }
 );
 
@@ -54,46 +109,133 @@ const userSlice = createSlice({
     reducers: {
         setUserDetails: (state, action) => {
             state.user = action.payload;
+            if (state.user && Array.isArray(state.user.address)) {
+                localStorage.setItem('userAddresses', JSON.stringify(state.user.address));
+            }
+        },
+        updateAddresses: (state, action) => {
+            if (state.user) {
+                const addresses = Array.isArray(action.payload) ? action.payload : [];
+                state.user.address = addresses;
+                localStorage.setItem('userAddresses', JSON.stringify(addresses));
+            }
         },
         clearUserDetails: (state) => {
             state.user = null;
             state.isLoading = false;
             state.error = null;
-        },
+            localStorage.removeItem('userAddresses');
+        }
     },
     extraReducers: (builder) => {
         builder
+            // Fetch user details
             .addCase(fetchUserDetails.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
-                console.log('fetchUserDetails.pending');
             })
             .addCase(fetchUserDetails.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.user = action.payload.user;
-                console.log('fetchUserDetails.fulfilled', action.payload);
+                state.error = null;
             })
             .addCase(fetchUserDetails.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
-                console.error('fetchUserDetails.rejected', action.payload);
             })
-            .addCase(updateUserDetails.pending, (state) => {
-                console.log('updateUserDetails.pending');
+
+            // Add address
+            .addCase(addAddress.pending, (state) => {
                 state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(addAddress.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.error = null;
+                if (action.payload.user) {
+                    state.user = action.payload.user;
+                }
+            })
+            .addCase(addAddress.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+
+            // Update address
+            .addCase(updateAddress.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(updateAddress.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.error = null;
+                if (action.payload.user) {
+                    state.user = action.payload.user;
+                }
+            })
+            .addCase(updateAddress.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+
+            // Delete address
+            .addCase(deleteAddress.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(deleteAddress.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.error = null;
+                if (action.payload.user) {
+                    state.user = action.payload.user;
+                    localStorage.setItem('user', JSON.stringify(action.payload.user));
+                    if (Array.isArray(action.payload.user.address)) {
+                        localStorage.setItem('userAddresses', JSON.stringify(action.payload.user.address));
+                    }
+                }
+            })
+            .addCase(deleteAddress.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+
+            // Update user details
+            .addCase(updateUserDetails.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
             })
             .addCase(updateUserDetails.fulfilled, (state, action) => {
-                console.log('updateUserDetails.fulfilled', action.payload);
                 state.isLoading = false;
-                state.user = action.payload;
+                state.user = action.payload.user;
+                state.error = null;
+                if (state.user && Array.isArray(state.user.address)) {
+                    localStorage.setItem('userAddresses', JSON.stringify(state.user.address));
+                }
             })
             .addCase(updateUserDetails.rejected, (state, action) => {
-                console.log('updateUserDetails.rejected', action.payload);
                 state.isLoading = false;
                 state.error = action.payload;
             });
     },
 });
 
-export const { setUserDetails,clearUserDetails } = userSlice.actions;
+// Extract actions
+const { setUserDetails, clearUserDetails, updateAddresses } = userSlice.actions;
+
+// Single export statement for all items
+export {
+    // Slice actions
+    setUserDetails,
+    clearUserDetails,
+    updateAddresses,
+    
+    // Async thunks
+    fetchUserDetails,
+    addAddress,
+    updateAddress,
+    deleteAddress,
+    updateUserDetails,
+};
+
+// Default export for the reducer
 export default userSlice.reducer;

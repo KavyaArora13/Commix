@@ -33,6 +33,10 @@
         background-color: transparent; // Transparent background
         outline: none; // Remove outline when focused
         box-shadow: none; // Remove any focus blue box
+        display: flex; // Center content
+        justify-content: center; // Center content
+        align-items: center; // Center content
+        height: 100%; // Ensure full height for centering
       }
     }
   }
@@ -45,6 +49,14 @@
 .section-title{
     font-weight: bold;
     font-size: 44px;
+
+    @media (max-width: 768px) {
+        font-size: 32px;
+    }
+
+    @media (max-width: 576px) {
+        font-size: 24px;
+    }
 }
 
 .view-all-button{
@@ -58,7 +70,7 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
     .view-all-button {
       margin-top: 10px; // Add margin for spacing
       align-self: flex-start; // Align to the left in the flex context
@@ -70,3 +82,58 @@
     }
   }
   
+  @media (max-width: 768px) {
+    .sort-by {
+      display: none;
+    }
+}
+@media (max-width: 576px) {
+  .product-grid-layout .row {
+    display: flex;
+    flex-wrap: wrap; // Allow wrapping of cards
+  }
+
+  .product-grid-layout .col-6 {
+    flex: 0 0 50%; // Two cards per row on mobile
+    max-width: 50%; // Ensure max width is 50%
+  }
+}
+
+// Mobile grid layout
+@media (max-width: 767px) {
+  .product-grid-layout {
+    .container {
+      max-width: 100%;
+      padding: 0 8px;
+    }
+
+    .row {
+      margin: 0 -8px;
+
+      // Hide filters on mobile
+      > div[class*='col-lg-4'] {
+        display: none;
+      }
+
+      // Main content area
+      > div[class*='col-lg-8'] {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0;
+
+        .row {
+          display: flex;
+          flex-wrap: wrap;
+          margin: 0 -4px;
+
+          > [class*='col-'] {  // Target all column classes
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding: 4px;
+            display: block !important;
+          }
+        }
+      }
+    }
+  }
+}

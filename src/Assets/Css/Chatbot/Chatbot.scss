@@ -4,11 +4,17 @@
   right: 20px;
   z-index: 1000;
   transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    bottom: 70px;
+    right: 10px;
+  }
 }
 
 .chatbot-image-container {
   cursor: pointer;
   transition: transform 0.3s ease;
+  position: relative;
 
   &:hover {
     transform: scale(1.05);
@@ -18,17 +24,28 @@
 .chatbot-image {
   width: 200px;
   height: 120px;
+
+  @media (max-width: 768px) {
+    width: 180px;
+    height: 108px;
+  }
+
+  @media (max-width: 480px) {
+    width: 150px;
+    height: 90px;
+  }
 }
 
 .chatbot-close-button {
   position: absolute;
   top: -10px;
-  left: 120px;
+  left: 110px;
   border: none;
   width: 24px;
   height: 24px;
   border-radius: 50%;
   font-size: 18px;
+  background-color: #fff;
   color: #333;
   cursor: pointer;
   display: flex;
@@ -36,6 +53,20 @@
   justify-content: center;
   transition: all 0.3s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    left: 100px;
+    width: 20px;
+    height: 20px;
+    font-size: 16px;
+  }
+
+  @media (max-width: 480px) {
+    left: 90px;
+    width: 18px;
+    height: 18px;
+    font-size: 14px;
+  }
 
   &:hover {
     background-color: #f0f0f0;
@@ -52,13 +83,29 @@
   background-color: #f0f0f0;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    width: 80vw;
+    height: 60vh;
+    max-height: 520px;
+    bottom: 65px;
+    right: 10px;
+  }
+
+  @media (max-width: 480px) {
+    width: 75vw;
+    height: 60vh;
+    bottom: 65px;
+    right: 2.5vw;
+    border-radius: 8px;
+  }
 
   &.open {
     opacity: 1;
@@ -73,18 +120,41 @@
     border-bottom: 1px solid #e0e0e0;
     position: relative;
 
+    @media (max-width: 768px) {
+      padding: 10px 12px;
+    }
+
     .bot-image {
       width: 60px;
       height: 60px;
       object-fit: cover;
       border-radius: 50%;
       margin-right: 15px;
+
+      @media (max-width: 768px) {
+        width: 50px;
+        height: 50px;
+      }
+
+      @media (max-width: 480px) {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+      }
     }
 
     h2 {
       font-size: 20px;
       margin: 0;
       font-weight: bold;
+
+      @media (max-width: 768px) {
+        font-size: 18px;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 16px;
+      }
     }
 
     .close-button {
@@ -103,7 +173,11 @@
       transition: color 0.3s ease;
 
       &:hover {
-        color: #333;
+        color: #4a0e4e;
+      }
+
+      @media (max-width: 480px) {
+        padding: 3px;
       }
     }
   }

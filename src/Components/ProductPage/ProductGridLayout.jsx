@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import ProductFilters from './ProductFilters'; // Import the ProductFilters component
 import ProductCard from './ProductCard'; // Import the ProductCard component
 import CardComponent from './CardComponent';
+import MobileFilter from './MobileFilter';
+import MobileBestSellers from './MobileBestSellers';
 import '../../Assets/Css/ProductPage/ProductGridLayout.scss';
 import axios from 'axios'; // Import axios for API calls
 import { API_URL } from '../../config/api';
-
 const itemsPerPage = 9;
 
 const ProductGridLayout = ({ searchTerm, sortOption, setSortOption }) => {
@@ -94,6 +95,9 @@ const ProductGridLayout = ({ searchTerm, sortOption, setSortOption }) => {
   if (loading) return <p>Loading products...</p>; // Loading state
   if (error) return <p>{error}</p>; // Error state
 
+  // Check if the screen size is mobile
+  const isMobile = window.innerWidth <= 768; // Adjust the breakpoint as needed
+
   return (
     <div className="product-grid-layout container mt-5">
       <div className="row">
@@ -101,28 +105,28 @@ const ProductGridLayout = ({ searchTerm, sortOption, setSortOption }) => {
         <div className="col-sm-12 col-md-12 col-lg-4 col-xl-3 col-12">
           <ProductFilters />
         </div>
-
+        <MobileFilter sortOption={sortOption} setSortOption={setSortOption} />
         {/* Right Section */}
         <div className="col-sm-12 col-md-12 col-lg-8 col-xl-9 col-12">
-          <div className="result-header mb-4">
-            <div className="d-flex justify-content-between align-items-center">
-              <div className="result-count">
+          <div className="result-header mb-4 d-flex justify-content-between align-items-center">
+            <div className="result-count">
+              {searchTerm && (
                 <p>Showing all {filteredProducts.length} results</p>
-              </div>
-              <div className="sort-by dropdown">
-                <select 
-                  id="sortOptions" 
-                  value={sortOption} 
-                  onChange={(e) => setSortOption(e.target.value)} // Use setSortOption here
-                  className="btn btn-dark dropdown-toggle"
-                >
-    <option value="" disabled>Sort By</option> {/* "Sort By" will be shown initially but disabled */}
-    <option value="AtoZ">A to Z</option>
-                  <option value="ZtoA">Z to A</option>
-                  <option value="priceLowToHigh">Price Low to High</option>
-                  <option value="priceHighToLow">Price High to Low</option>
-                </select>
-              </div>
+              )}
+            </div>
+            <div className="sort-by dropdown">
+              <select 
+                id="sortOptions" 
+                value={sortOption} 
+                onChange={(e) => setSortOption(e.target.value)} // Use setSortOption here
+                className="btn btn-dark dropdown-toggle"
+              >
+                <option value="" disabled>Sort By</option> {/* "Sort By" will be shown initially but disabled */}
+                <option value="AtoZ">A to Z</option>
+                <option value="ZtoA">Z to A</option>
+                <option value="priceLowToHigh">Price Low to High</option>
+                <option value="priceHighToLow">Price High to Low</option>
+              </select>
             </div>
           </div>
 
@@ -136,30 +140,33 @@ const ProductGridLayout = ({ searchTerm, sortOption, setSortOption }) => {
             )}
           </div>
 
-          <nav>
-            <ul className="pagination justify-content-center ">
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={handlePreviousPage}>
-                  &laquo;
-                </button>
-              </li>
-              {[...Array(totalPages).keys()].map((num) => (
-                <li
-                  key={num + 1}
-                  className={`page-item ${currentPage === num + 1 ? 'active' : ''}`}
-                >
-                  <button className="page-link" onClick={() => setCurrentPage(num + 1)}>
-                    {num + 1}
+          {/* Pagination */}
+          {totalPages > 1 && ( // Only show pagination if there is more than one page
+            <nav>
+              <ul className="pagination justify-content-center ">
+                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                  <button className="page-link" onClick={handlePreviousPage}>
+                    &laquo;
                   </button>
                 </li>
-              ))}
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={handleNextPage}>
-                   &raquo;
-                </button>
-              </li>
-            </ul>
-          </nav>
+                {[...Array(totalPages).keys()].map((num) => (
+                  <li
+                    key={num + 1}
+                    className={`page-item ${currentPage === num + 1 ? 'active' : ''}`}
+                  >
+                    <button className="page-link" onClick={() => setCurrentPage(num + 1)}>
+                      {num + 1}
+                    </button>
+                  </li>
+                ))}
+                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                  <button className="page-link" onClick={handleNextPage}>
+                    &raquo;
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          )}
         </div>
       </div>
 
@@ -173,20 +180,26 @@ const ProductGridLayout = ({ searchTerm, sortOption, setSortOption }) => {
           </h2>
         </div>
         <div className="col-lg-2 col-md-3 col-sm-12 d-flex justify-content-end align-items-center">
-          <button className="btn btn-dark view-all-button">VIEW ALL</button>
         </div>
       </div>
-      <div className='row mt-4'>
-        {bestSellers.map((product) =>(
-          <CardComponent
-          key={product._id}
-          image={product.image_urls[0]} // Adjusted to use the correct image field
-          title={product.name}
-          price={product.price}
-          description={product.description}
-          />
-        ))}
-      </div>
+
+      {/* Show MobileBestSellers only on mobile */}
+      {isMobile ? (
+        <MobileBestSellers bestSellers={bestSellers} />
+      ) : (
+        <div className='row mt-4'>
+          {bestSellers.map((product) => (
+            <CardComponent
+              key={product._id}
+              image={product.image_urls[0]} // Adjusted to use the correct image field
+              title={product.name}
+              price={product.variants && product.variants.length > 0 ? product.variants[0].price : 'N/A'} // Ensure variants exist
+              description={product.description}
+              slug={product.slug} // Pass the slug
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

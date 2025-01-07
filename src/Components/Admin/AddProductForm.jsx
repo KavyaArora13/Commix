@@ -101,45 +101,30 @@ const AddProductForm = ({ onClose }) => {
     // Validate variants
     const validVariants = formData.variants.filter(v => 
       v.name && 
-      typeof parseFloat(v.price) === 'number' && 
-      parseFloat(v.price) > 0 && 
-      typeof parseInt(v.stock_quantity) === 'number' && 
-      parseInt(v.stock_quantity) > 0
-    );
+      v.price && 
+      v.stock_quantity
+    ).map(v => ({
+      name: v.name,
+      price: Number(v.price),
+      stock_quantity: Number(v.stock_quantity)
+    }));
+
     if (validVariants.length === 0) {
-      setError('At least one valid variant with a name, positive price, and positive stock quantity is required.');
+      setError('At least one variant with name, price, and stock quantity is required');
       return;
     }
 
     try {
       const productData = new FormData();
       
-      // Convert comma-separated strings to arrays
-      const ingredientsArray = formData.ingredients.split(',').map(item => item.trim());
-      const heroIngredientsArray = formData.hero_ingredients.split(',').map(item => item.trim());
-      const functionsArray = formData.functions.split(',').map(item => item.trim());
-      const taglinesArray = formData.taglines.split(',').map(item => item.trim());  // Add taglines conversion
-
-      // Validate hero ingredients
-      const invalidHeroIngredients = heroIngredientsArray.filter(
-        hero => !ingredientsArray.includes(hero)
-      );
-      if (invalidHeroIngredients.length > 0) {
-        setError(`Hero ingredients must be part of the main ingredients list. Invalid ingredients: ${invalidHeroIngredients.join(', ')}`);
-        return;
-      }
-
+      // Append form data
       Object.keys(formData).forEach(key => {
         if (key === 'variants') {
-          productData.append(key, JSON.stringify(formData[key]));
-        } else if (key === 'ingredients') {
-          productData.append(key, JSON.stringify(ingredientsArray));
-        } else if (key === 'hero_ingredients') {
-          productData.append(key, JSON.stringify(heroIngredientsArray));
-        } else if (key === 'functions') {
-          productData.append(key, JSON.stringify(functionsArray));
-        } else if (key === 'taglines') {
-          productData.append(key, JSON.stringify(taglinesArray));  // Add taglines
+          // Ensure variants are properly stringified
+          productData.append('variants', JSON.stringify(validVariants));
+        } else if (['ingredients', 'hero_ingredients', 'functions', 'taglines'].includes(key)) {
+          const arrayData = formData[key].split(',').map(item => item.trim()).filter(Boolean);
+          productData.append(key, JSON.stringify(arrayData));
         } else {
           productData.append(key, formData[key]);
         }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import '../../Assets/Css/ProductDetail/ProductDetailInfo.scss';
@@ -9,17 +9,15 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { API_URL } from '../../config/api';
 import { useDispatch } from 'react-redux';
 import { updateCartItemCount } from '../../features/cart/cartSlice';
+import { addToGuestCart } from '../../services/guestCartService';
 
-const ProductDetailInfo = ({ product }) => {
+const ProductDetailInfo = forwardRef(({ product, isMobile }, ref) => {
   const dispatch = useDispatch();
   
-  // Find the 50ml variant or use the first available variant
   const defaultVariant = product.variants?.find(v => v.name === '50ml') || 
                         product.variants?.[0] || 
                         { name: '50ml', price: 0 };
 
-  // Add state for quantity
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState(defaultVariant);
   const [showMoreInfo, setShowMoreInfo] = useState({ 0: false, 1: false });
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -27,7 +25,6 @@ const ProductDetailInfo = ({ product }) => {
   const [offers, setOffers] = useState([]);
 
   useEffect(() => {
-    // Update selected variant when product changes
     const default50mlVariant = product.variants?.find(v => v.name === '50ml') || 
                               product.variants?.[0] || 
                               { name: '50ml', price: 0 };
@@ -70,12 +67,6 @@ const ProductDetailInfo = ({ product }) => {
   const handleAddToBag = async () => {
     try {
       setIsAddingToCart(true);
-      const userString = localStorage.getItem('user');
-      if (!userString) {
-        toast.error('Please log in to add items to cart');
-        return;
-      }
-      const user = JSON.parse(userString);
 
       if (!selectedVariant) {
         toast.error('Please select a variant');
@@ -83,16 +74,36 @@ const ProductDetailInfo = ({ product }) => {
       }
 
       // Check stock availability
-      if (selectedQuantity > selectedVariant.stock_quantity) {
-        toast.error(`Only ${selectedVariant.stock_quantity} items available in stock`);
+      if (selectedVariant.stock_quantity < 1) {
+        toast.error(`Out of stock`);
         return;
       }
 
+      const userString = localStorage.getItem('user');
+      
+      if (!userString) {
+        // Handle guest cart
+        const updatedCart = addToGuestCart(
+          product,
+          selectedVariant,
+          1
+        );
+        
+        // Update cart count in redux store for guest
+        const newCount = updatedCart.reduce((sum, item) => sum + item.quantity, 0);
+        dispatch(updateCartItemCount(newCount));
+        
+        toast.success('Added to cart successfully');
+        return;
+      }
+
+      // Handle logged-in user cart
+      const user = JSON.parse(userString);
       const response = await axios.post(`${API_URL}/cart/add`, {
         user_id: user.user.id,
         product_id: product._id,
         variant_name: selectedVariant.name,
-        quantity: selectedQuantity
+        quantity: 1
       });
 
       if (response.data.cartItem) {
@@ -115,6 +126,15 @@ const ProductDetailInfo = ({ product }) => {
   // Helper function to fetch the current cart item count
   const fetchCartItemCount = async (userId) => {
     try {
+      const userString = localStorage.getItem('user');
+      
+      if (!userString) {
+        // For guest users, get cart from localStorage
+        const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+        return guestCart.reduce((sum, item) => sum + item.quantity, 0);
+      }
+
+      // For logged-in users, get cart from API
       const response = await axios.get(`${API_URL}/cart/${userId}`);
       return response.data.cartItems.reduce((sum, item) => sum + item.quantity, 0);
     } catch (error) {
@@ -154,6 +174,15 @@ const ProductDetailInfo = ({ product }) => {
     }
   };
 
+  // Expose methods to parent
+  useImperativeHandle(ref, () => ({
+    handleAddToBag,
+    handleToggleFavorite,
+    isFavorite,
+    isAddingToCart,
+    selectedVariant
+  }));
+
   return (
     <div className="product-detail-info">
       <div className="row product-detail-header align-items-center">
@@ -167,97 +196,77 @@ const ProductDetailInfo = ({ product }) => {
 
       <div className="row mt-3">
         <div className="col-sm-12">
-          <div className="quantity-selector mb-3">
-            <label htmlFor="quantity" className="me-2">Quantity:</label>
-            <select
-              id="quantity"
-              value={selectedQuantity}
-              onChange={(e) => setSelectedQuantity(Number(e.target.value))}
-              className="form-select form-select-sm"
-              style={{ width: 'auto', display: 'inline-block' }}
-            >
-              {[...Array(Math.min(9, selectedVariant.stock_quantity || 1))].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </option>
-              ))}
-            </select>
-          </div>
           <h2 className="price">Rs: {selectedVariant.price}</h2>
-          <div className="variants-selection mt-2">
+        </div>
+      </div>
+
+      <div className="row mt-3">
+        <div className="col-12">
+          <div className="border-div">
             {product.variants && product.variants.length > 0 ? (
               product.variants.map((variant) => (
-                <button
+                <div
                   key={variant.name}
-                  className={`variant-btn ${selectedVariant.name === variant.name ? 'active' : ''}`}
+                  className={`variant-item ${selectedVariant.name === variant.name ? 'active' : ''}`}
                   onClick={() => setSelectedVariant(variant)}
                 >
-                  {variant.name} - Rs: {variant.price}
-                </button>
+                  <span className="variant-name">{variant.name}</span>
+                </div>
               ))
             ) : (
-              <button
-                className="variant-btn active"
-                disabled
-              >
-                50ml - Rs: 0
-              </button>
+              <div className="variant-item active">
+                <span className="variant-name">50ml</span>
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      <div className="row mt-3 ms-1">
-        <div className="col-lg-8 col-sm-12 col-md-8 promotion-section p-3">
-          <div className="promotion-content d-flex align-items-center justify-content-between">
-            {/* Add dynamic promotion content here if needed */}
-          </div>
-        </div>
-      </div>
-
-      <div className="row ms-1">
-        <div className="col-lg-8 col-sm-12 col-md-8 border-div"></div>
-      </div>
-
       <div className="row mt-4">
-        <div className="col-lg-8 col-sm-12 col-md-8 offer-section p-3">
+        <div className="offer-section">
           <h4>AVAILABLE OFFERS!</h4>
-
           {offers.map((offer, index) => (
-            <div key={offer._id} className={`offer-item ${showMoreInfo[index] ? 'expanded' : ''}`}>
-              <FontAwesomeIcon icon={faCircle} className="offer-dot" />
-              <span className="offer-text ms-1">
-                {offer.description}
-              </span>
-              <br />
-              <button className="btn btn-link" onClick={() => handleToggleInfo(index)}>
-                Know More
-              </button>
-              <div className="offer-details">
-                <p><strong>Terms & Conditions :</strong> {offer.terms}</p>
+            <div key={offer._id} className="offer-item">
+              <div className="offer-text">
+                <FontAwesomeIcon icon={faCircle} className="offer-dot" />
+                <span>{offer.description}</span>
+                <button onClick={() => handleToggleInfo(index)}>
+                  {showMoreInfo[index] ? 'Show Less' : 'Know More'}
+                </button>
               </div>
+              {showMoreInfo[index] && (
+                <div className="offer-details">
+                  <p><strong>Terms & Conditions:</strong> {offer.terms}</p>
+                </div>
+              )}
             </div>
           ))}
         </div>
       </div>
-      <div className="row mt-3 add-to-bag-section">
-        <div className="col-2 col-sm-2 col-lg-1 d-flex justify-content-center">
-          <button className="wishlist-btn" onClick={handleToggleFavorite}>
-            <FontAwesomeIcon icon={isFavorite ? fasHeart : farHeart} className={isFavorite ? 'text-danger' : ''} />
-          </button>
+
+      {!isMobile && (
+        <div className="row mt-3 add-to-bag-section">
+          <div className="col-2 col-sm-2 col-lg-1 d-flex justify-content-center">
+            <button className="wishlist-btn" onClick={handleToggleFavorite}>
+              <FontAwesomeIcon 
+                icon={isFavorite ? fasHeart : farHeart} 
+                className={isFavorite ? 'text-danger' : ''} 
+              />
+            </button>
+          </div>
+          <div className="col-10 col-sm-10 col-lg-3 d-flex justify-content-center">
+            <button 
+              className="btn btn-dark add-to-bag-btn" 
+              onClick={handleAddToBag}
+              disabled={isAddingToCart}
+            >
+              {isAddingToCart ? 'ADDING...' : 'ADD TO CART'}
+            </button>
+          </div>
         </div>
-        <div className="col-10 col-sm-10 col-lg-3 d-flex justify-content-center">
-          <button 
-            className="btn btn-dark add-to-bag-btn" 
-            onClick={handleAddToBag}
-            disabled={isAddingToCart}
-          >
-            {isAddingToCart ? 'ADDING...' : 'ADD TO CART'}
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
-};
+});
 
 export default ProductDetailInfo;

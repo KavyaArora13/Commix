@@ -6,6 +6,8 @@ import { API_URL } from '../../config/api';
 import '../../Assets/Css/Profile/OrderHistory.scss';
 import { FaShoppingBag } from 'react-icons/fa'; // Import the shopping bag icon
 import { useNavigate } from 'react-router-dom';
+import ReturnRequestModal from './ReturnRequestModal';
+import { toast } from 'react-toastify';
 
 const OrderHistory = ({ userDetails }) => {
   const [orders, setOrders] = useState([]);
@@ -15,55 +17,60 @@ const OrderHistory = ({ userDetails }) => {
   const [ordersPerPage] = useState(5); // Set to 5 orders per page
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [selectedOrderItem, setSelectedOrderItem] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      if (!userDetails) {
-        console.log("No user details available");
-        setLoading(false);
-        return;
-      }
+  // Move fetchOrders outside useEffect
+  const fetchOrders = async () => {
+    if (!userDetails) {
+      console.log("No user details available");
+      setLoading(false);
+      return;
+    }
 
-      let userId;
-      if (typeof userDetails === 'object') {
-        userId = userDetails.id || userDetails._id || 
-                 (userDetails.user && (userDetails.user.id || userDetails.user._id));
+    let userId;
+    if (typeof userDetails === 'object') {
+      userId = userDetails.id || userDetails._id || 
+               (userDetails.user && (userDetails.user.id || userDetails.user._id));
+    } else {
+      userId = userDetails;
+    }
+
+    if (!userId) {
+      console.log("Unable to find user ID in userDetails:", userDetails);
+      setError('User ID not found in user details');
+      setLoading(false);
+      return;
+    }
+
+    console.log("Fetching orders for userId:", userId);
+
+    try {
+      const response = await axios.get(`${API_URL}/orders/history/${userId}`);
+      console.log("API response:", response.data);
+      
+      if (response.data && response.data.success) {
+        setOrders(Array.isArray(response.data.orders) ? response.data.orders : []);
       } else {
-        userId = userDetails;
+        console.error("Unexpected API response structure:", response.data);
+        setError('Unexpected API response structure');
       }
-
-      if (!userId) {
-        console.log("Unable to find user ID in userDetails:", userDetails);
-        setError('User ID not found in user details');
-        setLoading(false);
-        return;
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+      if (err.response && err.response.status === 404) {
+        setOrders([]);
+      } else {
+        setError('An error occurred while fetching order history');
       }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      console.log("Fetching orders for userId:", userId);
-
-      try {
-        const response = await axios.get(`${API_URL}/orders/history/${userId}`);
-        console.log("API response:", response.data);
-        
-        if (response.data && response.data.success) {
-          setOrders(Array.isArray(response.data.orders) ? response.data.orders : []);
-        } else {
-          console.error("Unexpected API response structure:", response.data);
-          setError('Unexpected API response structure');
-        }
-      } catch (err) {
-        console.error("Error fetching orders:", err);
-        if (err.response && err.response.status === 404) {
-          setOrders([]);
-        } else {
-          setError('An error occurred while fetching order history');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  // Update useEffect to use the fetchOrders function
+  useEffect(() => {
     fetchOrders();
   }, [userDetails]);
 
@@ -115,6 +122,40 @@ const OrderHistory = ({ userDetails }) => {
     }
   };
 
+  const handleOpenReturnModal = (order, item) => {
+    setSelectedOrder(order);
+    setSelectedOrderItem(item);
+    setIsReturnModalOpen(true);
+  };
+
+  const handleCloseReturnModal = () => {
+    setIsReturnModalOpen(false);
+    setSelectedOrderItem(null);
+    setSelectedOrder(null);
+  };
+
+  const handleSubmitReturnRequest = async (returnData) => {
+    try {
+      console.log('Submitting return request:', returnData);
+      
+      const response = await axios.post(`${API_URL}/orders/return-request`, returnData);
+      
+      if (response.data.success) {
+        toast.success('Return request submitted successfully');
+        handleCloseReturnModal();
+        fetchOrders(); // Refresh the orders list
+      } else {
+        toast.error(response.data.message || 'Failed to submit return request');
+      }
+    } catch (error) {
+      console.error('Failed to submit return request:', error);
+      toast.error(
+        error.response?.data?.message || 
+        'Failed to submit return request. Please try again.'
+      );
+    }
+  };
+
   return (
     <div className="order-history">
       <h2>Order History</h2>
@@ -128,15 +169,19 @@ const OrderHistory = ({ userDetails }) => {
             {order.items.map(item => (
               <OrderedProduct 
                 key={item._id}
-                image={item.product?.image || "/images/order.png"}
-                title={item.product?.name || "Product Name Not Available"}
+                image={item.product_id?.image || "/images/order.png"}
+                title={item.product_name || "Product Name Not Available"}
                 seller="Seller information not available"
-                price={item.price?.toFixed(2) || "0.00"}
-                originalPrice={item.product?.price ? item.product.price.toFixed(2) : null}
+                price={item.price || 0}
+                originalPrice={item.product_id?.price}
                 quantity={item.quantity}
-                slug={item.product?.slug || ""}
-                productId={item.product?._id || ""}
+                slug={item.product_id?.slug || ""}
+                productId={item.product_id?._id || ""}
+                item={item}
+                order={order}
                 handleOpenReviewModal={handleOpenReviewModal}
+                handleOpenReturnModal={handleOpenReturnModal}
+                onReturnSuccess={() => fetchOrders()}
               />
             ))}
           </div>
@@ -156,6 +201,13 @@ const OrderHistory = ({ userDetails }) => {
         product={selectedProduct}
         user={userDetails}
         onSubmit={handleSubmitReview}
+      />
+      <ReturnRequestModal
+        isOpen={isReturnModalOpen}
+        onClose={handleCloseReturnModal}
+        order={selectedOrder}
+        item={selectedOrderItem}
+        onSubmit={handleSubmitReturnRequest}
       />
     </div>
   );

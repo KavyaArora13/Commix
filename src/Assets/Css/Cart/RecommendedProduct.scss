@@ -1,23 +1,30 @@
 .recommended-product {
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+
     .product-image {
-      width: 93px;
-      height: 114px;
+      width: 100%;
+      height: auto;
       img {
         object-fit: cover;
         width: 100%;
         height: 100%;
+        border-radius: 8px;
       }
     }
   
     .product-title {
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: bold;
-      margin-bottom: 0.25rem;
+      margin: 0.5rem 0;
     }
   
     .product-rating {
       font-size: 1rem;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.5rem;
       .star {
         color: #d6d6d6;
         &.filled {
@@ -32,13 +39,15 @@
   
     .product-price {
       font-weight: bold;
-      font-size: 1rem;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
     }
   
     .btn-warning {
       border-radius: 11px;
-      font-size: 0.8rem;
-      padding: 0.25rem 0.5rem;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      text-align: center;
     }
 }
 

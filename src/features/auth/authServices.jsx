@@ -53,6 +53,11 @@ const adminLogin = async (credentials) => {
   };
 };
 
+const sendOtp = async (userData) => {
+  const response = await api.post('/auth/send-otp', userData);
+  return response.data;
+};
+
 export const authService = {
   validateToken,
   login,
@@ -63,4 +68,5 @@ export const authService = {
   resendOtp,
   refreshToken,
   adminLogin,
+  sendOtp,
 };

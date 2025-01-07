@@ -55,7 +55,7 @@ const ReviewSection = ({ reviews, currentPage, totalPages, onPageChange }) => {
           <div className="review-header">
             <h4 className="reviewer-name">
               <FontAwesomeIcon icon={faUser} className="user-icon" />
-              {review.user_name || review.user_id?.name || 'Anonymous'}
+              <span className="name">{review.user_name || review.user_id?.name || 'Anonymous'}</span>
             </h4>
             <div className="review-rating">
               {[...Array(5)].map((_, i) => (
@@ -113,16 +113,15 @@ const ProductDropdownInfo = ({ description, ingredients, faqs, additionalDetails
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log('ProductDropdownInfo mounted with productId:', productId);
+    if (productId) {
+      console.log('Fetching initial reviews');
+      fetchReviews(1);
+    }
   }, [productId]);
 
   const toggleSection = (section) => {
     console.log('Toggling section:', section);
     setOpenSection(prevSection => prevSection === section ? '' : section);
-    if (section === 'reviews' && reviews.length === 0) {
-      console.log('Fetching reviews for the first time');
-      fetchReviews(1);
-    }
   };
 
   const fetchReviews = async (page) => {
@@ -167,6 +166,34 @@ const ProductDropdownInfo = ({ description, ingredients, faqs, additionalDetails
 
   console.log('Current state:', { openSection, reviews, isLoading, error });
 
+  const ReviewsDropdownSection = () => (
+    <DropdownSection
+      title="REVIEWS"
+      content={
+        !productId ? (
+          <p>Reviews are not available for this product.</p>
+        ) : isLoading ? (
+          <p>Loading reviews...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : reviews.length === 0 ? (
+          <p>No reviews available for this product.</p>
+        ) : (
+          <ReviewSection
+            reviews={reviews}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )
+      }
+      isOpen={openSection === 'reviews'}
+      toggleOpen={() => toggleSection('reviews')}
+      rating={reviewCount > 0 ? averageRating : null}
+      reviewCount={reviewCount > 0 ? reviewCount : null}
+    />
+  );
+
   return (
     <div className="product-dropdown-info">
       <DropdownSection
@@ -202,31 +229,7 @@ const ProductDropdownInfo = ({ description, ingredients, faqs, additionalDetails
         isOpen={openSection === 'additionalDetails'}
         toggleOpen={() => toggleSection('additionalDetails')}
       />
-      <DropdownSection
-        title="REVIEWS"
-        content={
-          !productId ? (
-            <p>Reviews are not available for this product.</p>
-          ) : isLoading ? (
-            <p>Loading reviews...</p>
-          ) : error ? (
-            <p>{error}</p>
-          ) : reviews.length === 0 ? (
-            <p>No reviews available for this product.</p>
-          ) : (
-            <ReviewSection
-              reviews={reviews}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          )
-        }
-        isOpen={openSection === 'reviews'}
-        toggleOpen={() => productId && toggleSection('reviews')}
-        rating={averageRating}
-        reviewCount={reviewCount}
-      />
+      <ReviewsDropdownSection />
     </div>
   );
 };

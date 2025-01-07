@@ -17,7 +17,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    height: 80px; // Adjust this value as needed
+    height: 70px; // Reduced from 80px
 
     .rounded-logo {
       background-color: #2C2E3A; 
@@ -28,7 +28,7 @@
       justify-content: center;
       align-items: center; // Changed from flex-start to center
       position: absolute;
-      top: -80px; // Changed from bottom to top
+      top: -70px; // Changed from -80px to -60px to move logo lower
       z-index: 2; 
       overflow: hidden; // Add this to clip the image
 
@@ -164,6 +164,87 @@
     padding-top: 20px;
     font-size: 12px;
     color: #888;
+  }
+
+  &.mobile-footer {
+    padding: 15px;
+    background-color: #2C2E3A;
+
+    .mobile-footer-content {
+      width: 100%;
+    }
+
+    .mobile-footer-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 15px;
+      text-align: center;
+
+      .mobile-footer-link {
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        
+        &:hover {
+          color: $highlight-color;
+        }
+      }
+    }
+
+    .mobile-footer-divider {
+      width: 100%;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.2);
+      margin: 15px 0;
+    }
+
+    .mobile-footer-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+
+        .social-icon {
+          width: 30px;
+          height: 30px;
+          background-color: $highlight-color;
+          font-size: 14px;
+        }
+
+        span {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .mobile-footer-social {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+
+      .social-icon {
+        width: 30px;
+        height: 30px;
+        background-color: $highlight-color;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #2C2E3A;
+        font-size: 14px;
+
+        &:hover {
+          background-color: white;
+        }
+      }
+    }
   }
 }
 

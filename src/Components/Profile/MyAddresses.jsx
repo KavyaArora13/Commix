@@ -1,27 +1,102 @@
-// src/Components/Profile/MyAddresses.jsx
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
-import '../../Assets/Css/Profile/MyAddresses.scss';
-import { FaMapMarkerAlt, FaEdit, FaTrashAlt } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { FaMapMarkerAlt, FaEdit, FaTrashAlt, FaPlus, FaPhone, FaUser, FaMapMarked } from 'react-icons/fa';
 import AddressModal from './AddressModal';
-import { API_URL } from '../../config/api';
+import { 
+    addAddress, 
+    updateAddress, 
+    deleteAddress, 
+    fetchUserDetails 
+} from '../../features/user/userSlice';
+import '../../Assets/Css/Profile/MyAddresses.scss';
 
 const MyAddresses = () => {
-  const { user: userDetails } = useSelector(state => state.user);
+  const dispatch = useDispatch();
+  const { user: userDetails, isLoading: loading, error: reduxError } = useSelector(state => state.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addressToEdit, setAddressToEdit] = useState(null);
-  const [addresses, setAddresses] = useState(userDetails?.address || []);
+  const [error, setError] = useState('');
 
-  if (!userDetails) return <div>No user data available</div>;
-
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('accessToken');
-    return {
-      headers: {
-        Authorization: `Bearer ${token}`
+  // Fetch user details on component mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const userId = storedUser?._id || storedUser?.id || (storedUser?.user && storedUser.user._id);
+        if (userId) {
+          await dispatch(fetchUserDetails(userId)).unwrap();
+        }
+      } catch (err) {
+        setError(getErrorMessage(err));
       }
     };
+    fetchUser();
+  }, [dispatch]);
+
+  // Add this effect to update addresses when userDetails changes
+  useEffect(() => {
+    if (userDetails?.address) {
+      localStorage.setItem('userAddresses', JSON.stringify(userDetails.address));
+    }
+  }, [userDetails]);
+
+  const getErrorMessage = (error) => {
+    if (!error) return '';
+    if (typeof error === 'string') return error;
+    if (error.message) return error.message;
+    return 'An error occurred';
+  };
+
+  const handleSaveAddress = async (newAddress) => {
+    try {
+      setError('');
+      const addressData = {
+        address_name: newAddress.address_name || 'Home',
+        street: newAddress.street,
+        state: newAddress.state || 'Default State',
+        house: newAddress.house,
+        postcode: newAddress.postcode,
+        location: newAddress.location,
+        country: newAddress.country,
+        phone_number: newAddress.phone_number.replace(/\D/g, ''),
+        firstName: newAddress.firstName,
+        lastName: newAddress.lastName
+      };
+
+      if (addressToEdit) {
+        await dispatch(updateAddress({ 
+          addressId: addressToEdit._id, 
+          addressData 
+        })).unwrap();
+      } else {
+        await dispatch(addAddress(addressData)).unwrap();
+      }
+
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      const userId = storedUser?._id || storedUser?.id || (storedUser?.user && storedUser.user._id);
+      if (userId) {
+        await dispatch(fetchUserDetails(userId)).unwrap();
+      }
+      setIsModalOpen(false);
+      setAddressToEdit(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      setError('');
+      await dispatch(deleteAddress(addressId)).unwrap();
+      
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      const userId = storedUser?._id || storedUser?.id || (storedUser?.user && storedUser.user._id);
+      if (userId) {
+        await dispatch(fetchUserDetails(userId)).unwrap();
+      }
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
   };
 
   const handleAddAddress = () => {
@@ -34,90 +109,87 @@ const MyAddresses = () => {
     setIsModalOpen(true);
   };
 
-  const handleSaveAddress = async (newAddress) => {
-    try {
-      if (addressToEdit) {
-        // Update existing address
-        const response = await axios.put(
-          `${API_URL}/users/address/${addressToEdit._id}`,
-          newAddress,
-          getAuthHeaders()
-        );
-        const updatedAddress = response.data.address;
-        setAddresses(addresses.map(addr => addr._id === updatedAddress._id ? updatedAddress : addr));
-      } else {
-        // Add new address
-        const response = await axios.post(
-          `${API_URL}/users/address`,
-          newAddress,
-          getAuthHeaders()
-        );
-        const addedAddress = response.data.address;
-        setAddresses([...addresses, addedAddress]);
-      }
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error('Error saving address:', error);
-      if (error.response && error.response.status === 401) {
-        // Handle unauthorized error (e.g., redirect to login)
-        console.log('Unauthorized. Redirecting to login...');
-        // Implement your redirect logic here
-      }
-      // Handle other errors (e.g., show error message to user)
-    }
-  };
+  const renderAddressCard = (address) => (
+    <div key={address._id} className="address-card">
+      <div className="address-type-badge">
+        {address.address_name || 'Home'}
+      </div>
+      <div className="address-header">
+        <h3>
+          <FaUser className="user-icon" />
+          <span className="name">{address.firstName} {address.lastName}</span>
+        </h3>
+        <div className="address-actions">
+          <FaEdit 
+            className="icon-btn edit-btn" 
+            aria-label="Edit address" 
+            onClick={() => handleEditAddress(address)} 
+          />
+          <FaTrashAlt 
+            className="icon-btn delete-btn" 
+            aria-label="Delete address" 
+            onClick={() => handleDeleteAddress(address._id)} 
+          />
+        </div>
+      </div>
+      <div className="address-content">
+        <div className="address-line">
+          <FaMapMarked />
+          <span>{address.house}, {address.street}</span>
+        </div>
+        <div className="address-line">
+          <FaMapMarkerAlt />
+          <span>{address.location}, {address.state}</span>
+        </div>
+        <div className="address-line">
+          <span className="postal">{address.postcode}, {address.country}</span>
+        </div>
+        <div className="address-line">
+          <FaPhone />
+          <span className="phone">{address.phone_number || 'Not provided'}</span>
+        </div>
+      </div>
+    </div>
+  );
 
-  const handleDeleteAddress = async (addressId) => {
-    try {
-      await axios.delete(
-        `${API_URL}/users/address/${addressId}`,
-        getAuthHeaders()
-      );
-      setAddresses(addresses.filter(addr => addr._id !== addressId));
-    } catch (error) {
-      console.error('Error deleting address:', error);
-      if (error.response && error.response.status === 401) {
-        // Handle unauthorized error
-        console.log('Unauthorized. Redirecting to login...');
-        // Implement your redirect logic here
-      }
-      // Handle other errors
-    }
-  };
+  if (loading) {
+    return <div>Loading addresses...</div>;
+  }
+
+  const addresses = userDetails?.address || [];
 
   return (
     <div className="my-addresses">
       <h2>My Addresses</h2>
-      {addresses.length === 0 ? (
-        <div className="no-address">
-          <div className="icon-container">
-            <FaMapMarkerAlt className="map-icon" />
-          </div>
-          <p>You haven't added any address yet</p>
-          <button className="add-address-btn" onClick={handleAddAddress}>ADD ADDRESS</button>
-        </div>
+      
+      {error && <div className="error-message">{error}</div>}
+
+      <button className="add-address-btn" onClick={handleAddAddress}>
+        <FaPlus />
+      </button>
+
+      {loading ? (
+        <div>Loading addresses...</div>
       ) : (
-        <div className="address-list">
-          {addresses.map((address, index) => (
-            <div key={address._id} className="address-card">
-              <h3>Address {index + 1}</h3>
-              <p>{userDetails.name}</p>
-              <p>{address.street}, {address.house}</p>
-              <p>{address.location}, {address.postcode}</p>
-              <p>{address.country}</p>
-              <p>Phone: {userDetails.phone_number || 'Not provided'}</p>
-              <div className="address-actions">
-                <FaEdit className="icon-btn edit-btn" aria-label="Edit address" onClick={() => handleEditAddress(address)} />
-                <FaTrashAlt className="icon-btn delete-btn" aria-label="Delete address" onClick={() => handleDeleteAddress(address._id)} />
-              </div>
+        <>
+          {addresses.length === 0 ? (
+            <div className="no-address">
+              <p>You haven't added any address yet</p>
             </div>
-          ))}
-          <button className="add-address-btn" onClick={handleAddAddress}>Add New Address</button>
-        </div>
+          ) : (
+            <div className="address-list">
+              {addresses.map(renderAddressCard)}
+            </div>
+          )}
+        </>
       )}
+      
       <AddressModal 
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setAddressToEdit(null);
+        }}
         onSave={handleSaveAddress}
         addressToEdit={addressToEdit}
       />

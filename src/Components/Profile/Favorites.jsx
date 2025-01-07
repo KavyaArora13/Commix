@@ -8,6 +8,7 @@ import '../../Assets/Css/Profile/FavoriteOrders.scss';
 const Favorites = () => {
   const [favorites, setFavorites] = useState([]);
   const [products, setProducts] = useState([]);
+  const [selectedVariant, setSelectedVariant] = useState({}); // State to track selected variant
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +34,7 @@ const Favorites = () => {
   }, []);
 
   const handleProductClick = (slug) => {
-    navigate(`/product/${slug}`); // Use slug for navigation
+    navigate(`/product/${slug}`);
   };
 
   const handleUnfavorite = async (productId) => {
@@ -69,10 +70,10 @@ const Favorites = () => {
             if (favorite) {
               return (
                 <div key={favorite._id} className="favorite-item">
-                  <div onClick={() => handleProductClick(product.slug)} className="favorite-product"> {/* Use slug here */}
+                  <div onClick={() => handleProductClick(product.slug)} className="favorite-product">
                     <img src={product.image_urls[0]} alt={product.name} className="product-image" />
                     <h3 className="product-name">{product.name}</h3>
-                    <p>Price: Rs. {product.price}</p>
+                    <p>Price: Rs. {selectedVariant[product._id]?.price || product.variants[0]?.price}</p>
                   </div>
                   <button onClick={() => handleUnfavorite(product._id)} className="unfavorite-btn">
                     <Trash2 className="icon" />

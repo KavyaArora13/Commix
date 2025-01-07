@@ -33,12 +33,14 @@ import axios from 'axios';
 import { API_URL } from './config/api';
 import Career from './Pages/Career.jsx';
 
-
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(checkAuthStatus());
+    
+    // Initial cart count fetch
+    fetchCartItemCount();
     
     // Set up an interval to fetch the cart count every 30 seconds
     const interval = setInterval(() => {
@@ -52,7 +54,16 @@ function App() {
   const fetchCartItemCount = async () => {
     try {
       const userString = localStorage.getItem('user');
-      if (!userString) return;
+      
+      // Handle guest cart count
+      if (!userString) {
+        const guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+        const count = guestCart.reduce((sum, item) => sum + item.quantity, 0);
+        dispatch(updateCartItemCount(count));
+        return;
+      }
+
+      // Handle logged-in user cart count
       const user = JSON.parse(userString);
       if (!user.user || !user.user.id) return;
       const response = await axios.get(`${API_URL}/cart/${user.user.id}`);
@@ -76,7 +87,7 @@ function App() {
         <Route path="/singleBlogPage" element={<SingleBlogPage/>} />
         <Route path="/faq" element={<Faq/>}/>
         <Route path="/order-success" element={<OrderCompleted/>}/>
-        <Route path="/offer" element={<Offer />} />
+        <Route path="/offers" element={<Offer />} />
         <Route path="/career" element={<Career />} />
 
         <Route path="/profile" element={<Profile />} />
@@ -104,8 +115,7 @@ function App() {
 
 const ChatbotWrapper = () => {
   const location = useLocation();
-  const noChatbotRoutes = ['/login', '/signup', '/order-success', '/admin', '/adminlogin'];
-
+  const noChatbotRoutes = ['/login', '/signup', '/order-success', '/admin', '/adminlogin']
   // Check if the current route is one of the specified routes or if it's a NotFound route
   const showChatbot = !noChatbotRoutes.includes(location.pathname);
 

@@ -27,6 +27,7 @@ const Profile = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('personal-info');
   const [expandedSection, setExpandedSection] = useState(null);
+  const [updateError, setUpdateError] = useState('');
 
   useEffect(() => {
     dispatch(checkAuthStatus());
@@ -60,23 +61,28 @@ const Profile = () => {
 
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
+    setUpdateError('');
   };
 
   const handleUpdateProfile = async (updatedData) => {
     try {
-      const response = await dispatch(updateUserDetails(updatedData)).unwrap();
-      if (response.success) {
+      setUpdateError('');
+      const result = await dispatch(updateUserDetails(updatedData)).unwrap();
+      
+      if (result && result.success) {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         const userId = storedUser ? (storedUser.id || (storedUser.user && storedUser.user.id)) : null;
+        
         if (userId) {
-          dispatch(fetchUserDetails(userId));
+          await dispatch(fetchUserDetails(userId));
+          handleCloseEditModal();
         }
-        handleCloseEditModal();
       } else {
-        console.error('Failed to update profile:', response.message);
+        setUpdateError(result?.message || 'Failed to update profile');
       }
     } catch (error) {
       console.error('Failed to update profile:', error);
+      setUpdateError(error?.message || 'An error occurred while updating profile');
     }
   };
 
@@ -147,8 +153,8 @@ const Profile = () => {
   return (
     <div className="profile-wrapper">
       <Header />
-      {userError ? (
-        <div className="error-message">Error loading user data: {userError}</div>
+      {typeof userError === 'string' && userError ? (
+        <div className="error-message">{userError}</div>
       ) : (
         <main className="profile-page">
           <ProfileBanner 
@@ -159,6 +165,13 @@ const Profile = () => {
             orders={userDetails?.orders_count || 0}
             onEditClick={handleOpenEditModal}
           />
+          
+          {updateError && (
+            <div className="alert alert-danger mx-3 mt-3">
+              {updateError}
+            </div>
+          )}
+
           <div className="container mt-4">
             <div className="row profile-content">
               <div className="col-lg-3 col-md-4 sidebar-wrapper d-none d-lg-block">
@@ -181,6 +194,7 @@ const Profile = () => {
         onClose={handleCloseEditModal}
         onUpdate={handleUpdateProfile}
         user={userDetails}
+        error={updateError}
       />
     </div>
   );

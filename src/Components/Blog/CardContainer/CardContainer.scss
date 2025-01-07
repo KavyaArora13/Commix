@@ -4,14 +4,67 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 40px;
-    
-    .card-slider {
-      display: flex;
-      overflow-x: hidden;
-      scroll-behavior: smooth;
-      padding: 20px 0;
-      width: calc(288px * 4 + 30px); // Width of 4 cards plus some gap
-      margin: 0 auto;
+
+    &.desktop {
+      @media screen and (max-width: 768px) {
+        display: none;
+      }
+      
+      .card-slider {
+        display: flex;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+        padding: 20px 0;
+        width: calc(288px * 4 + 30px);
+        margin: 0 auto;
+        
+        @media screen and (max-width: 1200px) {
+          width: 100%;
+          justify-content: flex-start;
+        }
+      }
+    }
+
+    &.mobile {
+      display: none;
+      padding: 0;
+      
+      @media screen and (max-width: 768px) {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .mobile-swiper {
+        padding: 20px 0 40px;
+        overflow: visible;
+        
+        .swiper-slide {
+          transition: transform 0.3s ease;
+          display: flex;
+          justify-content: center;
+          
+          &-active {
+            transform: scale(1.02);
+          }
+        }
+
+        .swiper-pagination {
+          bottom: 10px;
+          
+          &-bullet {
+            width: 8px;
+            height: 8px;
+            background: #ccc;
+            opacity: 0.5;
+            
+            &-active {
+              background: #ff69b4;
+              opacity: 1;
+            }
+          }
+        }
+      }
     }
     
     .slider-button {
@@ -39,13 +92,21 @@
     
     .read-more {
       text-align: center;
-      margin-top: 20px;
+      margin: 20px auto 0;
+      max-width: 200px;
       
       .read-more-link {
         font-family: 'Montserrat', sans-serif;
         color: #ff69b4;
         text-decoration: none;
         font-weight: bold;
+        padding: 10px;
+        display: inline-block;
+        
+        @media screen and (max-width: 768px) {
+          font-size: 14px;
+          margin-top: 10px;
+        }
       }
     }
   }

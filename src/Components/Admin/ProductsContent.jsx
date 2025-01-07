@@ -19,7 +19,7 @@ const ProductsContent = ({ onEditProduct, refreshTrigger }) => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API_URL}/products?populate=category,subcategory`);
+      const response = await axios.get(`${API_URL}/admin/products/`);
       setProducts(response.data.products);
       setLoading(false);
     } catch (error) {

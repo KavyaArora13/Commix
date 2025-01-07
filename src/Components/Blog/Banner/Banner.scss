@@ -2,7 +2,11 @@
     position: relative;
     width: 100%;
     overflow: hidden;
-    margin-top: 1rem;
+    margin-top: 0; // Remove default margin
+
+    @media screen and (max-width: 768px) {
+        margin-top: 0; // Adjust margin for mobile
+    }
 
     .slider-container {
         display: flex;
@@ -12,28 +16,42 @@
     .slide {
         min-width: 100%;
         position: relative;
-        height: 340px; // Set a fixed height for the banner
+        height: 450px; // Increased height for desktop
+
+        @media screen and (max-width: 768px) {
+            height: 300px; // Increased height for mobile
+        }
 
         img {
             width: 100%;
-            height: 100%; // Set height to 100% to fill the slide
-            object-fit: cover; // Cover the entire area while maintaining aspect ratio
+            height: 100%;
+            object-fit: cover;
         }
 
         .caption {
             position: absolute;
-            bottom: 20px; // Adjusted for better positioning
+            bottom: 30px; // Adjusted bottom position
             left: 50%;
-            transform: translateX(-50%); // Center the caption
-            width: 80%; // Set a specific width for the caption
-            max-width: 600px; // Optional: Limit max width
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 600px;
             background-color: rgba(255, 255, 255, 0.75);
-            padding: 1rem;
+            padding: 1.2rem; // Slightly increased padding
             text-align: center;
 
+            @media screen and (max-width: 768px) {
+                width: 90%;
+                bottom: 20px;
+                padding: 1rem;
+            }
+
             h2 {
-                font-size: 1.125rem;
+                font-size: 1.25rem; // Slightly increased font size
                 font-weight: 600;
+
+                @media screen and (max-width: 768px) {
+                    font-size: 1.1rem;
+                }
             }
         }
     }
@@ -48,6 +66,18 @@
         border-radius: 9999px;
         border: none;
         cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+
+        @media screen and (max-width: 768px) {
+            width: 32px;
+            height: 32px;
+            padding: 0.25rem;
+        }
 
         &.prev {
             left: 1rem;
@@ -56,41 +86,9 @@
         &.next {
             right: 1rem;
         }
-    }
 
-    // Media Queries for Responsiveness
-    @media (max-width: 1024px) {
-        .caption {
-            width: 90%; // Increase width for medium devices
-            h2 {
-                font-size: 1rem; // Adjust font size for smaller screens
-            }
-        }
-    }
-
-    @media (max-width: 768px) {
-        .caption {
-            width: 95%; // Increase width for tablets
-            h2 {
-                font-size: 0.9rem; // Further adjust font size
-            }
-        }
-
-        .nav-button {
-            padding: 0.4rem; // Adjust button size for smaller screens
-        }
-    }
-
-    @media (max-width: 480px) {
-        .caption {
-            width: 100%; // Full width for mobile devices
-            h2 {
-                font-size: 0.8rem; // Smaller font size for mobile
-            }
-        }
-
-        .nav-button {
-            padding: 0.3rem; // Further adjust button size
+        &:hover {
+            background-color: rgba(31, 41, 55, 0.9);
         }
     }
 }

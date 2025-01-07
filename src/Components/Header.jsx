@@ -4,16 +4,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import '../Assets/Css/Header.scss';
 import SocialIcon from '../Components/SocialIcon.jsx';
-import { faHeart, faShoppingCart, faUserCircle, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import HeaderLogo from '../Assets/Image/comix-logo.gif';
 import { checkAuthStatus, logout } from '../features/auth/authActions';
-import { fetchUserDetails, setUserDetails } from '../features/user/userSlice.js'
+import { fetchUserDetails, setUserDetails } from '../features/user/userSlice.js';
 import { API_URL } from "../config/api";
 import { updateCartItemCount } from '../features/cart/cartSlice';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-
-
+import { 
+  faHeart, 
+  faShoppingCart, 
+  faUserCircle,  
+  faBars, 
+  faTimes,
+  faFire,
+  faMedal,
+  faHome,
+  faGift
+} from '@fortawesome/free-solid-svg-icons';
+import styled from 'styled-components';
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -21,14 +29,79 @@ const Header = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [profilePicture, setProfilePicture] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [isSearchHovered, setIsSearchHovered] = useState(false);
+  const [headerSearchTerm, setHeaderSearchTerm] = useState('');
   const cartItemCount = useSelector((state) => state.cart.itemCount);
   const dispatch = useDispatch();
   const { user: authUser, isAuthenticated } = useSelector((state) => state.auth);
   const { user: userDetails, loading: userLoading } = useSelector((state) => state.user);
   const dropdownRef = useRef(null);
   const dropdownTimeout = useRef(null);
+  const [recentSearches, setRecentSearches] = useState([]);
 
   const navigate = useNavigate();
+
+  // Sample data for search dropdown
+  const hotPicks = [
+    { title: 'Lip Gloss', image: './images/lip1.jpg' },
+    { title: 'Foundation', image: './images/lip2.jpg' },
+    { title: 'Compact', image: './images/lip3.jpg' },
+    { title: 'Palette', image: './images/lip4.jpg' },
+    { title: 'Gifting', image: './images/lip5.jpg' }
+  ];
+
+  const bestSellers = [
+    {
+      title: 'Ace Of Face Foundation Stick',
+      image: './images/blog1.jpg',
+      price: '₹999'
+    },
+    {
+      title: 'Ace Of Face Foundation Stick',
+      image: './images/blog2.jpg',
+      price: '₹999'
+    },
+    {
+      title: 'Ace Of Face Foundation Stick',
+      image: './images/blog3.jpg',
+      price: '₹999'
+    }
+  ];
+
+  const handleSearchMouseEnter = () => {
+    if (dropdownTimeout.current) {
+      clearTimeout(dropdownTimeout.current);
+    }
+    setIsSearchHovered(true);
+  };
+
+  const handleSearchMouseLeave = () => {
+    dropdownTimeout.current = setTimeout(() => {
+      setIsSearchHovered(false);
+    }, 300); // Increased delay slightly for better UX
+  };
+
+  const handleHeaderSearch = (e) => {
+    e.preventDefault();
+    if (headerSearchTerm.trim()) {
+      const updatedSearches = [
+        headerSearchTerm,
+        ...recentSearches.filter(term => term !== headerSearchTerm)
+      ].slice(0, 5); // Keep only last 5 searches
+      localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+      setRecentSearches(updatedSearches);
+      
+      setIsSearchHovered(false);
+      setHeaderSearchTerm(''); // Clear search input
+      navigate('/product', { state: { searchTerm: headerSearchTerm } });
+    }
+  };
+
+  const handleSearchTermClick = (term) => {
+    setHeaderSearchTerm(''); // Clear search input
+    setIsSearchHovered(false); // Hide dropdown
+    navigate('/product', { state: { searchTerm: term } });
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -100,9 +173,12 @@ const Header = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    setIsDropdownOpen(false);
     localStorage.removeItem('user');
     setProfilePicture(null);
+    setIsDropdownOpen(false);
+    setTimeout(() => {
+      navigate('/');
+    }, 100);
   };
 
   const handleMouseEnter = (index) => {
@@ -115,7 +191,7 @@ const Header = () => {
   const handleMouseLeaveLips = () => {
     dropdownTimeout.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 300);
+    }, 100);
   };
 
   const handleMouseLeaveDropdown = () => {
@@ -162,10 +238,7 @@ const Header = () => {
     },
     { name: 'HAIRCARE', link: '/haircare' },
     { name: 'BODYCARE', link: '/bodycare' },
-    { name: 'ORALCARE', link: '/oralcare' },
-    { name: 'GIFTING', link: '/gifting' },
-    { name: 'BESTSELLERS', link: '/bestsellers' },
-    { name: 'NEW LAUNCHES', link: '/newlaunches' },
+    { name: 'ORALCARE', link: '/oralcare' },  
     { name: 'OFFERS', link: '/offers' },
     { name: 'BLOG', link: '/blog' }
   ];
@@ -211,7 +284,7 @@ const Header = () => {
             ) : (
               <SocialIcon icon={faUserCircle} />
             )}
-            <span className="user-name">{userName}</span>
+            <span className="user-name">&nbsp;{userName}</span>
           </div>
           {isDropdownOpen && (
             <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
@@ -250,6 +323,23 @@ const Header = () => {
 
   const totalDuration = 15 * marqueeItems.length; // Total duration for all items
 
+  useEffect(() => {
+    const loadRecentSearches = () => {
+      const searches = localStorage.getItem('recentSearches');
+      if (searches) {
+        setRecentSearches(JSON.parse(searches));
+      }
+    };
+    loadRecentSearches();
+  }, []);
+
+  // Add this function to handle clearing recent searches
+  const clearRecentSearches = (e) => {
+    e.stopPropagation(); // Prevent dropdown from closing
+    localStorage.removeItem('recentSearches');
+    setRecentSearches([]);
+  };
+
   return (
     <header className="header">
       <div className="header-top">
@@ -274,13 +364,91 @@ const Header = () => {
           <img src={HeaderLogo} alt="COMIX LOGO" className="comix-logo"/>
         </div>
 
-        <div className="search-bar-container">
-          <input className="search-bar" type="text" placeholder="Try Liquid Lipstick" />
-          <button className="search-button">
-            <SocialIcon icon={faSearch} className="search-icon" />
-            <span className="search-text">Search</span>
-          </button>
+        <div 
+          className="search-bar-container"
+          onMouseEnter={handleSearchMouseEnter}
+          onMouseLeave={handleSearchMouseLeave}
+        >
+          <form onSubmit={handleHeaderSearch} className="search-form">
+            <input 
+              className="search-bar" 
+              type="text" 
+              placeholder="Try Liquid Lipstick"
+              value={headerSearchTerm}
+              onChange={(e) => setHeaderSearchTerm(e.target.value)}
+            />
+            <button type="submit" className="search-button">
+              <i className="fas fa-search"></i>
+              <span className="search-text">Search</span>
+            </button>
+          </form>
+
+          {isSearchHovered && (
+            <div className="search-dropdown">
+              {recentSearches.length > 0 && (
+                <div className="search-section">
+                  <div className="section-header">
+                    <div className="header-left">
+                      <h3>RECENTLY SEARCHED</h3>
+                    </div>
+                    <button 
+                      className="clear-searches" 
+                      onClick={clearRecentSearches}
+                    >
+                      <i className="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <div className="frequently-searched">
+                    {recentSearches.map((term, index) => (
+                      <div 
+                        key={index} 
+                        className="search-term"
+                        onClick={() => handleSearchTermClick(term)}
+                      >
+                        {term}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="search-section">
+                <div className="section-header">
+                  <SocialIcon icon={faFire} />
+                  <h3>HOT PICKS</h3>
+                </div>
+                <div className="hot-picks">
+                  {hotPicks.map((item, index) => (
+                    <div key={index} className="hot-pick-item">
+                      <img src={item.image} alt={item.title} />
+                      <span>{item.title}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="search-section">
+                <div className="section-header">
+                  <SocialIcon icon={faMedal} />
+                  <h3>BEST SELLERS</h3>
+                </div>
+                <div className="best-sellers">
+                  {bestSellers.map((item, index) => (
+                    <div key={index} className="best-seller-item">
+                      <img src={item.image} alt={item.title} />
+                      <div className="item-details">
+                        <span className="title">{item.title}</span>
+                        <span className="price">{item.price}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
+
+       
 
         <div className="header-icons">
           {renderUserInfo()}
@@ -313,7 +481,7 @@ const Header = () => {
                 ) : (
                   <SocialIcon icon={faUserCircle} />
                 )}
-                <span className="sidebar-username">{getUserName()}</span>
+                <span className="sidebar-username">&{getUserName()}</span>
               </div>
             ) : null}
           </div>
@@ -369,8 +537,33 @@ const Header = () => {
           </div>
         ))}
       </nav>
+
+      {/* Mobile Footer Navigation */}
+      <div className="mobile-footer">
+        <Link to="/" className="footer-item">
+          <SocialIcon icon={faHome} />
+          <span>Home</span>
+        </Link>
+        <Link to="/cart" className="footer-item">
+          <SocialIcon icon={faShoppingCart} />
+          <span>Cart</span>
+        </Link>
+        <Link to="/offers" className="footer-item">
+          <SocialIcon icon={faGift} />
+          <span>Offers</span>
+        </Link>
+        <Link to={isAuthenticated ? "/profile" : "/login"} className="footer-item">
+          <SocialIcon icon={faUserCircle} />
+          <span>Profile</span>
+        </Link>
+      </div>
     </header>
   );
 };
+
+// Add a margin to the main content area to prevent overlap
+const MainContent = styled.div`
+  margin-top: 60px; // Adjust based on the height of your header
+`;
 
 export default Header;

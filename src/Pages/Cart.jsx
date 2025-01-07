@@ -1,3 +1,4 @@
+// src/Assets/Css/ProductPage/CardComponent.scss
 // src/Pages/Cart.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -11,14 +12,17 @@ import CardComponent from '../Components/ProductPage/CardComponent';
 import { API_URL } from "../config/api";
 import '../Assets/Css/Cart/Cart.scss';
 import '../Assets/Css/ProductPage/ProductGridLayout.scss';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination } from 'swiper/modules';
 import { useDispatch } from 'react-redux';
 import { updateCartItemCount } from '../features/cart/cartSlice';
 import Touch from '../Components/Touch';
-import { toast } from 'sonner';  // Change this import
+import { toast } from 'react-toastify';  
+import { getGuestCart, addToGuestCart, removeFromGuestCart } from '../services/guestCartService';
+import '../Assets/Css/ProductPage/CardComponent.scss'
+import MobileCart from '../Components/Cart/MobileCart';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 const fetchCartItemCount = async (userId) => {
   try {
@@ -43,6 +47,7 @@ const Cart = () => {
   useEffect(() => {
     fetchCartData();
     fetchAllProducts();
+    fetchBestSellers();
   }, []);
 
   useEffect(() => {
@@ -52,14 +57,23 @@ const Cart = () => {
   const fetchCartData = async () => {
     try {
       const userString = localStorage.getItem('user');
+      
       if (!userString) {
-        throw new Error('User not found in localStorage');
+        const guestCart = getGuestCart();
+        console.log('Fetched guest cart items:', guestCart);
+        setCartProducts(guestCart);
+        return;
       }
-      const user = JSON.parse(userString);
-      if (!user.user || !user.user.id) {
-        throw new Error('Invalid user data in localStorage');
+
+      const userData = JSON.parse(userString);
+      const userId = userData.user?.id || userData.id;
+      
+      if (!userId) {
+        throw new Error('Invalid user ID');
       }
-      const response = await axios.get(`${API_URL}/cart/${user.user.id}`);
+
+      const response = await axios.get(`${API_URL}/cart/${userId}`);
+      console.log('Fetched cart items for logged-in user:', response.data.cartItems);
       setCartProducts(response.data.cartItems || []);
     } catch (error) {
       console.error("Error fetching cart data:", error);
@@ -87,93 +101,95 @@ const Cart = () => {
   const handleQuantityChange = async (data) => {
     try {
       const userString = localStorage.getItem('user');
-      if (!userString) {
-        toast.error('Please log in to update cart');
-        return;
-      }
-
-      // Validate data
-      if (!data.user_id || !data.product_id || !data.quantity || !data.variant_name) {
-        toast.error('Missing required fields');
-        return;
-      }
-
-      // Find the current item and its variant
-      const currentItem = cartProducts.find(
-        p => p.product_id._id === data.product_id && p.variant_name === data.variant_name
-      );
       
-      if (!currentItem) {
-        toast.error('Item not found in cart');
+      if (!userString) {
+        const updatedCart = addToGuestCart(
+          {
+            _id: data.product_id,
+            name: data.product_name,
+            image_urls: data.image_urls,
+            description: data.description,
+            variants: data.variants
+          },
+          {
+            name: data.variant_name,
+            price: data.price
+          },
+          data.quantity,
+          true
+        );
+        setCartProducts(updatedCart);
+        dispatch(updateCartItemCount(updatedCart.reduce((sum, item) => sum + item.quantity, 0)));
+        toast.success('Cart updated successfully');
         return;
       }
 
-      const variant = currentItem.product_id.variants.find(v => v.name === data.variant_name);
-      if (!variant) {
-        toast.error('Product variant not found');
+      const userData = JSON.parse(userString);
+      const userId = userData.user?.id || userData.id;
+
+      if (!userId) {
+        toast.error('Invalid user data');
         return;
       }
 
-      // Check stock availability
-      if (data.quantity > variant.stock_quantity) {
-        toast.error(`Only ${variant.stock_quantity} items available in stock`);
-        return;
-      }
-
-      // Call the addToCart endpoint to update quantity
-      await axios.post(`${API_URL}/cart/add`, {
-        user_id: data.user_id,
-        product_id: data.product_id,
-        variant_name: data.variant_name,
-        quantity: data.quantity
-      });
-
-      // Refresh cart data and update Redux store
+      data.user_id = userId;
+      const response = await axios.post(`${API_URL}/cart/add`, data);
       await fetchCartData();
-      const newCount = await fetchCartItemCount(data.user_id);
+      const newCount = await fetchCartItemCount(userId);
       dispatch(updateCartItemCount(newCount));
       toast.success('Cart updated successfully');
 
     } catch (error) {
       console.error("Error updating quantity:", error);
-      if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error('Failed to update quantity. Please try again.');
-      }
+      toast.error(error.message || 'Failed to update quantity');
     }
   };
 
-  const handleDelete = async (productId, variantName, quantity) => {
+  const handleDelete = async (productId, variantName) => {
     try {
       const userString = localStorage.getItem('user');
+      
       if (!userString) {
-        toast.error('Please log in to remove items');
+        if (!productId || !variantName) {
+          console.error('Missing required data:', { productId, variantName });
+          toast.error('Unable to remove item: Missing data');
+          return;
+        }
+
+        console.log('Deleting guest cart item:', { productId, variantName });
+        const updatedCart = removeFromGuestCart(productId, variantName);
+        console.log('Cart after deletion:', updatedCart);
+        setCartProducts(updatedCart);
+        const newCount = updatedCart.reduce((sum, item) => sum + item.quantity, 0);
+        dispatch(updateCartItemCount(newCount));
+        toast.success('Item removed from cart');
         return;
       }
-      const user = JSON.parse(userString);
-      
+
+      const userData = JSON.parse(userString);
+      const userId = userData.user?.id || userData.id;
+
+      if (!userId) {
+        toast.error('Invalid user data');
+        return;
+      }
+
+      const actualProductId = typeof productId === 'string' ? productId : productId._id;
+
       await axios.post(`${API_URL}/cart/remove`, {
-        user_id: user.user.id,
-        product_id: productId,
+        user_id: userId,
+        product_id: actualProductId,
         variant_name: variantName
       });
       
-      // Update local state
-      const updatedCartProducts = cartProducts.filter(item => 
-        !(item.product_id._id === productId && item.variant_name === variantName)
-      );
-      setCartProducts(updatedCartProducts);
-      
-      // Update Redux store
-      const newCount = await fetchCartItemCount(user.user.id);
+      await fetchCartData();
+      const newCount = await fetchCartItemCount(userId);
       dispatch(updateCartItemCount(newCount));
-      
       toast.success('Item removed from cart');
       
     } catch (error) {
       console.error("Error removing item:", error);
-      toast.error('Failed to remove item. Please try again.');
+      toast.error('Failed to remove item from cart');
     }
   };
 
@@ -198,8 +214,47 @@ const Cart = () => {
     }
   };
 
+  const fetchBestSellers = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/products/`);
+      if (response.data.success) {
+        setBestSellers(response.data.products);
+      } else {
+        console.error('Failed to fetch best sellers');
+      }
+    } catch (err) {
+      console.error('Error fetching best sellers:', err);
+    }
+  };
+
   const handleProceedToBuy = () => {
-    navigate('/checkout');
+    const userString = localStorage.getItem('user');
+    if (!userString) {
+      navigate('/checkout', { state: { isGuest: true } });
+    } else {
+      navigate('/checkout');
+    }
+  };
+
+  const fetchRecommendedProducts = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/recommended-products`);
+      const productsWithReviews = await Promise.all(response.data.map(async (product) => {
+        const reviewsResponse = await axios.get(`${API_URL}/reviews/product/${product._id}`);
+        const reviews = reviewsResponse.data.reviews;
+
+        // Calculate average rating
+        const averageRating = reviews.length > 0 
+          ? (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1)
+          : 0;
+
+        return { ...product, averageRating, reviews };
+      }));
+
+      setRecommendedProducts(productsWithReviews);
+    } catch (error) {
+      console.error('Error fetching recommended products:', error);
+    }
   };
 
   if (isLoading) {
@@ -209,109 +264,126 @@ const Cart = () => {
   const isCartEmpty = cartProducts.length === 0;
 
   return (
-    <>
-      <Header />
-      <div className="container-fluid mt-3">
-        <div className="cart-header">
-          <h1>Cart</h1>
-          <Link to="/" className="continue-shopping">
-            <span>←</span>
-            continue shopping
-          </Link>
+    <div className="cart-page">
+      {/* Desktop Header */}
+      <div className="desktop-header">
+        <Header />
+      </div>
+
+      {/* Mobile Header */}
+      <div className="mobile-header">
+        <div className="mobile-cart-header">
+          <button onClick={() => navigate(-1)} className="back-button">
+            <FontAwesomeIcon icon={faArrowLeft} />
+          </button>
+          <h1>Shopping Cart</h1>
+          <div className="spacer"></div>
         </div>
-        {isCartEmpty ? (
-          <div className="empty-cart-message">
-            <h2>Your cart is empty</h2>
-            <p>Add some products to your cart and come back here to complete your purchase!</p>
-            <Link to="/" className="btn btn-primary">
-              Start Shopping
+      </div>
+
+      <div className="cart-container">
+        <div className="container-fluid mt-3">
+          <div className="cart-header">
+            <h1>Cart</h1>
+            <Link to="/" className="continue-shopping">
+              <span>←</span>
+              continue shopping
             </Link>
           </div>
-        ) : (
-          <div className="row">
-            <div className="col-12 col-sm-12 col-md-8 col-lg-9 col-xl-9 mb-4">
-              {cartProducts.map(product => (
-                <CartProduct 
+          {isCartEmpty ? (
+            <div className="empty-cart-message">
+              <h2>Your cart is empty</h2>
+              <p>Add some products to your cart and come back here to complete your purchase!</p>
+              <Link to="/" className="btn btn-primary">
+                Start Shopping
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Mobile Cart */}
+              <div className="d-block d-md-none">
+                <MobileCart
+                  cartProducts={cartProducts}
+                  recommendedProducts={recommendedProducts}
+                  handleQuantityChange={handleQuantityChange}
+                  handleDelete={handleDelete}
+                  subtotal={subtotal}
+                  itemCount={itemCount}
+                  onProceedToBuy={handleProceedToBuy}
+                />
+              </div>
+
+              {/* Desktop Cart */}
+              <div className="d-none d-md-block">
+                <div className="row">
+                  <div className="col-md-8 col-lg-9 col-xl-9 mb-4">
+                    {cartProducts.map(product => (
+                      <CartProduct 
+                        key={`${product.product_id}-${product.variant_name}`}
+                        product={product}
+                        onQuantityChange={handleQuantityChange}
+                        onDelete={() => handleDelete(product.product_id, product.variant_name)}
+                      />
+                    ))}
+                  </div>
+                  <div className="col-md-4 col-lg-3 col-xl-3">
+                    <OrderSummary 
+                      subtotal={subtotal} 
+                      itemCount={itemCount} 
+                      onProceedToBuy={handleProceedToBuy}
+                    />
+                    <div className="recommended-products">
+                      <h5>Recommended Products</h5>
+                      {recommendedProducts.length > 0 ? (
+                        <div className="recommended-product-list">
+                          {recommendedProducts.map(product => (
+                            <RecommendedProduct key={product._id} product={product} />
+                          ))}
+                        </div>
+                      ) : (
+                        <p>No recommended products available.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {!isCartEmpty && (
+          <div className="product-grid-layout container mt-5">
+            <div className="row mt-5">
+              <div className="col-lg-10 col-md-9 col-sm-12">
+                <p className="section-subtitle">
+                  Top Seller
+                </p>
+                <h2 className="section-title">
+                  Explore Our Best Collections
+                </h2>
+              </div>
+              <div className="col-lg-2 col-md-3 col-sm-12 d-flex justify-content-end align-items-center">
+                <Link to="/product" className="btn btn-dark view-all-button">VIEW ALL</Link>
+              </div>
+            </div>
+            <div className='row mt-4'>
+              {bestSellers.map((product) => (
+                <CardComponent
                   key={product._id}
-                  product={product}
-                  onQuantityChange={handleQuantityChange}
-                  onDelete={() => handleDelete(product.product_id._id, product.variant_name, product.quantity)}
+                  image={product.image_urls[0]}
+                  title={product.name}
+                  price={product.variants && product.variants.length > 0 ? product.variants[0].price : 'N/A'}
+                  description={product.description}
+                  slug={product.slug}
                 />
               ))}
-            </div>
-            <div className="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
-              <OrderSummary 
-                subtotal={subtotal} 
-                itemCount={itemCount} 
-                onProceedToBuy={handleProceedToBuy}
-              />
-              <div className="recommended-products">
-                <h5>Recommended Products</h5>
-                {recommendedProducts.length > 0 ? (
-                  <>
-                    <div className="d-md-none">
-                      <Swiper
-                        modules={[Pagination]}
-                        spaceBetween={15}
-                        slidesPerView={1}
-                        pagination={{ clickable: true }}
-                        className="mySwiper"
-                      >
-                        {recommendedProducts.map(product => (
-                          <SwiperSlide key={product._id}>
-                            <RecommendedProduct product={product} />
-                          </SwiperSlide>
-                        ))}
-                      </Swiper>
-                    </div>
-                    <div className="d-none d-md-block recommended-product-list">
-                      {recommendedProducts.map(product => (
-                        <RecommendedProduct key={product._id} product={product} />
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <p>No recommended products available.</p>
-                )}
-              </div>
             </div>
           </div>
         )}
       </div>
-
-      {!isCartEmpty && (
-        <div className="product-grid-layout container mt-5">
-          <div className="row mt-5">
-            <div className="col-lg-10 col-md-9 col-sm-12">
-              <p className="section-subtitle">
-                Top Seller
-              </p>
-              <h2 className="section-title">
-                Explore Our Best Collections
-              </h2>
-            </div>
-            <div className="col-lg-2 col-md-3 col-sm-12 d-flex justify-content-end align-items-center">
-              <Link to="/products" className="btn btn-dark view-all-button">VIEW ALL</Link>
-            </div>
-          </div>
-          <div className='row mt-4'>
-            {bestSellers.map((product) => (
-              <div key={product._id} className="col-lg-3 col-md-6 col-sm-6 mb-4">
-                <CardComponent
-                  id={product._id}
-                  image={product.image_urls[0]}
-                  title={product.name}
-                  price={product.variants && product.variants.length > 0 ? product.variants[0].price : 0}
-                  description={product.description}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
       <Touch/>
       <Footer />
-    </>
+    </div>
   );
 };
 

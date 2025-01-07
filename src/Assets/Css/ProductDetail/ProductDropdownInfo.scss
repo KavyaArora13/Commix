@@ -30,6 +30,8 @@
       margin-left: 10px;
       font-size: 14px;
       font-weight: normal;
+      display: inline-block;
+      opacity: 1;
 
       .star-icon {
         color: #FBD800;
@@ -60,8 +62,13 @@
   li {
     margin-bottom: 15px;
   }
-}
 
+  .dropdown-section.open {
+    .rating-info {
+      opacity: 1;
+    }
+  }
+}
 
 .reviews-section {
   .review-item {
@@ -76,8 +83,18 @@
       margin-bottom: 10px;
 
       .reviewer-name {
-        font-weight: bold;
-        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .user-icon {
+          color: #666;
+          font-size: 16px;
+        }
+
+        .name {
+          font-weight: 500;
+        }
       }
 
       .review-rating {
@@ -130,6 +147,75 @@
 
     .page-info {
       font-size: 0.9em;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .product-dropdown-info {
+    margin: 0;
+    background: #fff;
+
+    .dropdown-section {
+      border-top: 8px solid #f5f5f5;
+      border-bottom: none;
+      margin: 0;
+      
+      &:first-child {
+        border-top: none;
+      }
+    }
+
+    .dropdown-header {
+      padding: 15px;
+      background: #fff;
+      position: relative;
+      
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 15px;
+        right: 15px;
+        height: 1px;
+        background: #eee;
+      }
+    }
+
+    .dropdown-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      
+      .bullet-icon {
+        font-size: 6px;
+        margin-right: 8px;
+      }
+    }
+
+    .dropdown-content {
+      padding: 15px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #666;
+      background: #fff;
+
+      ul {
+        margin: 0;
+        padding: 0;
+        
+        li {
+          margin-bottom: 10px;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+
+    .dropdown-icon {
+      color: #999;
     }
   }
 }

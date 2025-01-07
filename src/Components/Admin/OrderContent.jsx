@@ -6,6 +6,8 @@ export default function OrderContent() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  console.log(orders);
 
   useEffect(() => {
     fetchOrders();
@@ -67,28 +69,82 @@ export default function OrderContent() {
           <thead>
             <tr>
               <th>Order No</th>
-              <th>Username</th>
+              <th>Customer</th>
               <th>Date & Time</th>
-              <th>Status</th>
+              <th>Order Status</th>
+              <th>Return Status</th>
               <th>Total Amount</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
-              <tr key={order._id}>
-                <td>{order.order_no}</td>
-                <td>{order.user && order.user.username ? order.user.username : 'N/A'}</td>
-                <td>{formatDate(order.createdAt)}</td>
-                <td>{order.order_status}</td>
-                <td>${order.total_amount.toFixed(2)}</td>
-                <td>
-                  <button onClick={() => downloadInvoice(order._id)}>
-                    Download Invoice
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {orders.map((order) => {
+              // Updated customer name logic for guest users
+              const customerName = order.is_guest 
+                ? `${order.guest_info?.firstName || ''} ${order.guest_info?.lastName || ''} (Guest)`
+                : order.user?.username || 'N/A';
+
+              // If guest name is just " (Guest)", show email instead
+              const displayName = customerName.trim() === '(Guest)' 
+                ? `${order.guest_info?.email} (Guest)` 
+                : customerName;
+
+              return (
+                <tr key={order._id}>
+                  <td>{order.order_no}</td>
+                  <td>
+                    <div>
+                      {displayName}
+                      {order.is_guest && (
+                        <div className="guest-details">
+                          <small>Email: {order.guest_info?.email}</small>
+                          <small>Phone: {order.guest_info?.phone}</small>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td>{formatDate(order.createdAt)}</td>
+                  <td>
+                    <span className={`status ${order.order_status.toLowerCase()}`}>
+                      {order.order_status}
+                    </span>
+                  </td>
+                  <td>
+                    {order.items && order.items.map((item, index) => (
+                      <div key={index}>
+                        {item.return_status === 'requested' && (
+                          <span className="status return-requested">
+                            Return Requested
+                          </span>
+                        )}
+                        {item.return_status === 'approved' && (
+                          <span className="status return-approved">
+                            Return Approved
+                          </span>
+                        )}
+                        {item.return_status === 'rejected' && (
+                          <span className="status return-rejected">
+                            Return Rejected
+                          </span>
+                        )}
+                        {(!item.return_status || item.return_status === 'none') && (
+                          <span className="status no-return">-</span>
+                        )}
+                      </div>
+                    ))}
+                  </td>
+                  <td>₹{order.total_amount.toFixed(2)}</td>
+                  <td>
+                    <button 
+                      className="download-btn"
+                      onClick={() => downloadInvoice(order._id)}
+                    >
+                      Download Invoice
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

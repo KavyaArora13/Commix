@@ -1,0 +1,146 @@
+.return-request-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .modal-content {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+
+      h3 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+
+      .close-button {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #666;
+      }
+    }
+
+    .product-info {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+
+      .product-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+      }
+
+      .product-details {
+        h4 {
+          margin: 0 0 0.2rem 0;
+          font-size: 0.9rem;
+        }
+
+        p {
+          margin: 0.1rem 0;
+          color: #666;
+          font-size: 0.8rem;
+        }
+      }
+    }
+
+    .form-group {
+      margin-bottom: 0.8rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.2rem;
+        font-weight: 500;
+        font-size: 0.85rem;
+      }
+
+      select, textarea {
+        width: 100%;
+        padding: 0.4rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }
+
+      textarea {
+        resize: none;
+        height: 60px;
+      }
+
+      .return-type-options {
+        display: flex;
+        gap: 1.2rem;
+        margin-bottom: 0.3rem;
+
+        label {
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+          font-size: 0.85rem;
+          margin: 0;
+        }
+      }
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      margin-top: 0.8rem;
+
+      button {
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+      }
+
+      .cancel-button {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        color: #666;
+      }
+
+      .submit-button {
+        background-color: #333;
+        color: white;
+        border: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .return-request-modal {
+    padding: 0.5rem;
+
+    .modal-content {
+      width: 95%;
+      padding: 0.8rem;
+    }
+  }
+} 

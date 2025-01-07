@@ -47,7 +47,9 @@ const MainSlider = () => {
     autoplay: banners.length > 1,
     autoplaySpeed: 3000,
     pauseOnHover: true,
-    cssEase: "linear"
+    cssEase: "linear",
+    arrows: false,
+    adaptiveHeight: false
   };
 
   const renderShopNowButton = (link) => {
@@ -73,20 +75,33 @@ const MainSlider = () => {
   };
 
   return (
-    <div className="main-slider-container">
-      <Slider {...settings}>
-        {banners.map((banner) => (
-          <div key={banner._id}>
-            <div className="slide-content" style={{backgroundImage: `url(${banner.image_url})`}}>
-              <div className="content-wrapper">
-                <h1>{banner.title}</h1>
-                <p>{banner.description}</p>
-                {renderShopNowButton(banner.link)}
+    <div className="main-section">
+      <div className="main-slider-container">
+        <Slider {...settings}>
+          {banners.map((banner) => (
+            <div key={banner._id} className="slider-item">
+              <div className="slide-content">
+                <div className="slide-background" style={{
+                  backgroundImage: `linear-gradient(to right, 
+                    rgba(255, 255, 255, 0.9) 0%, 
+                    rgba(255, 255, 255, 0.8) 15%, 
+                    rgba(255, 255, 255, 0.6) 25%,
+                    rgba(255, 255, 255, 0.2) 35%,
+                    rgba(255, 255, 255, 0) 45%
+                  ), url(${banner.image_url})`,
+                  backgroundPosition: 'center right',
+                  backgroundSize: 'cover'
+                }} />
+                <div className="content-wrapper">
+                  <h1>{banner.title}</h1>
+                  <p>{banner.description}</p>
+                  {renderShopNowButton(banner.link)}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </Slider>
+          ))}
+        </Slider>
+      </div>
     </div>
   );
 };

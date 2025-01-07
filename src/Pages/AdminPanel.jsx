@@ -1,6 +1,7 @@
 // src/Pages/AdminPanel.jsx
+
 import React, { useState } from "react";
-import { BarChart, Users, Package, Grid, Image, Tag, LogOut, ShoppingCart } from "lucide-react";
+import { BarChart, Users, Package, Grid, Image, Tag, LogOut, ShoppingCart, Menu } from "lucide-react";
 import "../Assets/Css/Admin/AdminPanel.scss";
 import DashboardContent from '../Components/Admin/DashboardContent';
 import UsersContent from '../Components/Admin/UsersContent';
@@ -33,10 +34,12 @@ export default function AdminPanel() {
     { name: "Offers", icon: Tag },
   ];
 
+
   const handleEditProduct = (product) => {
     setSelectedProduct(product);
     setIsEditProductModalOpen(true);
   };
+
 
   const handleUpdateProduct = (updatedProduct) => {
     console.log("Product updated:", updatedProduct);
@@ -44,6 +47,7 @@ export default function AdminPanel() {
     setRefreshProducts(prev => !prev); // Toggle this state to trigger a refresh
   };
 
+  
   const renderContent = () => {
     switch (currentSection) {
       case "dashboard":
@@ -105,8 +109,12 @@ export default function AdminPanel() {
         </div>
       </aside>
       <main>
-        <button className="toggle-button" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-          {isSidebarOpen ? "Hide Menu" : "Show Menu"}
+        <button 
+          className={`toggle-button ${isEditProductModalOpen ? 'hidden' : ''}`} 
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          aria-label={isSidebarOpen ? "Close Menu" : "Open Menu"}
+        >
+          {isSidebarOpen ? <LogOut size={24} /> : <Menu size={24} />}
         </button>
         {renderContent()}
       </main>

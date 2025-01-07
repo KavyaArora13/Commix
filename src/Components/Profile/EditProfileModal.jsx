@@ -5,7 +5,7 @@ import Spinner from '../Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
-const EditProfileModal = ({ isOpen, onClose, onUpdate, user }) => {
+const EditProfileModal = ({ isOpen, onClose, onUpdate, user, error }) => {
   const [formData, setFormData] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -16,7 +16,6 @@ const EditProfileModal = ({ isOpen, onClose, onUpdate, user }) => {
       setFormData({
         first_name: user.first_name || '',
         last_name: user.last_name || '',
-        phone_number: user.phone_number || '',
         email: user.email || '',
         profile_picture: user.profile_picture || null
       });
@@ -86,6 +85,11 @@ const EditProfileModal = ({ isOpen, onClose, onUpdate, user }) => {
     <div className="edit-profile-modal">
       <div className="modal-content">
         {isUpdating && <Spinner />}
+        {error && (
+          <div className="alert alert-danger">
+            {error}
+          </div>
+        )}
         <div className="modal-header">
           <div className="background-image" style={{backgroundImage: `url(${profileBanner})`}}></div>
           <div className="profile-image-container" onClick={handleImageClick}>
@@ -106,11 +110,29 @@ const EditProfileModal = ({ isOpen, onClose, onUpdate, user }) => {
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
             <div className="form-row">
-              <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} placeholder="First Name" />
-              <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} placeholder="Last Name" />
+              <input 
+                type="text" 
+                name="first_name" 
+                value={formData.first_name} 
+                onChange={handleChange} 
+                placeholder="First Name" 
+              />
+              <input 
+                type="text" 
+                name="last_name" 
+                value={formData.last_name} 
+                onChange={handleChange} 
+                placeholder="Last Name" 
+              />
             </div>
-            <input type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} placeholder="Phone number" />
-            <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email address" />
+            <input 
+              type="email" 
+              name="email" 
+              value={formData.email} 
+              onChange={handleChange} 
+              placeholder="Email address" 
+              disabled
+            />
             <div className="button-row">
               <button type="submit" className="update-button" disabled={isUpdating}>
                 {isUpdating ? 'Updating...' : 'Update'}

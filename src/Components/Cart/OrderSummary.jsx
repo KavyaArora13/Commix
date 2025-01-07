@@ -1,7 +1,7 @@
 import React from 'react';
 import '../../Assets/Css/Cart/OrderSummary.scss';
 
-const OrderSummary = ({ subtotal, itemCount, onProceedToBuy }) => {
+const OrderSummary = ({ subtotal, itemCount, onProceedToBuy, cartItems }) => {
   const freeDeliveryThreshold = 1000;
 
   return (
@@ -25,10 +25,22 @@ const OrderSummary = ({ subtotal, itemCount, onProceedToBuy }) => {
         <span className="text-success">Your order is eligible for FREE Delivery</span>
         <p className="text-muted small">Choose FREE Delivery options at checkout.</p>
       </div>
+      
+      {/* Product List with Descriptions */}
+      <div className="product-list mb-3">
+        {cartItems && cartItems.map((item, index) => (
+          <div key={index} className="product-item mb-2">
+            <div className="product-name">{item.name}</div>
+            <div className="product-description text-muted small">{item.description}</div>
+            <div className="product-price">${item.price.toFixed(2)} x {item.quantity}</div>
+          </div>
+        ))}
+      </div>
+
       <h5 className="mb-3">Subtotal ({itemCount} items): ${subtotal.toFixed(2)}</h5>
       <div className="form-check mb-3 gift-checkbox">
         <input className="form-check-input" type="checkbox" id="giftOrder" />
-        <label className="form-check-label " htmlFor="giftOrder">
+        <label className="form-check-label" htmlFor="giftOrder">
           This order contains a gift
         </label>
       </div>

@@ -74,10 +74,44 @@
 // Add media query for responsiveness
 @media (max-width: 768px) {
   .touch-subscribe-section {
-    padding: 3rem 0 10rem; // Adjust padding for smaller screens
+    padding: 3rem 0 10rem;// Adjust padding for smaller screens
     
     .touch-content {
       padding-bottom: 80px; // Reduce padding for smaller screens
+    }
+
+    .touch-heading-container {
+      flex-direction: column; // Stack elements vertically
+      .touch-section-heading {
+        font-size: 1.5rem; // Adjust font size for smaller screens
+      }
+
+      .touch-decor-icon {
+        width: 2rem; // Adjust icon size for smaller screens
+      }
+    }
+
+    .touch-section-description {
+      font-size: 0.9rem; // Adjust font size for description
+    }
+
+    .touch-subscribe-form {
+      flex-direction: column;
+      padding: 0 15px;
+      
+      .touch-email-input {
+        width: 70%; // Reduced from 80% to 70%
+        margin: 0 auto 20px; // Center the input and add bottom margin
+        border-radius: 5px;
+        border-right: 1px solid black;
+        font-size: 0.875rem;
+      }
+
+      .touch-subscribe-button {
+        width: 70%; // Match input width
+        margin: 0 auto; // Center the button
+        border-radius: 5px;
+      }
     }
   }
 }

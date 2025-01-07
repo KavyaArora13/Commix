@@ -23,7 +23,17 @@ const OfferSection = ({ onApplyOffer, appliedOffer }) => {
   const fetchOffers = async () => {
     try {
       const response = await axios.get(`${API_URL}/offers/active-offers`);
-      setOffers(response.data.offers);
+      if (response.data.offers) {
+        const currentDate = new Date();
+        const activeOffers = response.data.offers.filter(offer => {
+          const startDate = new Date(offer.start_date);
+          const endDate = new Date(offer.end_date);
+          return offer.is_active && currentDate >= startDate && currentDate <= endDate;
+        });
+        setOffers(activeOffers);
+      } else {
+        setOffers([]);
+      }
     } catch (error) {
       console.error('Error fetching offers:', error);
       setError('Failed to load offers');
@@ -33,7 +43,13 @@ const OfferSection = ({ onApplyOffer, appliedOffer }) => {
   const handleOfferSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
     try {
+      if (appliedOffer && appliedOffer._id === selectedOfferId) {
+        await onApplyOffer(null);
+        setSelectedOfferId('');
+        return;
+      }
       await onApplyOffer(selectedOfferId);
     } catch (err) {
       setError(err.message || 'Failed to apply offer');
@@ -56,14 +72,30 @@ const OfferSection = ({ onApplyOffer, appliedOffer }) => {
               </option>
             ))}
           </select>
-          <button type="submit">
-            {appliedOffer ? 'Change Offer' : 'Apply Offer'}
-          </button>
+          <div className="offer-buttons">
+            <button type="submit" className="apply-offer-btn">
+              {appliedOffer ? 'Change Offer' : 'Apply Offer'}
+            </button>
+            {appliedOffer && (
+              <button 
+                type="button" 
+                onClick={() => onApplyOffer(null)}
+                className="remove-offer-btn"
+              >
+                Remove Offer
+              </button>
+            )}
+          </div>
         </form>
       ) : (
         <p>No offers available at the moment.</p>
       )}
       {error && <p className="error-message">{error}</p>}
+      {appliedOffer && (
+        <p className="applied-offer-message">
+          Applied offer: {appliedOffer.title} ({appliedOffer.discount_percentage}% off)
+        </p>
+      )}
     </div>
   );
 };

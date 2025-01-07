@@ -73,6 +73,32 @@
   }
 }
 
+// Media query for iPad Pro
+@media (max-width: 1024px) and (min-width: 768px) {
+  .image-comparison-slider {
+    width: 400px; // Adjust overall width for iPad
+    max-width: 90%; // Ensure it doesn't exceed the container
+
+    .image-container {
+      height: 300px; // Adjust height for iPad
+    }
+
+    .before-image,
+    .after-image {
+      height: 100%; // Maintain full height
+    }
+
+    .slider {
+      width: 3px; // Adjust slider width for better aesthetics
+    }
+
+    .slider-button {
+      width: 30px; // Adjust button size
+      height: 30px; // Adjust button size
+    }
+  }
+}
+
 .custom-slider-container {
   .slick-slide {
     padding: 0 10px;

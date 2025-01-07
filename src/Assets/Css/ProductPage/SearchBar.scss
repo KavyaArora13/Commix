@@ -2,13 +2,34 @@
     .form-container{
         border: 1px solid #b9b9b9;
         opacity: 80%;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        @media (max-width: 576px) {
+            flex-direction: row;
+            padding: 5px;
+        }
     }
     .form-control {
         font-size: 1rem; 
+        width: 100%;
+        padding: 10px;
+        @media (max-width: 576px) {
+            font-size: 0.9rem;
+            width: 80%;
+            padding: 5px;
+            border: 1px solid #b9b9b9;
+            outline: none;
+        }
     }
 
     .btn-light {
         padding: 10px; 
+        @media (max-width: 576px) {
+            padding: 5px 10px;
+            margin-left: 5px;
+            width: auto;
+        }
     }
 
     .btn-light i {
@@ -18,5 +39,6 @@
 
     .btn-light:hover {
         cursor: pointer;
+        background-color: #e2e6ea;
     }
 }

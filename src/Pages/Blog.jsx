@@ -8,6 +8,7 @@ import Footer from '../Components/Footer.jsx'
 import SectionDivider from '../Components/Blog/SectionDivider/SectionDivider.jsx'
 import YouTubeVideo from '../Components/Blog/YTvideo/YoutubeVideo.jsx'
 import Touch from '../Components/Offer/Touch.jsx'
+import './Blog.scss'
 
 const Blog = () => {
   const posts = [
@@ -20,27 +21,25 @@ const Blog = () => {
   return (
     <>
       <Header />
-      <BlogBanner />
-      <SectionHeader title="Popular Posts" />
-      <CardContainer posts={posts} />
-      <SectionDivider />
-      <SectionHeader title="HAIR" />
-      <CardContainer posts={posts} />
-      <SectionDivider />
-      <SectionHeader title="SKIN" />
-      <CardContainer posts={posts} />
-      <SectionDivider/>
-      <SectionHeader title="TRENDING POSTS" />
-      <CardContainer posts={posts} />
-      <SectionDivider/>
-      <SectionHeader title="LATEST POSTS" />
-      <YouTubeVideo videoId="dQw4w9WgXcQ" title="Featured YouTube Video" />
-      <Touch/>
+      <div className="blog-content">
+        <BlogBanner />
+        <SectionHeader title="Popular Posts" />
+        <CardContainer posts={posts} />
+        <SectionDivider />
+        <SectionHeader title="HAIR" />
+        <CardContainer posts={posts} />
+        <SectionDivider />
+        <SectionHeader title="SKIN" />
+        <CardContainer posts={posts} />
+        <SectionDivider/>
+        <SectionHeader title="TRENDING POSTS" />
+        <CardContainer posts={posts} />
+        <SectionDivider/>
+        <SectionHeader title="LATEST POSTS" />
+        <YouTubeVideo videoId="dQw4w9WgXcQ" title="Featured YouTube Video" />
+        <Touch/>
+      </div>
       <Footer/>
-      
-
-
-
     </>
   )
 }

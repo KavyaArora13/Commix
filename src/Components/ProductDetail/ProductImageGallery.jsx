@@ -12,7 +12,7 @@ const ProductImageGallery = ({ images }) => {
             <div
               key={index}
               className={`thumbnail ${image === selectedImage ? 'active' : ''}`}
-              onClick={() => setSelectedImage(image)}
+              onMouseEnter={() => setSelectedImage(image)}
             >
               <img src={image} alt={`Thumbnail ${index + 1}`} />
             </div>
@@ -22,19 +22,17 @@ const ProductImageGallery = ({ images }) => {
           <img src={selectedImage} alt="Selected product" className="main-image" />
         </div>
         <div className="bottom-thumbnails">
-          {images.length > 3 && (
-            <div
-              className={`thumbnail ${images[3] === selectedImage ? 'active' : ''}`}
-              onClick={() => setSelectedImage(images[3])}
-            >
-              <img src={images[3]} alt="Corner Thumbnail" />
-            </div>
-          )}
+          <div
+            className={`thumbnail ${images[3] === selectedImage ? 'active' : ''}`}
+            onMouseEnter={() => setSelectedImage(images[3])}
+          >
+            <img src={images[3]} alt="Corner Thumbnail" />
+          </div>
           {images.slice(4).map((image, index) => (
             <div
               key={index + 4}
               className={`thumbnail ${image === selectedImage ? 'active' : ''}`}
-              onClick={() => setSelectedImage(image)}
+              onMouseEnter={() => setSelectedImage(image)}
             >
               <img src={image} alt={`Thumbnail ${index + 5}`} />
             </div>

@@ -6,6 +6,7 @@ import CouponCard from '../Components/Offer/CouponCard';
 import '../Assets/Css/Offer/Offer.scss';
 import axios from 'axios'; // Make sure axios is installed
 import { API_URL } from '../config/api';
+import SectionHeader from '../Components/Blog/SectionHeader/SectionHeader';
 
 const Offer = () => {
   const [offers, setOffers] = useState([]);
@@ -34,28 +35,30 @@ const Offer = () => {
   return (
     <>
       <Header />
-
-      <div className="container mt-4">
-        {offers.length > 0 ? (
-          <div className="row">
-            {offers.map((offer) => (
-              <CouponCard
-                key={offer._id}
-                imageSrc={offer.image_url}
-                couponCode={offer.title}
-                description={offer.description}
-                discountPercentage={offer.discount_percentage}
-                startDate={new Date(offer.start_date).toLocaleDateString()}
-                endDate={new Date(offer.end_date).toLocaleDateString()}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="no-offers-message">
-            <h2>No offers available at the moment</h2>
-            <p>Please check back later for new offers and discounts!</p>
-          </div>
-        )}
+      <div className="mt-5 pt-4">
+        <SectionHeader className="container mb-4" title="Offers" />
+        <div className="container mt-4">
+          {offers.length > 0 ? (
+            <div className="row">
+              {offers.map((offer) => (
+                <CouponCard
+                  key={offer._id}
+                  imageSrc={offer.image_url}
+                  couponCode={offer.title}
+                  description={offer.description}
+                  discountPercentage={offer.discount_percentage}
+                  startDate={new Date(offer.start_date).toLocaleDateString()}
+                  endDate={new Date(offer.end_date).toLocaleDateString()}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="no-offers-message">
+              <h2>No offers available at the moment</h2>
+              <p>Please check back later for new offers and discounts!</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <Touch />

@@ -22,13 +22,15 @@ export const login = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
-      // Ensure the response has the same structure as Google sign-in
       return {
         user: response.user,
         accessToken: response.accessToken
       };
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue({ message: 'Login failed. Please try again.' });
     }
   }
 );

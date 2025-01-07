@@ -118,3 +118,84 @@
     color: #111; // Keep the text color the same on hover
   }
 }
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cancel-button, .refund-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.cancel-button {
+  background-color: #dc3545;
+  color: white;
+  
+  &:hover {
+    background-color: #c82333;
+  }
+}
+
+.refund-button {
+  background-color: #ffc107;
+  color: #000;
+  
+  &:hover {
+    background-color: #e0a800;
+  }
+}
+
+.refund-status, .order-status {
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    
+    &.pending {
+      background-color: #ffc107;
+      color: #000;
+    }
+    
+    &.approved {
+      background-color: #28a745;
+      color: white;
+    }
+    
+    &.completed {
+      background-color: #17a2b8;
+      color: white;
+    }
+    
+    &.rejected {
+      background-color: #dc3545;
+      color: white;
+    }
+  }
+}
+
+.confirm-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+  }
+}

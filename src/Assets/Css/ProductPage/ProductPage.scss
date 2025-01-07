@@ -1,0 +1,16 @@
+.search-bar {
+    width: 100%; // Make the search bar full width
+    padding: 10px; // Add some padding for better touch targets
+    font-size: 1rem; // Set a base font size
+
+    @media (max-width: 768px) {
+        padding: 8px; // Adjust padding for smaller screens
+        font-size: 0.9rem; // Slightly reduce font size for mobile
+    }
+
+    @media (max-width: 576px) {
+        padding: 6px; // Further adjust padding for mobile
+        font-size: 0.8rem; // Further reduce font size for mobile
+    }
+}
+

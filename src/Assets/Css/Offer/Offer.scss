@@ -1,6 +1,41 @@
-.kavya{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+// Desktop styles (default)
+.offers-slider {
+  .row {
+    margin: 0 -15px; // Reset default row margins
+  }
+  
+  .col-md-4 {
+    width: 33.333%;
+    padding: 0 15px;
+  }
+}
+
+// Mobile styles
+@media (max-width: 768px) {
+  .offers-section {
+    margin-top: 60px !important;
+  }
+
+  .offers-slider {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .row {
+      flex-wrap: nowrap;
+      margin: 0;
+      padding: 0 15px;
+    }
+
+    .col-md-4 {
+      min-width: 300px;
+      padding: 0 10px;
+      width: auto; // Reset width for mobile
+    }
+  }
 }
